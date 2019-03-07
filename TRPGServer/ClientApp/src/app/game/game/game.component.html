@@ -1,0 +1,16 @@
+<div class="container">
+  <div class="col-offset-1 col-md-6">
+    <table *ngIf="showMap()">
+      <tr *ngFor="let mapRow of getTileIds(); let i = index">
+        <td *ngFor="let mapTileId of mapRow; let j = index">
+          <div class="tileGrid">
+            <img class="mapTileIcon" src="{{getTileUri(i, j)}}" alt="tile" draggable="false" /><div class="entity-name" *ngIf="showEntity(i, j)">{{getEntityName(i, j)}}</div><img class="unitIcon" src="{{getEntityUri(i, j)}}" alt="entity" *ngIf="showEntity(i, j)" draggable="false" />
+          </div>
+        </td>
+      </tr>
+    </table>
+  </div>
+  <div class="col-md-5">
+    <game-chatbox-component #chatbox></game-chatbox-component>
+  </div>
+</div>

@@ -1,0 +1,33 @@
+[
+    {
+        "id": 1,
+        "iconUri": "images/dungeon/floor/dirt_full_new.png",
+        "isBlocking": false
+    },
+    {
+        "id": 2,
+        "iconUri": "images/dungeon/floor/floor_vines_1_old.png",
+        "isBlocking": false
+    },
+    {
+        "id": 3,
+        "iconUri": "images/dungeon/floor/acidic_floor_0.png",
+        "isBlocking": false
+    },
+  {
+    "id": 4,
+    "iconUri": "images/dungeon/floor/dirt_1_new.png",
+    "isBlocking": false
+  },
+  {
+    "id": 5,
+    "iconUri": "images/dungeon/water/deep_water.png",
+    "isBlocking": true
+  },
+  {
+    "id": 6,
+    "iconUri": "images/dungeon/doors/closed_door.png",
+    "isBlocking": false,
+    "canTransport": true
+  }
+]

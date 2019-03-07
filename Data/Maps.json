@@ -1,0 +1,157 @@
+[
+  {
+    "id": 1,
+    "mapTileIds": [
+      [ 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
+      [ 2, 1, 1, 1, 1, 1, 1, 1, 2 ],
+      [ 2, 1, 4, 4, 4, 4, 4, 1, 6 ],
+      [ 2, 1, 3, 3, 3, 3, 3, 1, 2 ],
+      [ 2, 1, 4, 4, 4, 4, 4, 1, 2 ],
+      [ 2, 1, 1, 1, 1, 1, 1, 1, 2 ],
+      [ 2, 2, 2, 2, 2, 2, 2, 2, 2 ],
+      [ 2, 1, 6, 1, 1, 1, 1, 1, 2 ]
+    ],
+    "transportAssignments": [
+      {
+        "id": 1,
+        "transportMapId": 2,
+        "transportFrom": {
+          "positionX": 7,
+          "positionY": 2
+        },
+        "transportTo": {
+          "positionX": 0,
+          "positionY": 2
+        }
+      },
+      {
+        "id": 2,
+        "transportMapId": 4,
+        "transportFrom": {
+          "positionX": 2,
+          "positionY": 8
+        },
+        "transportTo": {
+          "positionX": 3,
+          "positionY": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": 2,
+    "mapTileIds": [
+      [ 2, 2, 6, 2, 2, 2, 2, 2, 2 ],
+      [ 2, 1, 1, 1, 1, 1, 1, 1, 2 ],
+      [ 2, 1, 4, 4, 4, 4, 4, 1, 2 ],
+      [ 2, 1, 3, 3, 3, 3, 3, 1, 6 ],
+      [ 2, 1, 4, 4, 4, 4, 4, 1, 2 ],
+      [ 2, 1, 1, 1, 1, 1, 1, 1, 2 ],
+      [ 2, 2, 2, 2, 2, 2, 2, 2, 2 ]
+    ],
+    "transportAssignments": [
+      {
+        "id": 1,
+        "transportMapId": 1,
+        "transportFrom": {
+          "positionX": 0,
+          "positionY": 2
+        },
+        "transportTo": {
+          "positionX": 7,
+          "positionY": 2
+        }
+      },
+      {
+        "id": 2,
+        "transportMapId": 3,
+        "transportFrom": {
+          "positionX": 3,
+          "positionY": 8
+        },
+        "transportTo": {
+          "positionX": 3,
+          "positionY": 0
+        }
+      }
+    ]
+  },
+  {
+    "id": 3,
+    "mapTileIds": [
+      [ 2, 2, 2, 2, 6, 2, 2, 2, 5 ],
+      [ 2, 1, 1, 1, 1, 1, 1, 1, 5 ],
+      [ 2, 1, 4, 4, 4, 4, 4, 1, 5 ],
+      [ 6, 1, 3, 3, 3, 3, 3, 1, 5 ],
+      [ 2, 1, 4, 4, 4, 4, 4, 1, 5 ],
+      [ 2, 1, 1, 1, 1, 1, 1, 1, 5 ],
+      [ 2, 2, 2, 2, 2, 2, 2, 2, 5 ],
+      [ 5, 5, 5, 5, 5, 5, 5, 5, 5 ]
+    ],
+    "transportAssignments": [
+      {
+        "id": 1,
+        "transportMapId": 2,
+        "transportFrom": {
+          "positionX": 3,
+          "positionY": 0
+        },
+        "transportTo": {
+          "positionX": 3,
+          "positionY": 8
+        }
+      },
+      {
+        "id": 2,
+        "transportMapId": 4,
+        "transportFrom": {
+          "positionX": 0,
+          "positionY": 4
+        },
+        "transportTo": {
+          "positionX": 7,
+          "positionY": 4
+        }
+      }
+    ]
+  },
+  {
+    "id": 4,
+    "mapTileIds": [
+      [ 5, 5, 5, 5, 5, 5, 5, 5, 5 ],
+      [ 2, 1, 1, 1, 1, 1, 1, 1, 5 ],
+      [ 2, 1, 4, 4, 4, 4, 4, 1, 5 ],
+      [ 6, 1, 3, 3, 3, 3, 3, 1, 5 ],
+      [ 2, 1, 4, 4, 4, 4, 4, 1, 5 ],
+      [ 2, 1, 1, 1, 1, 1, 1, 1, 5 ],
+      [ 2, 2, 2, 2, 2, 2, 2, 2, 5 ],
+      [ 5, 5, 5, 5, 6, 5, 5, 5, 5 ]
+    ],
+    "transportAssignments": [
+      {
+        "id": 1,
+        "transportMapId": 1,
+        "transportFrom": {
+          "positionX": 3,
+          "positionY": 0
+        },
+        "transportTo": {
+          "positionX": 2,
+          "positionY": 8
+        }
+      },
+      {
+        "id": 2,
+        "transportMapId": 3,
+        "transportFrom": {
+          "positionX": 7,
+          "positionY": 4
+        },
+        "transportTo": {
+          "positionX": 0,
+          "positionY": 4
+        }
+      }
+    ]
+  }
+]

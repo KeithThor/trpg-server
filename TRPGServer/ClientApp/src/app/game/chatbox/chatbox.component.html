@@ -1,0 +1,18 @@
+<div id="chatbox">
+  <div id="message-container">
+    <chatbox-message-component *ngFor="let m of receivedMessages" [message]="m"></chatbox-message-component>
+  </div>
+  <div class="input-group">
+    <span class="input-group-addon">
+      <select [(ngModel)]="message.messageType" name="messageType">
+        <option selected value="local">&lt;Local&gt;</option>
+        <option value="global">&lt;Global&gt;</option>
+        <option value="private">&lt;Private&gt;</option>
+      </select>
+    </span>
+    <input class="form-control" [(ngModel)]="message.content" type="text" name="content" placeholder="Message" />
+    <span class="input-group-addon">
+      <button class="btn btn-default" (click)="sendMessageAsync()" type="submit">Send</button>
+    </span>
+  </div>
+</div>

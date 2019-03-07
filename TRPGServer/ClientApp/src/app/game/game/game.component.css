@@ -1,0 +1,20 @@
+tr > td > .tileGrid {
+  position: relative;
+  width: 32px;
+  height: 32px;
+}
+
+.tileGrid > .mapTileIcon {
+  position: absolute;
+  z-index: 1;
+}
+
+.tileGrid > .entity-name {
+  position: absolute;
+  z-index: 3;
+}
+
+.tileGrid > .unitIcon {
+  position: absolute;
+  z-index: 2;
+}

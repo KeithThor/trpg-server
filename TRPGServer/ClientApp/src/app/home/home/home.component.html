@@ -1,0 +1,22 @@
+<div class="container">
+  <div class="col-md-6 offset-md-3">
+    <h3 *ngIf="isLoggedIn(); else notLoggedIn">Hi {{getUsername()}}, welcome to the new home!</h3>
+    <ng-template #notLoggedIn><h3>Welcome to home anonymous user!</h3></ng-template>
+    <button *ngIf="isLoggedIn()" class="btn btn-secondary" (click)="logOut()">Log out</button>
+  </div>
+  <div class="col-md-3">
+    <h3>Gamedata</h3>
+    <form>
+      <div class="form-group">
+        <label for="messageInput">Message</label>
+        <input class="form-control" id="messageInput" [(ngModel)]="message" [ngModelOptions]="{standalone: true}" type="text" />
+      </div>
+      <button (click)="sendMessage()" type="submit">Send Message</button>
+    </form>
+    <ul class="list-group">
+      <li *ngFor="let gameState of gameData" class="list-group-item">
+        {{gameState}}
+      </li>
+    </ul>
+  </div>
+</div>
