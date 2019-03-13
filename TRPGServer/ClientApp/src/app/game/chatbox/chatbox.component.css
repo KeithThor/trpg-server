@@ -1,6 +1,6 @@
 #message-container {
   height: 500px;
   max-height: 500px;
-  background-color: white;
+  background: white;
   overflow-y: scroll;
 }

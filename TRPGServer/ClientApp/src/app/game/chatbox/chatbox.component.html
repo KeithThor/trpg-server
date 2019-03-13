@@ -1,5 +1,5 @@
 <div id="chatbox">
-  <div id="message-container">
+  <div #container id="message-container">
     <chatbox-message-component *ngFor="let m of receivedMessages" [message]="m"></chatbox-message-component>
   </div>
   <div class="input-group">
