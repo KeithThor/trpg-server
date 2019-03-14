@@ -46,7 +46,7 @@ namespace TRPGServer
                         {
                             OnMessageReceived = context =>
                             {
-                                var authToken = context.Request.Query["authToken"];
+                                var authToken = context.Request.Query["access_token"];
                                 
                                 var path = context.HttpContext.Request.Path;
                                 if (!string.IsNullOrEmpty(authToken) &&
