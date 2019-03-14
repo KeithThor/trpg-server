@@ -1,4 +1,5 @@
-﻿using TRPGShared;
+﻿using System.Collections.Generic;
+using TRPGShared;
 
 namespace TRPGGame.Entities
 {
@@ -13,9 +14,9 @@ namespace TRPGGame.Entities
         int Id { get; }
 
         /// <summary>
-        /// The uri containing the icon that represents this tile on the world map.
+        /// The uris containing the layers of icons that represents this tile on the world map.
         /// </summary>
-        string IconUri { get; }
+        IEnumerable<string> IconUris { get; }
 
         /// <summary>
         /// Gets or sets whether or not this tile blocks player movement.

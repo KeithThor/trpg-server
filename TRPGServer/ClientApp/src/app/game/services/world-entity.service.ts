@@ -3,6 +3,7 @@ import { HubConnectionBuilder, HubConnection } from '@aspnet/signalr';
 import { WorldEntity } from "../model/world-entity.model";
 import { Coordinate } from "../model/coordinate.model";
 import { LocalStorageConstants } from "../../constants";
+import { EntityLocation } from "../model/entity-location.model";
 
 @Injectable()
 export class WorldEntityService {
@@ -26,18 +27,20 @@ export class WorldEntityService {
   private isRequestingData: boolean;
   private failedReconnections: number;
   private changeMapCallbacks: { (newMapId: number): Promise<void>; }[]
+  private updateLocationsCallbacks: { (mapEntities: number[][], entities: EntityLocation[]): void; }[]
 
   /** Initializes this service and starts the connection to the server. */
   public async initializeAsync(): Promise<void> {
     this.entityLocations = [];
     this.changeMapCallbacks = [];
+    this.updateLocationsCallbacks = [];
     this.connection = new HubConnectionBuilder().withUrl("/hubs/worldentities",
       {
         accessTokenFactory: () => localStorage.getItem(LocalStorageConstants.authToken)
       })
       .build();
     this.connection.on("updateEntities",
-      (locations: number[][], entities: number[]) => this.updateEntities(locations, entities));
+      (locations: number[][], entities: EntityLocation[]) => this.updateEntities(locations, entities));
     this.connection.on("addEntities", (entities: WorldEntity[]) => this.addEntities(entities));
     this.connection.on("removeEntities", (ids: number[]) => this.removeEntities(ids));
     this.connection.on("updateMovement", this.updateMovement);
@@ -67,13 +70,21 @@ export class WorldEntityService {
    */
   public beginPlayAsync(): Promise<void> {
     if (this.connection == undefined) throw new Error("The connection hasn't been started yet.");
-    console.log("Begin play calling");
+    console.log("Beginning play");
     return this.connection.send("BeginPlay").catch(err => console.log(err));
   }
 
   /** Registers a callback function to be called whenever a request to change maps is successfully performed. */
   public onChangeMaps(callback: (newMapId: number) => Promise<void>): void {
     this.changeMapCallbacks.push(callback);
+  }
+
+  /**
+   * Registers a callback function to be called whenever there is an update to entity locations from the server.
+   * @param callback The function called whenever there is an update to entity locations from the server.
+   */
+  public onUpdateLocations(callback: (mapEntities: number[][], entities: EntityLocation[]) => void): void {
+    this.updateLocationsCallbacks.push(callback);
   }
 
   /**
@@ -153,15 +164,13 @@ export class WorldEntityService {
    * Called whenever there is an update for world entity locations available from the server.
    * @param mapEntities A 2d array containing the locations of entities represented by their ids.
    */
-  private updateEntities(mapEntities: number[][], entities: number[]): void {
-    if (entities != null) {
-      this.entityIds = entities;
-      setTimeout(() => this.verifyEntities(), 500);
-    }
+  private updateEntities(mapEntities: number[][], entities: EntityLocation[]): void {
+    //if (entities != null) {
+    //  this.entityIds = entities;
+    //  setTimeout(() => this.verifyEntities(), 500);
+    //}
     this.entityLocations = mapEntities;
-    console.log("updating entities");
-    console.log(mapEntities);
-    console.log(this.entityLocations);
+    this.updateLocationsCallbacks.forEach(callback => callback(mapEntities, entities));
   }
 
   /**
@@ -199,6 +208,7 @@ export class WorldEntityService {
     entities.forEach(entity => {
       this.entities.push(entity);
     });
+    console.log(this.entities);
   }
 
   /**

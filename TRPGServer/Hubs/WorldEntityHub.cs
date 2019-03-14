@@ -101,9 +101,12 @@ namespace TRPGServer.Hubs
         public void EndConnection()
         {
             var removedManager = _worldEntityManager.RemovePlayerEntityManager(Guid.Parse(Context.UserIdentifier));
-            int mapId = removedManager.GetCurrentMap().Id;
-            Groups.RemoveFromGroupAsync(Context.ConnectionId, mapId.ToString());
-            removedManager.EndConnection();
+            if (removedManager != null)
+            {
+                int mapId = removedManager.GetCurrentMap().Id;
+                Groups.RemoveFromGroupAsync(Context.ConnectionId, mapId.ToString());
+                removedManager.EndConnection();
+            }
         }
 
         /// <summary>

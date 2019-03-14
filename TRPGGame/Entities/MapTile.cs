@@ -15,7 +15,7 @@ namespace TRPGGame.Entities
         public MapTile(MapTile tile)
         {
             Id = tile.Id;
-            IconUri = tile.IconUri;
+            IconUris = tile.IconUris;
             IsBlocking = tile.IsBlocking;
             CanTransport = tile.CanTransport;
             TransportMapId = tile.TransportMapId;
@@ -30,7 +30,7 @@ namespace TRPGGame.Entities
         /// <summary>
         /// The uri containing the icon that represents this tile on the world map.
         /// </summary>
-        public string IconUri { get; set; }
+        public IEnumerable<string> IconUris { get; set; }
 
         /// <summary>
         /// Gets or sets whether or not this tile blocks player movement.

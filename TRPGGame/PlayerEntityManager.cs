@@ -76,9 +76,11 @@ namespace TRPGGame
                 PositionY = oldPosition.PositionY + deltaY
             };
 
+            if (newPosition.PositionX >= _currentMapManager.Map.MapData.Count) return false;
+            if (newPosition.PositionY >= _currentMapManager.Map.MapData[0].Count) return false;
             if (_currentMapManager.Map.MapData[newPosition.PositionX][newPosition.PositionY].IsBlocking) return false;
 
-            lock (_lock)
+            lock(_lock)
             {
                 if (_currentMapManager.TryMoveEntity(_worldEntity.Id, newPosition))
                 {
@@ -86,6 +88,7 @@ namespace TRPGGame
                     return true;
                 }
             }
+
             return false;
         }
 
@@ -112,7 +115,7 @@ namespace TRPGGame
         /// <returns>Returns true if changing maps was successful.</returns>
         public bool ChangeMaps(ref int newMapId)
         {
-            lock (_lock)
+            lock(_lock)
             {
                 LastAccessed = DateTime.Now;
                 if (!CanChangeMaps()) return false;
@@ -138,7 +141,7 @@ namespace TRPGGame
         /// <returns>True if changing maps was successful.</returns>
         public bool ChangeMaps(int newMapId)
         {
-            lock (_lock)
+            lock(_lock)
             {
                 if (!IsActive) throw new Exception("PlayerEntityManager must be initialized before calling ChangeMaps.");
                 LastAccessed = DateTime.Now;
@@ -163,7 +166,7 @@ namespace TRPGGame
         /// <returns>The read-only instance of the map.</returns>
         public IReadOnlyMap GetCurrentMap()
         {
-            lock (_lock)
+            lock(_lock)
             {
                 if (IsActive) return _currentMapManager.Map;
                 else
@@ -179,7 +182,7 @@ namespace TRPGGame
         /// </summary>
         public void EndConnection()
         {
-            lock (_lock)
+            lock(_lock)
             {
                 if (IsActive)
                 {

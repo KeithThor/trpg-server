@@ -5,6 +5,6 @@ export class MapData {
 
 export class MapTile {
   id: number;
-  iconUri: string;
+  iconUris: string[];
   isBlocking: boolean;
 }

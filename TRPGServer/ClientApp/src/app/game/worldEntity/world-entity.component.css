@@ -1,0 +1,18 @@
+.game-entity {
+  position: absolute;
+  display: block;
+  height: 0px;
+  width: 0px;
+}
+
+.game-entity > .entity-name {
+  position: absolute;
+  color: white;
+  z-index: 3;
+  bottom: 0px;
+}
+
+.game-entity > .entity-icon {
+  position: absolute;
+  z-index: 2;
+}

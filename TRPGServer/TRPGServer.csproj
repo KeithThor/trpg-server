@@ -32,7 +32,11 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\app\game\chatbox\message.component.ts" />
+    <None Remove="ClientApp\src\app\game\create\create.component.ts" />
     <None Remove="ClientApp\src\app\game\mapTile\map-tile.component.ts" />
+    <None Remove="ClientApp\src\app\game\model\entity-location.model.ts" />
+    <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.css" />
+    <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
     <None Remove="ClientApp\src\app\shared\auth\auth.guard.ts" />
     <None Remove="ClientApp\src\app\constants.ts" />
     <None Remove="ClientApp\src\app\game\game.component.ts" />
@@ -50,6 +54,10 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\app\game\chatbox\message.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\create\create.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\entity-location.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.css" />
     <TypeScriptCompile Include="ClientApp\src\app\game\mapTile\map-tile.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\shared\auth\auth.guard.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\constants.ts" />

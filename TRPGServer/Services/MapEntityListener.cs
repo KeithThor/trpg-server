@@ -41,17 +41,27 @@ namespace TRPGServer.Services
 
         private void OnMapStateChanged(object sender, MapStateChangedArgs e)
         {
-            _hubContext.Clients.Group(MapId).SendAsync("updateEntities", e.MapSpaces, e.Entities);
+            var entityLocations = e.Entities.Select(kvp => new
+            {
+                Id = kvp.Key,
+                Location = kvp.Value
+            });
+
+            _hubContext.Clients.Group(MapId).SendAsync("updateEntities", e.MapSpaces, entityLocations);
         }
 
         private void OnWorldEntitiesAdded(object sender, WorldEntityAddedArgs e)
         {
-            var entities = e.AddedEntities.Select(entity => new DisplayEntity
+            var entities = new List<DisplayEntity>();
+            foreach (var entity in e.AddedEntities)
             {
-                Id = entity.Id,
-                IconUri = entity.IconUri,
-                Name = entity.Name
-            });
+                entities.Add(new DisplayEntity
+                {
+                    Id = entity.Id,
+                    IconUris = entity.IconUris,
+                    Name = entity.Name
+                });
+            }
             _displayEntities.AddRange(entities);
 
             var tasks = new List<Task>

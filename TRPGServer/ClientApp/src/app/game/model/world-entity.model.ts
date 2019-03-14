@@ -1,5 +1,5 @@
 export class WorldEntity {
   id: number;
-  iconUri: string;
+  iconUris: string[];
   name: string;
 }

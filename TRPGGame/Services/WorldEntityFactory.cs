@@ -44,7 +44,11 @@ namespace TRPGGame.Services
                     OwnerGuid = ownerId,
                     Name = "User",
                     CurrentMapId = 1,
-                    IconUri = "images/player/base/human_male.png",
+                    IconUris = new string[]
+                    {
+                        "images/player/base/human_male.png",
+                        "images/player/hair/brown_1.png"
+                    },
                     Position = new TRPGShared.Coordinate() { PositionX = 1, PositionY = 1}
                 };
                 await _dbContext.PlayerEntities.AddAsync(entity);

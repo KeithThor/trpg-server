@@ -28,7 +28,10 @@ export class GameStateService {
       this.worldEntityService.initializeAsync()
     ]);
     this.worldEntityService.onChangeMaps(this.changeMapsHandlerAsync.bind(this));
+  }
 
+  /** Called to begin playing the game after all services are initialized. */
+  public async beginPlayAsync(): Promise<void> {
     await this.worldEntityService.beginPlayAsync();
     this.initialized = true;
   }

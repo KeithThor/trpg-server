@@ -1,0 +1,67 @@
+[
+    {
+        "id": 1,
+        "name": "Brown Hair 1",
+        "iconUri": "images/player/hair/brown_1.png"
+    },
+    {
+        "id": 2,
+        "name": "Brown Hair 2",
+        "iconUri": "images/player/hair/brown_2.png"
+    },
+    {
+        "id": 3,
+        "name": "Long Black Hair",
+        "iconUri": "images/player/hair/long_black.png"
+    },
+    {
+        "id": 4,
+        "name": "Long Red Hair",
+        "iconUri": "images/player/hair/long_red.png"
+    },
+    {
+        "id": 5,
+        "name": "Long Blonde Hair",
+        "iconUri": "images/player/hair/long_yellow.png"
+    },
+    {
+        "id": 6,
+        "name": "Long White Hair",
+        "iconUri": "images/player/hair/long_white.png"
+    },
+    {
+        "id": 7,
+        "name": "Black Side Sweep",
+        "iconUri": "images/player/hair/fem_black.png"
+    },
+    {
+        "id": 8,
+        "name": "Red Side Sweep",
+        "iconUri": "images/player/hair/fem_red.png"
+    },
+    {
+        "id": 9,
+        "name": "Blonde Side Sweep",
+        "iconUri": "images/player/hair/fem_yellow.png"
+    },
+    {
+        "id": 10,
+        "name": "White Side Sweep",
+        "iconUri": "images/player/hair/fem_white.png"
+    },
+    {
+        "id": 11,
+        "name": "Brown Pigtails",
+        "iconUri": "images/player/hair/pigtails_brown.png"
+    },
+    {
+        "id": 12,
+        "name": "Red Pigtails",
+        "iconUri": "images/player/hair/pigtails_red.png"
+    },
+    {
+        "id": 13,
+        "name": "Blonde Pigtails",
+        "iconUri": "images/player/hair/pigtails_yellow.png"
+    }
+]

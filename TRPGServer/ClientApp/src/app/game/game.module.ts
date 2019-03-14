@@ -1,4 +1,5 @@
 import { NgModule } from "@angular/core";
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { GameComponent } from "./game/game.component";
 import { WorldEntityService } from "./services/world-entity.service";
 import { MapService } from "./services/map.service";
@@ -12,21 +13,29 @@ import { FormsModule } from "@angular/forms";
 import { GameStateService } from "./services/game-state.service";
 import { ChatService } from "./services/chat.service";
 import { MapTileComponent } from "./mapTile/map-tile.component";
+import { WorldEntityComponent } from "./worldEntity/world-entity.component";
+import { CreateComponent } from "./create/create.component";
+import { BrowserModule } from "@angular/platform-browser";
 
 @NgModule({
   declarations: [
     GameComponent,
+    CreateComponent,
     ChatboxComponent,
     MessageComponent,
-    MapTileComponent
+    MapTileComponent,
+    WorldEntityComponent
   ],
 
   imports: [
     SharedModule,
+    BrowserModule,
+    BrowserAnimationsModule,
     CommonModule,
     FormsModule,
     RouterModule.forChild([
       { path: 'game', component: GameComponent, canActivate: [AuthGuard] },
+      { path: 'create', component: CreateComponent, canActivate: [AuthGuard] }
     ])
   ],
 

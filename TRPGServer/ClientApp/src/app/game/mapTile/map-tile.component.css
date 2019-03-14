@@ -1,0 +1,8 @@
+.mapTile {
+  position: absolute;
+}
+
+.mapTile > .tile-icon {
+  position: absolute;
+  z-index: 1;
+}

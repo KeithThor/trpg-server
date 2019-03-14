@@ -23,6 +23,10 @@ namespace TRPGGame.Data
                     position.Property(e => e.PositionX).HasColumnName("PositionX");
                     position.Property(e => e.PositionY).HasColumnName("PositionY");
                 });
+                entity.Property(e => e.IconUris)
+                      .HasConversion(
+                        v => string.Join(',', v),
+                        v => v.Split(',', StringSplitOptions.RemoveEmptyEntries));
             });
         }
 

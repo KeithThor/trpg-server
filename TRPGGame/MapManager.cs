@@ -162,12 +162,10 @@ namespace TRPGGame
                 }
                 if (_isStateChanged)
                 {
-
-                    var entities = (_worldEntityAdded) ? _entities.Keys: null;
                     mapStateChangedArgs = new MapStateChangedArgs
                     {
                         MapSpaces = new List<List<int?>>(_occupiedSpaces),
-                        Entities = entities
+                        Entities = _entities
                     };
                     _isStateChanged = false;
                 }

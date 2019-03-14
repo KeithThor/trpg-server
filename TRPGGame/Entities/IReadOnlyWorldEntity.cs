@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TRPGShared;
 
 namespace TRPGGame.Entities
@@ -24,9 +25,9 @@ namespace TRPGGame.Entities
         string Name { get; }
 
         /// <summary>
-        /// The Uri containing the icon that represents this WorldEntity on the map.
+        /// The Uris containing the layers of icons that represents this WorldEntity on the map.
         /// </summary>
-        string IconUri { get; }
+        IEnumerable<string> IconUris { get; }
 
         /// <summary>
         /// The current X-Y position this WorldEntity occupies on the map the entity resides in.
