@@ -33,6 +33,7 @@
   <ItemGroup>
     <None Remove="ClientApp\src\app\game\chatbox\message.component.ts" />
     <None Remove="ClientApp\src\app\game\create\create.component.ts" />
+    <None Remove="ClientApp\src\app\game\game\tile-node.component.ts" />
     <None Remove="ClientApp\src\app\game\mapTile\map-tile.component.ts" />
     <None Remove="ClientApp\src\app\game\model\entity-location.model.ts" />
     <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.css" />
@@ -55,6 +56,7 @@
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\app\game\chatbox\message.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\create.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\game\tile-node.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\entity-location.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.css" />

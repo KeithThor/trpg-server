@@ -3,10 +3,7 @@
     <table *ngIf="showMap()">
       <tr *ngFor="let mapRow of getTileIds(); let i = index">
         <td *ngFor="let mapTileId of mapRow; let j = index">
-          <div class="tileGrid">
-            <map-tile-component [location]="getLocation(i, j)" [mapTile]="getMapTile(mapTileId)"></map-tile-component>
-            <world-entity-component  [entity]="getEntity(i, j)" *ngIf="showEntity(i, j)"></world-entity-component>
-          </div>
+          <game-tile-node [location]="getLocation(i, j)" [mapTile]="getMapTile(i, j)" [entity]="getEntity(i, j)"></game-tile-node>
         </td>
       </tr>
     </table>

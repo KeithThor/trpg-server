@@ -20,16 +20,16 @@ import { WorldEntity } from "../model/world-entity.model";
         bottom: "0px"
       })),
       state('moveLeft', style({
-        left: "0px",
-        right: "32px",
+        left: "-32px",
+        right: "0px",
         top: "0px",
         bottom: "0px"
       })),
       state('moveUp', style({
         left: "0px",
         right: "0px",
-        top: "0px",
-        bottom: "32px"
+        top: "-32px",
+        bottom: "0px"
       })),
       state('moveDown', style({
         left: "0px",
@@ -38,7 +38,7 @@ import { WorldEntity } from "../model/world-entity.model";
         bottom: "0px"
       })),
       transition("* <=> *",
-        animate('0.2s'))
+        animate('1s'))
     ])
   ]
 })
@@ -51,6 +51,7 @@ export class WorldEntityComponent {
   public onAnimationFinishedHandler: () => void;
 
   public onAnimationFinished(): void {
+    console.log("Animation finished");
     if (this.onAnimationFinishedHandler != null) {
       this.onAnimationFinishedHandler();
     }

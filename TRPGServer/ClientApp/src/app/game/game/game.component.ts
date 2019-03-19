@@ -10,6 +10,7 @@ import { WorldEntityComponent, WorldEntityAnimationConstants } from "../worldEnt
 import { QueryList } from "@angular/core";
 import { EntityLocation } from "../model/entity-location.model";
 import { WorldEntityService } from "../services/world-entity.service";
+import { TileNodeComponent } from "./tile-node.component";
 
 @Component({
   selector: 'app-game-component',
@@ -23,7 +24,7 @@ export class GameComponent implements OnInit {
 
   }
   @ViewChild("chatbox") chatbox: ChatboxComponent;
-  @ViewChildren(WorldEntityComponent) worldEntityComponents: QueryList<WorldEntityComponent>;
+  @ViewChildren(TileNodeComponent) tileNodeComponents: QueryList<TileNodeComponent>;
   private subscriptions: Subscription[];
   private isMoving: boolean = false;
   private entityLocations: EntityLocation[];
@@ -196,7 +197,13 @@ export class GameComponent implements OnInit {
         return;
       }
 
-      let component = this.worldEntityComponents.find(c => c.entity.id === entity.id);
+      let component = this.tileNodeComponents.find(c => c.entity.id === entity.id).worldEntityComponent;
+      if (component == null) {
+        if (index === entityLocations.length - 1) {
+          this.entityLocations = entityLocations;
+        }
+        return;
+      }
 
       if (index === entityLocations.length - 1) {
         component.onAnimationFinishedHandler = (() => {

@@ -16,6 +16,7 @@ import { MapTileComponent } from "./mapTile/map-tile.component";
 import { WorldEntityComponent } from "./worldEntity/world-entity.component";
 import { CreateComponent } from "./create/create.component";
 import { BrowserModule } from "@angular/platform-browser";
+import { TileNodeComponent } from "./game/tile-node.component";
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { BrowserModule } from "@angular/platform-browser";
     CreateComponent,
     ChatboxComponent,
     MessageComponent,
+    TileNodeComponent,
     MapTileComponent,
     WorldEntityComponent
   ],
