@@ -26,12 +26,15 @@ export class GameComponent implements OnInit {
   @ViewChild("chatbox") chatbox: ChatboxComponent;
   @ViewChildren(TileNodeComponent) tileNodeComponents: QueryList<TileNodeComponent>;
   private subscriptions: Subscription[];
-  private isMoving: boolean = false;
   private entityLocations: EntityLocation[];
+  private updateQueue: EntityLocation[][];
+  private isAnimating: boolean;
 
   ngOnInit(): void {
     this.subscriptions = [];
     this.entityLocations = [];
+    this.updateQueue = [];
+    this.isAnimating = false;
     this.initialize();
     this.subscriptions.push(this.router.events.subscribe(event => {
       if (event instanceof NavigationStart) {
@@ -66,10 +69,7 @@ export class GameComponent implements OnInit {
       if (event.key === "`") {
         this.gameStateService.changeMapsAsync();
       }
-      if (event.key === "q") {
-        console.log("Q pressed");
-        this.isMoving = !this.isMoving;
-      }
+      console.log(this.updateQueue);
     }
   }
 
@@ -84,11 +84,6 @@ export class GameComponent implements OnInit {
     console.log("Context menu opens");
   }
 
-  public getAnimationStatus(): string {
-    if (this.isMoving === true) return "moving";
-    else return "stationary";
-  }
-
   /**
    * Initializes the services and connections for the game component.
    */
@@ -96,6 +91,7 @@ export class GameComponent implements OnInit {
     await this.gameStateService.initializeAsync()
       .catch(err => console.log(err));
     this.worldEntityService.onUpdateLocations(this.onUpdateLocation.bind(this));
+    this.worldEntityService.onChangeMaps(this.onChangeMaps.bind(this));
     await this.gameStateService.beginPlayAsync();
   }
 
@@ -160,6 +156,7 @@ export class GameComponent implements OnInit {
     let entity: EntityLocation = this.entityLocations.find(entity =>
       entity.location.positionX === positionX && entity.location.positionY === positionY);
 
+    if (entity == null) return null;
 
     //let entityId = this.gameStateService.getEntityLocations()[positionX][positionY];
     let foundEntity = this.gameStateService.getEntities()
@@ -181,14 +178,43 @@ export class GameComponent implements OnInit {
   }
 
   /**
-   * Whenever there is a new update for entity locations from the server, find the changes in entity locations and animate
-   * the WorldEntityComponents to show changes in locations.
+   * Whenever there is a new update for entity locations from the server, push the new update to the updateQueue and call animateEntities
+   * if the GameComponent isn't already animating.
    * @param entities A grid showing which entity occupies which space.
    * @param entityLocations An array of entity locations, giving the id of the entity and its current position on the map.
    */
-  private onUpdateLocation(entities: number[][], entityLocations: EntityLocation[]) {
+  private onUpdateLocation(entities: number[][], entityLocations: EntityLocation[]): void {
+    if (this.entityLocations == null || this.entityLocations.length === 0) {
+      this.entityLocations = entityLocations;
+    }
+    else {
+      this.updateQueue.push(entityLocations);
+      if (!this.isAnimating) {
+        this.animateEntities();
+      }
+    }
+  }
+
+  /**
+   * Resets the entity locations stored by the GameComponent whenever a change map request has been successfully
+   * approved by the server.
+   * @param newMapId
+   */
+  private onChangeMaps(newMapId: number): Promise<void> {
+    this.entityLocations = [];
+  }
+
+  /** Detects changes from the current state of WorldEntities on the grid and the first update on the queue and
+   * animates those changes on the current state before swapping entity locations.
+   * 
+   * Will run recursively until there are no more updates in the queue. */
+  private animateEntities(): void {
+    if (this.isAnimating || this.updateQueue.length === 0) return;
+    
+    this.isAnimating = true;
+    let entityLocations = this.updateQueue.shift();
+
     entityLocations.forEach((entity, index) => {
-      console.log(entity);
       let oldEntityLocation: EntityLocation = this.entityLocations.find(e => e.id === entity.id);
       if (oldEntityLocation == null) {
         if (index === entityLocations.length - 1) {
@@ -197,7 +223,10 @@ export class GameComponent implements OnInit {
         return;
       }
 
-      let component = this.tileNodeComponents.find(c => c.entity.id === entity.id).worldEntityComponent;
+      let component = this.tileNodeComponents
+        .find(c => c.entity != null && c.entity.id === entity.id)
+        .worldEntityComponent;
+
       if (component == null) {
         if (index === entityLocations.length - 1) {
           this.entityLocations = entityLocations;
@@ -206,9 +235,13 @@ export class GameComponent implements OnInit {
       }
 
       if (index === entityLocations.length - 1) {
-        component.onAnimationFinishedHandler = (() => {
+        setTimeout((() => {
           this.entityLocations = entityLocations;
-        }).bind(this);
+          this.isAnimating = false;
+          if (this.updateQueue.length > 0) {
+            this.animateEntities();
+          }
+        }).bind(this), 100);
       }
 
       if (entity.location.positionX - oldEntityLocation.location.positionX > 0) {

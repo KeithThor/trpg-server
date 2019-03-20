@@ -38,7 +38,7 @@ import { WorldEntity } from "../model/world-entity.model";
         bottom: "0px"
       })),
       transition("* <=> *",
-        animate('1s'))
+        animate('0.2s'))
     ])
   ]
 })

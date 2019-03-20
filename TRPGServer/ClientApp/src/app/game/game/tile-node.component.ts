@@ -7,7 +7,8 @@ import { WorldEntityComponent } from "../worldEntity/world-entity.component";
 /** A component representing one tile on a map grid. Contains anything that can exist on that tile. */
 @Component({
   selector: 'game-tile-node',
-  templateUrl: "./tile-node.component.html"
+  templateUrl: "./tile-node.component.html",
+  styleUrls: ["./tile-node.component.css"]
 })
 export class TileNodeComponent {
   @Input() location: Coordinate;

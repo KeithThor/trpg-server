@@ -76,7 +76,7 @@ export class WorldEntityService {
 
   /** Registers a callback function to be called whenever a request to change maps is successfully performed. */
   public onChangeMaps(callback: (newMapId: number) => Promise<void>): void {
-    this.changeMapCallbacks.push(callback);
+    this.changeMapCallbacks.unshift(callback);
   }
 
   /**
