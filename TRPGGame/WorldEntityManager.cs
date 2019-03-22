@@ -2,7 +2,6 @@
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TRPGGame.Entities;
 using TRPGGame.Services;
@@ -18,6 +17,7 @@ namespace TRPGGame
         private readonly IWorldState _worldState;
         private ConcurrentDictionary<Guid, WorldEntity> _worldEntities;
         private ConcurrentDictionary<Guid, PlayerEntityManager> _playerEntityManagers;
+        private readonly List<CombatEntity> _combatEntities;
 
         /// <summary>
         /// The time in minutes until a player is logged off due to inactivity.
@@ -31,6 +31,7 @@ namespace TRPGGame
             _worldState = worldState;
             _worldEntities = new ConcurrentDictionary<Guid, WorldEntity>();
             _playerEntityManagers = new ConcurrentDictionary<Guid, PlayerEntityManager>();
+            _combatEntities = new List<CombatEntity>();
         }
 
         public async Task<IReadOnlyWorldEntity> GetOrAddEntityAsync(Guid ownerId)
@@ -111,6 +112,18 @@ namespace TRPGGame
         {
             _playerEntityManagers.TryRemove(ownerId, out PlayerEntityManager manager);
             return manager;
+        }
+
+        [Obsolete]
+        public void SaveCombatEntity(CombatEntity entity)
+        {
+            _combatEntities.Add(entity);
+        }
+
+        [Obsolete]
+        public IEnumerable<CombatEntity> GetCombatEntities()
+        {
+            return _combatEntities;
         }
     }
 }

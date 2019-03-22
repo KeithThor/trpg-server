@@ -1,0 +1,30 @@
+.icon-label {
+}
+
+.icon {
+  position: absolute;
+  height: 32px;
+  width: 32px;
+}
+
+.icon-enlarged {
+  position: absolute;
+  height: 64px;
+  width: 64px;
+}
+
+.entity-viewer-container {
+  width: 200px;
+  height: 200px;
+  text-align: center;
+}
+
+.entity-viewer {
+  display: inline-block;
+}
+
+.entity-node {
+  position: relative;
+  height: 48px;
+  width: 48px;
+}

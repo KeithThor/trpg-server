@@ -1,0 +1,8 @@
+<div class="edit-entity" (click)="onClick()">
+  <div class="icon-label">
+    {{entity.name}}
+  </div>
+  <div class="icon-container">
+    <img class="icon" *ngFor="let iconUri of entity.iconUris" src="{{iconUri}}" draggable="false" />
+  </div>
+</div>

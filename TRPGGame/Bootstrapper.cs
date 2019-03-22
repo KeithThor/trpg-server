@@ -1,10 +1,9 @@
-﻿using System;
-using Autofac;
-using System.Collections.Generic;
-using System.Text;
-using TRPGGame.Repository;
-using TRPGGame.Entities;
+﻿using Autofac;
+using System;
 using TRPGGame.Data;
+using TRPGGame.Entities;
+using TRPGGame.Entities.Data;
+using TRPGGame.Repository;
 using TRPGGame.Services;
 
 namespace TRPGGame
@@ -33,8 +32,11 @@ namespace TRPGGame
             containerBuilder.RegisterType<WorldState>().As<IWorldState>().SingleInstance();
             containerBuilder.RegisterType<MapRepository>().As<IRepository<Map>>();
             containerBuilder.RegisterType<MapTileRepository>().As<IRepository<MapTile>>();
+            containerBuilder.RegisterType<CharacterBaseRepository>().As<IRepository<CharacterBase>>();
+            containerBuilder.RegisterType<CharacterHairRepository>().As<IRepository<CharacterHair>>();
             containerBuilder.RegisterType<WorldEntityDbContext>();
             containerBuilder.RegisterType<WorldEntityManager>().SingleInstance();
+            containerBuilder.RegisterType<PlayerEntityFactory>();
             containerBuilder.RegisterType<WorldEntityFactory>();
         }
 
