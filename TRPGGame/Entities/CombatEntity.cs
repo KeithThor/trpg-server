@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TRPGGame.Entities.Data;
 
 namespace TRPGGame.Entities
 {
@@ -38,5 +39,10 @@ namespace TRPGGame.Entities
         /// The uris that point to the icons that make up the appearance of this entity. Does not include equipment uris.
         /// </summary>
         public IEnumerable<string> IconUris { get; set; }
+
+        /// <summary>
+        /// Represents the character's in-game stats that determine combat efficiency.
+        /// </summary>
+        public CharacterStats Stats { get; set; }
     }
 }

@@ -17,12 +17,12 @@
                 <img src="images/gui/startup/stonesoup.png"> Home
               </a>
             </li>
-            <li [routerLinkActive]='["link-active"]'>
+            <li *ngIf="!isAuthenticated()" [routerLinkActive]='["link-active"]'>
               <a [routerLink]='["/login"]' (click)='collapse()'>
                 <img src="images/gui/startup/tutorial.png"> Login
               </a>
             </li>
-            <li [routerLinkActive]='["link-active"]'>
+            <li *ngIf="!isAuthenticated()" [routerLinkActive]='["link-active"]'>
               <a [routerLink]='["/register"]' (click)='collapse()'>
                 <img src="images/gui/startup/tutorial.png"> Register
               </a>
@@ -30,6 +30,16 @@
             <li [routerLinkActive]='["link-active"]'>
               <a [routerLink]='["/game"]' (click)='collapse()'>
                 <img src="images/gui/startup/arena.png"> Game
+              </a>
+            </li>
+            <li [routerLinkActive]='["link-active"]'>
+              <a [routerLink]='["/create"]' (click)='collapse()'>
+                <img src="images/gui/startup/dungeon_sprint.png"> Create
+              </a>
+            </li>
+            <li *ngIf="isAuthenticated()">
+              <a [routerLink]='["/"]' (click)='logOut()'>
+                <img src="images/gui/startup/tutorial.png"> Log Out
               </a>
             </li>
           </ul>

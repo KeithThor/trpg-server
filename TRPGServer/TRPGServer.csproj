@@ -32,9 +32,16 @@
 
   <ItemGroup>
     <None Remove="ClientApp\src\app\game\chatbox\message.component.ts" />
+    <None Remove="ClientApp\src\app\game\combatEntity\combat-entity.component.ts" />
     <None Remove="ClientApp\src\app\game\create\create.component.ts" />
+    <None Remove="ClientApp\src\app\game\create\statPicker\stat-icon.component.ts" />
+    <None Remove="ClientApp\src\app\game\create\statPicker\stat-picker.component.ts" />
+    <None Remove="ClientApp\src\app\game\create\statPicker\stat-slider.component.ts" />
+    <None Remove="ClientApp\src\app\game\create\statPicker\StatConstants.ts" />
     <None Remove="ClientApp\src\app\game\game\tile-node.component.ts" />
     <None Remove="ClientApp\src\app\game\mapTile\map-tile.component.ts" />
+    <None Remove="ClientApp\src\app\game\model\character-stats.model.ts" />
+    <None Remove="ClientApp\src\app\game\model\character.model.ts" />
     <None Remove="ClientApp\src\app\game\model\entity-location.model.ts" />
     <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.css" />
     <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
@@ -55,8 +62,15 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\app\game\chatbox\message.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\create\editEntity\edit-entity.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\create.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\statSlider\statIcon\stat-icon.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\stat-picker.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\statSlider\stat-slider.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\StatConstants.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\game\tile-node.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\character-stats.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\character.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\entity-location.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.css" />
@@ -73,6 +87,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="ClientApp\src\app\game\combatEntity\" />
     <Folder Include="ClientApp\src\app\home\model\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>

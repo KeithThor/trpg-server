@@ -6,6 +6,7 @@ export class CharacterTemplate {
   public hairId: number;
   public baseId: number;
   public groupId: number;
+  public allocatedStats: CharacterStats;
 }
 
 export class CharacterHair {

@@ -17,6 +17,10 @@ import { WorldEntityComponent } from "./worldEntity/world-entity.component";
 import { CreateComponent } from "./create/create.component";
 import { BrowserModule } from "@angular/platform-browser";
 import { TileNodeComponent } from "./game/tile-node.component";
+import { EditEntityComponent } from "./create/editEntity/edit-entity.component";
+import { StatPickerComponent } from "./create/statPicker/stat-picker.component";
+import { StatSliderComponent } from "./create/statPicker/statSlider/stat-slider.component";
+import { StatIconComponent } from "./create/statPicker/statSlider/statIcon/stat-icon.component";
 
 @NgModule({
   declarations: [
@@ -26,7 +30,11 @@ import { TileNodeComponent } from "./game/tile-node.component";
     MessageComponent,
     TileNodeComponent,
     MapTileComponent,
-    WorldEntityComponent
+    WorldEntityComponent,
+    EditEntityComponent,
+    StatPickerComponent,
+    StatSliderComponent,
+    StatIconComponent
   ],
 
   imports: [

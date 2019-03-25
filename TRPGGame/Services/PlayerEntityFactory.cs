@@ -36,7 +36,7 @@ namespace TRPGGame.Services
         /// </summary>
         /// <param name="template">The template containing specifications on how to create the entity.</param>
         /// <returns>Returns the combat entity if the operation was successful, else returns null.</returns>
-        public async Task<IReadOnlyCombatEntity> CreateAsync(CharacterTemplate template)
+        public async Task<CombatEntity> CreateAsync(CharacterTemplate template)
         {
             var hairData = await _characterHairRepo.GetDataAsync();
             var baseData = await _characterBaseRepo.GetDataAsync();
@@ -68,7 +68,8 @@ namespace TRPGGame.Services
                 OwnerId = template.OwnerId,
                 IconUris = iconUris,
                 GroupId = template.GroupId,
-                OwnerName = template.OwnerName
+                OwnerName = template.OwnerName,
+                Stats = template.AllocatedStats
             };
 
             _worldEntityManager.SaveCombatEntity(character);
@@ -84,8 +85,10 @@ namespace TRPGGame.Services
         /// </summary>
         /// <param name="template">The template to use to update the entity with.</param>
         /// <returns>Returns the modified combat entity or null if no entity was modified.</returns>
-        public async Task<IReadOnlyCombatEntity> UpdateAsync(CharacterTemplate template)
+        public async Task<CombatEntity> UpdateAsync(CombatEntity entity, CharacterTemplate template)
         {
+            if (entity.OwnerId != template.OwnerId) return null;
+
             var hairData = await _characterHairRepo.GetDataAsync();
             var baseData = await _characterBaseRepo.GetDataAsync();
             IEnumerable<string> iconUris;
@@ -108,17 +111,16 @@ namespace TRPGGame.Services
                 return null;
             }
 
-            var character = _worldEntityManager.GetCombatEntities()
-                                               .FirstOrDefault(e => e.Id == template.EntityId);
+            var modifiedEntity = new CombatEntity();
+            modifiedEntity.Name = template.Name;
+            modifiedEntity.GroupId = template.GroupId;
+            modifiedEntity.IconUris = iconUris;
+            modifiedEntity.Id = entity.Id;
+            modifiedEntity.OwnerId = entity.OwnerId;
+            modifiedEntity.OwnerName = entity.OwnerName;
+            modifiedEntity.Stats = template.AllocatedStats;
 
-            if (character == null) return null;
-            if (character.OwnerId != template.OwnerId) return null;
-
-            character.Name = template.Name;
-            character.GroupId = template.GroupId;
-            character.IconUris = iconUris;
-
-            return character;
+            return modifiedEntity;
         }
     }
 }

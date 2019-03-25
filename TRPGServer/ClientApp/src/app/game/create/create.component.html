@@ -1,0 +1,41 @@
+<div class="container">
+  <div class="entity-window col-md-6">
+    <game-edit-entity *ngFor="let entity of entities" [entity]="entity" [clickHandler]="selectEntity.bind(self)"></game-edit-entity>
+    <div (click)="newEntity()">
+      <div class="icon-label">New Character</div>
+      <img class="icon" src="images/misc/unseen_monster.png" draggable="false"/>
+    </div>
+    <div class="entity-viewer-container" *ngIf="isLoaded">
+      <div class="entity-viewer">
+        <div class="icon-label">{{name}}</div>
+        <img class="icon-enlarged" src="{{getBaseUri()}}" />
+        <img class="icon-enlarged" src="{{getHairUri()}}" />
+      </div>
+    </div>
+  </div>
+  <div class="options-window col-md-6">
+    <form #form="ngForm" name="characterForm">
+      <div class="form-group">
+        <label for="nameInput">Character Name: </label>
+        <input class="form-control" [(ngModel)]="name" type="text" name="nameInput" />
+      </div>
+      <div class="form-group">
+        <label for="hairSelection">Hair: </label>
+        <select class="form-control" [(ngModel)]="hairId" name="hairSelection">
+          <option *ngFor="let hair of hairs" value="{{hair.id}}">{{hair.name}}</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="bodySelection">Race and Sex: </label>
+        <input type="hidden" [(ngModel)]="baseId" name="bodyHiddenInput"/>
+        <select class="form-control" [(ngModel)]="baseId" name="bodySelection" [disabled]="isEditing">
+          <option *ngFor="let base of bases" value="{{base.id}}">{{base.name}}</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" (click)="sendRequestAsync()">
+        {{getButtonText()}}
+      </button>
+    </form>
+    <game-stat-picker *ngIf="isLoaded" #statPicker [base]="selectedBase" [(stats)]="stats"></game-stat-picker>
+  </div>
+</div>

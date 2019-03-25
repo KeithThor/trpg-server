@@ -3,6 +3,7 @@ using System;
 using TRPGGame.Data;
 using TRPGGame.Entities;
 using TRPGGame.Entities.Data;
+using TRPGGame.Managers;
 using TRPGGame.Repository;
 using TRPGGame.Services;
 
@@ -36,6 +37,7 @@ namespace TRPGGame
             containerBuilder.RegisterType<CharacterHairRepository>().As<IRepository<CharacterHair>>();
             containerBuilder.RegisterType<WorldEntityDbContext>();
             containerBuilder.RegisterType<WorldEntityManager>().SingleInstance();
+            containerBuilder.RegisterType<CombatEntityManager>().SingleInstance();
             containerBuilder.RegisterType<PlayerEntityFactory>();
             containerBuilder.RegisterType<WorldEntityFactory>();
         }

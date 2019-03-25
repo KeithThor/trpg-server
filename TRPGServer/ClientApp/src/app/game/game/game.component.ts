@@ -6,7 +6,7 @@ import { ChatboxComponent } from "../chatbox/chatbox.component";
 import { GameStateService } from "../services/game-state.service";
 import { MapTile } from "../model/map-data.model";
 import { WorldEntity } from "../model/world-entity.model";
-import { WorldEntityComponent, WorldEntityAnimationConstants } from "../worldEntity/world-entity.component";
+import { WorldEntityAnimationConstants } from "../worldEntity/world-entity.component";
 import { QueryList } from "@angular/core";
 import { EntityLocation } from "../model/entity-location.model";
 import { WorldEntityService } from "../services/world-entity.service";
@@ -129,11 +129,6 @@ export class GameComponent implements OnInit {
     if (!this.gameStateService.initialized) return false;
     if (this.entityLocations == null || this.entityLocations.length === 0) return false;
 
-    //let locations = this.gameStateService.getEntityLocations();
-    //if (!locations) return false;
-    //if (!locations[positionX]) return false;
-    //if (locations[positionX][positionY] == null) return false;
-
     let i = 0;
     let found: boolean = false;
     while (i < this.entityLocations.length && !found) {
@@ -202,6 +197,7 @@ export class GameComponent implements OnInit {
    */
   private onChangeMaps(newMapId: number): Promise<void> {
     this.entityLocations = [];
+    return;
   }
 
   /** Detects changes from the current state of WorldEntities on the grid and the first update on the queue and

@@ -1,20 +1,13 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.SpaServices.AngularCli;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Linq;
-using System.Threading.Tasks;
 using TRPGServer.Data;
 using TRPGServer.Hubs;
-using TRPGServer.Services;
 
 namespace TRPGServer
 {
@@ -81,7 +74,6 @@ namespace TRPGServer
             {
                 routes.MapHub<GameDataHub>("/hubs/gamedata");
                 routes.MapHub<ChatHub>("/hubs/chat");
-                routes.MapHub<MapStateHub>("/hubs/mapstate");
                 routes.MapHub<WorldEntityHub>("/hubs/worldentities");
             });
 

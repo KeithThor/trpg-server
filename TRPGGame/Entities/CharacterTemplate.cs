@@ -1,4 +1,5 @@
 ﻿using System;
+using TRPGGame.Entities.Data;
 
 namespace TRPGGame.Entities
 {
@@ -14,5 +15,8 @@ namespace TRPGGame.Entities
         public int BaseId { get; set; }
         public int HairId { get; set; }
         public int? GroupId { get; set; }
+        public CharacterStats AllocatedStats { get; set; }
+
+        public const int MaxAllocatedStats = 25;
     }
 }

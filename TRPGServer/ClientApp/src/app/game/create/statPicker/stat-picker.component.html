@@ -1,0 +1,13 @@
+<div>
+  <h4>Stats</h4>
+  <br />
+  <h6>Unallocated Points</h6>
+  <div>
+    <img *ngFor="let position of getFreePointsArray()" src="images/dungeon/wall/crystal_wall_lightcyan.png" draggable="false" />
+  </div>
+  <br />
+  <game-stat-slider *ngFor="let statName of getStatNames()" [statName]="statName"
+                    [bonusStats]="base.bonusStats" [allocatedStats]="stats"
+                    [maxStats]="base.maxStats"
+                    [clickHandler]="onStatSliderClicked.bind(self)"></game-stat-slider>
+</div>

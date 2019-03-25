@@ -2,31 +2,115 @@
     {
         "id": 1,
         "name": "Human Male",
-        "iconUri": "images/player/base/human_male.png"
+      "iconUri": "images/player/base/human_male.png",
+      "maxStats": {
+        "strength": 10,
+        "dexterity": 10,
+        "agility": 10,
+        "intelligence": 10,
+        "constitution": 10
+      },
+      "bonusStats": {
+        "strength": 0,
+        "dexterity": 0,
+        "agility": 0,
+        "intelligence": 0,
+        "constitution": 0
+      }
     },
-    {
-        "id": 2,
-        "name": "Human Female",
-        "iconUri": "images/player/base/human_female.png"
+  {
+    "id": 2,
+    "name": "Human Female",
+    "iconUri": "images/player/base/human_female.png",
+    "maxStats": {
+      "strength": 10,
+      "dexterity": 10,
+      "agility": 10,
+      "intelligence": 10,
+      "constitution": 10
     },
-    {
-        "id": 3,
-        "name": "Orc Male",
-        "iconUri": "images/player/base/orc_male.png"
-    },
-    {
-        "id": 4,
-        "name": "Orc Female",
-        "iconUri": "images/player/base/orc_female.png"
-    },
-    {
-        "id": 5,
-        "name": "Red Naga Male",
-        "iconUri": "images/player/base/naga_red_male.png"
-    },
-    {
-        "id": 6,
-        "name": "Red Naga Female",
-        "iconUri": "images/player/base/naga_red_female.png"
+    "bonusStats": {
+      "strength": 0,
+      "dexterity": 0,
+      "agility": 0,
+      "intelligence": 0,
+      "constitution": 0
     }
+  },
+  {
+    "id": 3,
+    "name": "Orc Male",
+    "iconUri": "images/player/base/orc_male.png",
+    "maxStats": {
+      "strength": 11,
+      "dexterity": 10,
+      "agility": 10,
+      "intelligence": 8,
+      "constitution": 10
+    },
+    "bonusStats": {
+      "strength": 1,
+      "dexterity": 0,
+      "agility": 0,
+      "intelligence": 0,
+      "constitution": 0
+    }
+  },
+  {
+    "id": 4,
+    "name": "Orc Female",
+    "iconUri": "images/player/base/orc_female.png",
+    "maxStats": {
+      "strength": 11,
+      "dexterity": 10,
+      "agility": 10,
+      "intelligence": 8,
+      "constitution": 10
+    },
+    "bonusStats": {
+      "strength": 1,
+      "dexterity": 0,
+      "agility": 0,
+      "intelligence": 0,
+      "constitution": 0
+    }
+  },
+  {
+    "id": 5,
+    "name": "Red Naga Male",
+    "iconUri": "images/player/base/naga_red_male.png",
+    "maxStats": {
+      "strength": 10,
+      "dexterity": 10,
+      "agility": 10,
+      "intelligence": 10,
+      "constitution": 10
+    },
+    "bonusStats": {
+      "strength": 0,
+      "dexterity": 0,
+      "agility": 1,
+      "intelligence": 1,
+      "constitution": -2
+    }
+  },
+  {
+    "id": 6,
+    "name": "Red Naga Female",
+    "iconUri": "images/player/base/naga_red_female.png",
+    "maxStats": {
+      "strength": 10,
+      "dexterity": 10,
+      "agility": 10,
+      "intelligence": 10,
+      "constitution": 10
+    },
+    "bonusStats": {
+      "strength": 0,
+      "dexterity": 0,
+      "agility": 1,
+      "intelligence": 1,
+      "constitution": -2
+    }
+  }
 ]

@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -25,7 +26,30 @@ namespace TRPGGame.Repository
         {
             using (var reader = new StreamReader(DataConstants.AssemblyLocation + "/Data/Characters/Base.json"))
             {
-                _characterBases = JsonConvert.DeserializeObject<List<CharacterBase>>(await reader.ReadToEndAsync());
+                var bases = new List<CharacterBase>();
+                JContainer basesAsList = JsonConvert.DeserializeObject<JContainer>(reader.ReadToEnd());
+                foreach (var baseObject in basesAsList)
+                {
+                    var chrBase = baseObject.ToObject<CharacterBase>();
+                    if (baseObject["maxStats"] != null)
+                    {
+                        chrBase.MaxStats = baseObject["maxStats"].ToObject<CharacterStats>();
+                    }
+                    else
+                    {
+                        chrBase.MaxStats = new CharacterStats();
+                    }
+                    if (baseObject["bonusStats"] != null)
+                    {
+                        chrBase.BonusStats = baseObject["bonusStats"].ToObject<CharacterStats>();
+                    }
+                    else
+                    {
+                        chrBase.MaxStats = new CharacterStats();
+                    }
+                    bases.Add(chrBase);
+                }
+                _characterBases = bases;
             }
         }
     }

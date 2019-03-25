@@ -12,6 +12,10 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using TRPGGame;
+using TRPGGame.Entities.Data;
+using TRPGGame.Managers;
+using TRPGGame.Repository;
+using TRPGGame.Services;
 using TRPGServer.Hubs;
 using TRPGServer.Services;
 
@@ -82,6 +86,13 @@ namespace TRPGServer
             services.AddSingleton(bootstrapper.GetInstance<Game>());
             services.AddSingleton(bootstrapper.GetInstance<IWorldState>());
             services.AddSingleton(bootstrapper.GetInstance<WorldEntityManager>());
+            services.AddSingleton(bootstrapper.GetInstance<CombatEntityManager>());
+            services.AddSingleton(bootstrapper.GetInstance<IRepository<CharacterBase>>());
+            services.AddSingleton(bootstrapper.GetInstance<IRepository<CharacterHair>>());
+            services.AddTransient(typeof(PlayerEntityFactory), (provider) =>
+            {
+                return bootstrapper.GetInstance<PlayerEntityFactory>();
+            });
         }
 
         /// <summary>

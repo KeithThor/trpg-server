@@ -1,9 +1,212 @@
-import { Component } from "@angular/core";
+import { Component, OnInit, ViewChild, PACKAGE_ROOT_URL } from "@angular/core";
+import { HttpClient } from "@angular/common/http";
+import { CreateCharacterData, CharacterHair, CharacterBase, CharacterTemplate } from "../model/character.model";
+import { CombatEntity } from "../model/combat-entity.model";
+import { NgForm, FormGroup } from "@angular/forms";
+import { CharacterStats } from "../model/character-stats.model";
+import { StatPickerComponent } from "./statPicker/stat-picker.component";
 
 @Component({
   selector: 'game-create-component',
-  templateUrl: './create.component.html'
+  templateUrl: './create.component.html',
+  styleUrls: ['./create.component.css']
 })
-export class CreateComponent {
+export class CreateComponent implements OnInit {
+  constructor(private http: HttpClient) {
 
+  }
+
+  public isLoaded: boolean = false;
+  public isEditing: boolean = false;
+  public hairs: CharacterHair[] = [];
+  public bases: CharacterBase[] = [];
+  public entities: CombatEntity[] = [];
+  public stats: CharacterStats;
+  public selectedBase: CharacterBase;
+  public entityId: number = 0;
+  public name: string = "Name";
+  public hairId: number = 0;
+  public baseId: number = 0;
+  public self = this;
+  @ViewChild("form") form: NgForm;
+  @ViewChild("statPicker") statPicker: StatPickerComponent;
+
+  ngOnInit(): void {
+    let loadedCreateData: boolean = false;
+    let loadedEntityData: boolean = false;
+    this.stats = new CharacterStats();
+
+    this.http.get<CreateCharacterData>("api/character")
+      .subscribe({
+        next: (data) => {
+          this.bases = data.bases;
+          this.hairs = data.hairs;
+        },
+        complete: () => {
+          if (loadedEntityData === true) this.initialize();
+          else loadedCreateData = true;
+        }
+      });
+    this.http.get<CombatEntity[]>("api/character/created")
+      .subscribe({
+        next: (entities) => {
+          this.entities = entities;
+        },
+        complete: () => {
+          if (loadedCreateData === true) this.initialize();
+          else loadedEntityData = true;
+        }
+      });
+  }
+
+  /** Called to initialize the component with data and let the DOM know that the component is loaded. */
+  public initialize(): void {
+    this.newEntity();
+    this.isLoaded = true;
+  }
+
+  /** Gets the icon URI for the base of a character based on the player's selection. */
+  public getBaseUri(): string {
+    let base: CharacterBase = this.bases.find(b => b.id == this.baseId);
+    return base.iconUri;
+  }
+
+  /** Gets the icon URI for the hair of a character based on the player's selection. */
+  public getHairUri(): string {
+    let hair: CharacterHair = this.hairs.find(h => h.id == this.hairId);
+    return hair.iconUri;
+  }
+
+  public getButtonText(): string {
+    if (this.isEditing) return "Save Changes";
+    else return "Create Character";
+  }
+
+  /** Resets the form and fills it with data for a new character.
+   * Will give the user a warning if the user has prior unsaved changes.*/
+  public newEntity(): void {
+    if (this.areAnyFormsDirty()) {
+      if (!confirm("You have unsaved changes. Leaving will discard all changes you have made so far.")) {
+        return;
+      }
+    }
+
+    this.entityId = -1;
+    this.isEditing = false;
+    this.baseId = this.bases[0].id;
+    this.hairId = this.hairs[0].id;
+    this.name = "Name";
+    this.stats = new CharacterStats();
+    this.stats.strength = 5;
+    this.stats.dexterity = 5;
+    this.stats.agility = 5;
+    this.stats.intelligence = 5;
+    this.stats.constitution = 5;
+
+    // Deep copy array
+    this.selectedBase = this.bases[0];
+    if (this.statPicker != null) {
+      this.statPicker.freePoints = 0;
+    }
+  }
+
+  /**
+   * Selects an entity from the DOM and loads its data into the form to allow the player to edit.
+   * Will give the user a warning if the user has prior unsaved changes.
+   * @param entity The entity the user selected from the DOM.
+   */
+  public selectEntity(entity: CombatEntity): void {
+    if (this.areAnyFormsDirty()) {
+      if (!confirm("You have unsaved changes. Leaving will discard all changes you have made so far.")) {
+        return;
+      }
+    }
+
+    let self = this;
+    this.entityId = entity.id;
+    this.name = entity.name;
+    this.isEditing = true;
+    this.stats = JSON.parse(JSON.stringify(entity.stats));
+    this.statPicker.freePoints = 0;
+    entity.iconUris.forEach(iconUri => {
+      for (let i = 0; i < this.hairs.length; i++) {
+        if (iconUri === this.hairs[i].iconUri) {
+          self.hairId = this.hairs[i].id;
+          return;
+        }
+      }
+      for (let i = 0; i < this.bases.length; i++) {
+        if (iconUri === this.bases[i].iconUri) {
+          self.baseId = this.bases[i].id;
+          self.selectedBase = this.bases[i];
+          return;
+        }
+      }
+    });
+
+    this.markFormsPristine();
+  }
+
+  /** Marks the forms in this template pristine. */
+  private markFormsPristine(): void {
+    let t = this;
+    Object.keys(this.form.controls).forEach(control => {
+      t.form.controls[control].markAsPristine();
+    });
+    if (this.statPicker == null) return;
+
+    this.statPicker.isPristine = true;
+  }
+
+  /** Returns true if any forms in this component are dirty. */
+  private areAnyFormsDirty(): boolean {
+    if (this.statPicker == null) return false;
+    return (this.form.dirty || !this.statPicker.isPristine);
+  }
+
+  /** Sends a request to the server to either POST or PATCH a character using the data from the form as a template. */
+  public sendRequestAsync(): void {
+    if (!this.statPicker.isValid()) {
+      alert("You still have extra stat points that need to be allocated.");
+      return;
+    }
+
+    let template = new CharacterTemplate();
+    template.name = this.name;
+    template.baseId = this.baseId;
+    template.hairId = this.hairId;
+    template.allocatedStats = this.stats;
+
+    if (this.isEditing) {
+      this.http.patch("api/character", template)
+        .subscribe({
+          error: (err) => {
+            console.log(err);
+          },
+          complete: () => {
+            let entity = this.entities.find(e => e.id === this.entityId);
+            entity.name = template.name;
+            entity.iconUris = [
+              this.bases.find(b => b.id === template.baseId).iconUri,
+              this.hairs.find(h => h.id === template.hairId).iconUri
+            ];
+            this.markFormsPristine();
+          }
+        });
+    }
+    else {
+      this.http.post("api/character", template).subscribe({
+        next: (entity: CombatEntity) => {
+          this.entities.push(entity);
+        },
+        error: (err) => {
+          // Todo: handle error by displaying to user
+          console.log(err);
+        },
+        complete: () => {
+          this.markFormsPristine();
+        }
+      });
+    }
+  }
 }

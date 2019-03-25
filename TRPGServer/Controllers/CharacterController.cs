@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using TRPGGame;
 using TRPGGame.Entities;
 using TRPGGame.Entities.Data;
+using TRPGGame.Managers;
 using TRPGGame.Repository;
 using TRPGGame.Services;
 
@@ -17,7 +18,7 @@ namespace TRPGServer.Controllers
     {
         private readonly IRepository<CharacterBase> _characterBaseRepo;
         private readonly IRepository<CharacterHair> _characterHairRepo;
-        private readonly PlayerEntityFactory _playerEntityFactory;
+        private readonly CombatEntityManager _combatEntityManager;
 
         // Remove once db context is established
         [Obsolete]
@@ -25,12 +26,12 @@ namespace TRPGServer.Controllers
 
         public CharacterController(IRepository<CharacterBase> characterBaseRepo,
                                    IRepository<CharacterHair> characterHairRepo,
-                                   PlayerEntityFactory playerEntityFactory,
+                                   CombatEntityManager combatEntityManager,
                                    WorldEntityManager worldEntityManager)
         {
             _characterBaseRepo = characterBaseRepo;
             _characterHairRepo = characterHairRepo;
-            _playerEntityFactory = playerEntityFactory;
+            _combatEntityManager = combatEntityManager;
             _worldEntityManager = worldEntityManager;
         }
 
@@ -105,9 +106,11 @@ namespace TRPGServer.Controllers
         [Authorize]
         public async Task<IActionResult> Create([FromBody]CharacterTemplate template)
         {
+            if (!await IsValidTemplateAsync(template)) return new BadRequestResult();
+
             template.OwnerId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             template.OwnerName = User.FindFirst(ClaimTypes.Name).Value;
-            var entity = await _playerEntityFactory.CreateAsync(template);
+            var entity = await _combatEntityManager.CreateAsync(template);
 
             if (entity != null) return new CreatedAtActionResult("create", "character", template, entity);
             else return new BadRequestResult();
@@ -118,13 +121,41 @@ namespace TRPGServer.Controllers
         [Authorize]
         public async Task<IActionResult> Patch([FromBody]CharacterTemplate template)
         {
+            if (! await IsValidTemplateAsync(template)) return new BadRequestResult();
+
             template.OwnerId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             template.OwnerName = User.FindFirst(ClaimTypes.Name).Value;
 
-            var entity = await _playerEntityFactory.UpdateAsync(template);
+            var entity = await _combatEntityManager.UpdateAsync(template);
 
             if (entity != null) return new StatusCodeResult(204);
             else return new BadRequestResult();
+        }
+
+        [Route("")]
+        [HttpDelete]
+        [Authorize]
+        public IActionResult Delete([FromBody]int entityId)
+        {
+            var ownerId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+
+            if (_combatEntityManager.Delete(entityId, ownerId)) return new NoContentResult();
+            else return new BadRequestResult();
+        }
+
+        /// <summary>
+        /// Checks whether an incoming character template is valid.
+        /// </summary>
+        /// <param name="template">The template to validate.</param>
+        /// <returns></returns>
+        private async Task<bool> IsValidTemplateAsync(CharacterTemplate template)
+        {
+            var bases = await _characterBaseRepo.GetDataAsync();
+            var cBase = bases.FirstOrDefault(b => b.Id == template.BaseId);
+            if (cBase == null) return false;
+            if (template.AllocatedStats.GetTotalStats() != CharacterTemplate.MaxAllocatedStats) return false;
+
+            return true;
         }
     }
 }
