@@ -28,7 +28,8 @@
       <div class="form-group">
         <label for="bodySelection">Race and Sex: </label>
         <input type="hidden" [(ngModel)]="baseId" name="bodyHiddenInput"/>
-        <select class="form-control" [(ngModel)]="baseId" name="bodySelection" [disabled]="isEditing">
+        <select class="form-control" [ngModel]="baseId" (ngModelChange)="onBaseChanged($event)"
+                name="bodySelection" [disabled]="isEditing">
           <option *ngFor="let base of bases" value="{{base.id}}">{{base.name}}</option>
         </select>
       </div>

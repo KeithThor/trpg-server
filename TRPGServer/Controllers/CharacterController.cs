@@ -106,8 +106,6 @@ namespace TRPGServer.Controllers
         [Authorize]
         public async Task<IActionResult> Create([FromBody]CharacterTemplate template)
         {
-            if (!await IsValidTemplateAsync(template)) return new BadRequestResult();
-
             template.OwnerId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             template.OwnerName = User.FindFirst(ClaimTypes.Name).Value;
             var entity = await _combatEntityManager.CreateAsync(template);
@@ -121,8 +119,6 @@ namespace TRPGServer.Controllers
         [Authorize]
         public async Task<IActionResult> Patch([FromBody]CharacterTemplate template)
         {
-            if (! await IsValidTemplateAsync(template)) return new BadRequestResult();
-
             template.OwnerId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
             template.OwnerName = User.FindFirst(ClaimTypes.Name).Value;
 
@@ -141,21 +137,6 @@ namespace TRPGServer.Controllers
 
             if (_combatEntityManager.Delete(entityId, ownerId)) return new NoContentResult();
             else return new BadRequestResult();
-        }
-
-        /// <summary>
-        /// Checks whether an incoming character template is valid.
-        /// </summary>
-        /// <param name="template">The template to validate.</param>
-        /// <returns></returns>
-        private async Task<bool> IsValidTemplateAsync(CharacterTemplate template)
-        {
-            var bases = await _characterBaseRepo.GetDataAsync();
-            var cBase = bases.FirstOrDefault(b => b.Id == template.BaseId);
-            if (cBase == null) return false;
-            if (template.AllocatedStats.GetTotalStats() != CharacterTemplate.MaxAllocatedStats) return false;
-
-            return true;
         }
     }
 }

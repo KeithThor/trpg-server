@@ -38,6 +38,7 @@ namespace TRPGGame.Services
         /// <returns>Returns the combat entity if the operation was successful, else returns null.</returns>
         public async Task<CombatEntity> CreateAsync(CharacterTemplate template)
         {
+            if (!await IsValidTemplateAsync(template)) return null;
             var hairData = await _characterHairRepo.GetDataAsync();
             var baseData = await _characterBaseRepo.GetDataAsync();
             IEnumerable<string> iconUris;
@@ -87,7 +88,7 @@ namespace TRPGGame.Services
         /// <returns>Returns the modified combat entity or null if no entity was modified.</returns>
         public async Task<CombatEntity> UpdateAsync(CombatEntity entity, CharacterTemplate template)
         {
-            if (entity.OwnerId != template.OwnerId) return null;
+            if (!await IsValidTemplateAsync(template)) return null;
 
             var hairData = await _characterHairRepo.GetDataAsync();
             var baseData = await _characterBaseRepo.GetDataAsync();
@@ -121,6 +122,58 @@ namespace TRPGGame.Services
             modifiedEntity.Stats = template.AllocatedStats;
 
             return modifiedEntity;
+        }
+
+        /// <summary>
+        /// Checks if the given template is valid asynchronously.
+        /// </summary>
+        /// <param name="template">The template to validate.</param>
+        /// <returns></returns>
+        private async Task<bool> IsValidTemplateAsync(CharacterTemplate template)
+        {
+            if (!await AreStatsValidAsync(template)) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Checks if the given template is valid asynchronously.
+        /// </summary>
+        /// <param name="template">The template to validate.</param>
+        /// <param name="entity">The entity to validate against.</param>
+        /// <returns></returns>
+        private async Task<bool> IsValidTemplateAsync(CharacterTemplate template, CombatEntity entity)
+        {
+            if (entity.OwnerId != template.OwnerId) return false;
+            if (!await IsValidTemplateAsync(template)) return false;
+            return true;
+        }
+
+        /// <summary>
+        /// Checks to see if the allocated stats on a template are valid given the selected character base.
+        /// </summary>
+        /// <param name="template">The template in which the stats to validate are stored.</param>
+        /// <returns></returns>
+        private async Task<bool> AreStatsValidAsync(CharacterTemplate template)
+        {
+            var data = await _characterBaseRepo.GetDataAsync();
+            var cBase = data.FirstOrDefault(b => b.Id == template.BaseId);
+            if (template.AllocatedStats.GetTotalStats() != CharacterTemplate.MaxAllocatedStats) return false;
+
+            var allocatedStats = template.AllocatedStats.AsArray();
+            var bonusStats = cBase.BonusStats.AsArray();
+            var maxStats = cBase.MaxStats.AsArray();
+
+            for (int i = 0; i < allocatedStats.Length; i++)
+            {
+                // Check minimum stats
+                if ((bonusStats[i] >= 0 && allocatedStats[i] + bonusStats[i] <= 0) ||
+                    (bonusStats[i] < 0 && allocatedStats[i] + bonusStats[i] < 0)) return false;
+
+                // Check maximum stats
+                if (allocatedStats[i] + bonusStats[i] > maxStats[i]) return false;
+            }
+
+            return true;
         }
     }
 }

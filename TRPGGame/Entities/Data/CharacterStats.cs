@@ -16,5 +16,22 @@ namespace TRPGGame.Entities.Data
         {
             return Strength + Dexterity + Agility + Intelligence + Constitution;
         }
+
+        /// <summary>
+        /// Returns all stat values as an integer array.
+        /// <para>Arranged in the following order: Strength, Dexterity, Agility, Intelligence, Constitution.</para>
+        /// </summary>
+        /// <returns></returns>
+        public int[] AsArray()
+        {
+            return new int[]
+            {
+                Strength,
+                Dexterity,
+                Agility,
+                Intelligence,
+                Constitution
+            };
+        }
     }
 }

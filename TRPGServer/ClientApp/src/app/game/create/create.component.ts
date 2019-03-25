@@ -82,6 +82,18 @@ export class CreateComponent implements OnInit {
     else return "Create Character";
   }
 
+  /**
+   * Called by the template whenever the user changes the baseId of a character.
+   * @param baseId The id of the new base the user chose.
+   */
+  public onBaseChanged(baseId: number) {
+    let base: CharacterBase = this.bases.find(b => b.id == baseId);
+    if (base != null) {
+      this.selectedBase = base;
+      this.baseId = baseId;
+    }
+  }
+
   /** Resets the form and fills it with data for a new character.
    * Will give the user a warning if the user has prior unsaved changes.*/
   public newEntity(): void {
