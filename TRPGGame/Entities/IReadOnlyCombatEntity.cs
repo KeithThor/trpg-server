@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using TRPGGame.Entities.Data;
 
 namespace TRPGGame.Entities
 {
@@ -9,7 +9,7 @@ namespace TRPGGame.Entities
     public interface IReadOnlyCombatEntity
     {
         int? GroupId { get; }
-        IEnumerable<string> IconUris { get; }
+        IReadOnlyCharacterIconSet IconUris { get; }
         int Id { get; }
         string Name { get; }
         Guid OwnerId { get; }

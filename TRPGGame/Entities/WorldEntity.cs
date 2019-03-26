@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using TRPGGame.Entities.Data;
 using TRPGShared;
 
 namespace TRPGGame.Entities
@@ -10,8 +11,10 @@ namespace TRPGGame.Entities
         public int Id { get; set; }
         public string Name { get; set; }
         public Guid OwnerGuid { get; set; }
-        public IEnumerable<string> IconUris { get; set; }
+        public CharacterIconSet IconUris { get; set; }
         public Coordinate Position { get; set; }
         public int CurrentMapId { get; set; }
+
+        IReadOnlyCharacterIconSet IReadOnlyWorldEntity.IconUris => IconUris;
     }
 }

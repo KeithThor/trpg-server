@@ -1,5 +1,6 @@
 import { Component, Input, HostListener, trigger, state, style, transition, animate } from "@angular/core";
 import { WorldEntity } from "../model/world-entity.model";
+import { CharacterIconSet } from "../model/character.model";
 
 @Component({
   selector: 'world-entity-component',
@@ -55,6 +56,10 @@ export class WorldEntityComponent {
     if (this.onAnimationFinishedHandler != null) {
       this.onAnimationFinishedHandler();
     }
+  }
+
+  public getIconArray(): string[] {
+    return CharacterIconSet.asArray(this.entity.iconUris);
   }
 
   @HostListener('contextmenu', ['$event'])

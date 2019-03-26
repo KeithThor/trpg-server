@@ -33,6 +33,18 @@ export class StatSliderComponent {
     else return "images/dungeon/wall/crystal_wall_lightgray.png";
   }
 
+  /** Constructs the text for this slider component. */
+  public getSliderText(): string {
+    let statNameCapped = this.statName.charAt(0).toUpperCase() + this.statName.slice(1);
+    let statParameters = "(" + this.allocatedStats[this.statName] + " / " + this.maxStats[this.statName] + ")";
+    let bonusParameters = "";
+    if (this.bonusStats[this.statName] !== 0) {
+      if (this.bonusStats[this.statName] > 0) bonusParameters = " +" + this.bonusStats[this.statName];
+      else bonusParameters = " " + this.bonusStats[this.statName];
+    }
+    return statNameCapped + statParameters + bonusParameters;
+  }
+
   /** Returns an array containing the max stat number converted into an array from 1 to the max stat number. */
   public getMaxStatAsArray(): number[] {
     let arr: number[] = [];

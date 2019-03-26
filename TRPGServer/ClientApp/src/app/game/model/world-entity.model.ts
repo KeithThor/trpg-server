@@ -1,5 +1,7 @@
+import { CharacterIconSet } from "./character.model";
+
 export class WorldEntity {
   id: number;
-  iconUris: string[];
+  iconUris: CharacterIconSet;
   name: string;
 }

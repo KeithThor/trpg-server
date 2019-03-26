@@ -3,6 +3,6 @@
     {{entity.name}}
   </div>
   <div class="icon-container">
-    <img class="icon" *ngFor="let iconUri of entity.iconUris" src="{{iconUri}}" draggable="false" />
+    <img class="icon" *ngFor="let iconUri of getIconArray()" src="{{iconUri}}" draggable="false" />
   </div>
 </div>

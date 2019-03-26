@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TRPGGame.Entities.Data;
 using TRPGShared;
 
 namespace TRPGGame.Entities
@@ -27,7 +28,7 @@ namespace TRPGGame.Entities
         /// <summary>
         /// The Uris containing the layers of icons that represents this WorldEntity on the map.
         /// </summary>
-        IEnumerable<string> IconUris { get; }
+        IReadOnlyCharacterIconSet IconUris { get; }
 
         /// <summary>
         /// The current X-Y position this WorldEntity occupies on the map the entity resides in.

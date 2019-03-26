@@ -1,5 +1,6 @@
 import { Component, Input } from "@angular/core";
 import { CombatEntity } from "../../model/combat-entity.model";
+import { CharacterIconSet } from "../../model/character.model";
 
 @Component({
   selector: "game-edit-entity",
@@ -12,5 +13,9 @@ export class EditEntityComponent {
 
   public onClick(): void {
     this.clickHandler(this.entity);
+  }
+
+  public getIconArray(): string[] {
+    return CharacterIconSet.asArray(this.entity.iconUris);
   }
 }

@@ -41,19 +41,19 @@ namespace TRPGGame.Services
             if (!await IsValidTemplateAsync(template)) return null;
             var hairData = await _characterHairRepo.GetDataAsync();
             var baseData = await _characterBaseRepo.GetDataAsync();
-            IEnumerable<string> iconUris;
+            CharacterIconSet iconUris;
 
             try
             {
                 // Find the corresponding iconUris and arrange them in the correct order from
                 // bottom layer to top
                 var hair = hairData.First(h => h.Id == template.HairId).IconUri;
-                var body = baseData.First(b => b.Id == template.BaseId).IconUri;
+                var cBase = baseData.First(b => b.Id == template.BaseId).IconUri;
 
-                iconUris = new List<string>
+                iconUris = new CharacterIconSet
                 {
-                    body,
-                    hair
+                    BaseIconUri = cBase,
+                    HairIconUri = hair
                 };
             }
             catch (ArgumentException e)
@@ -92,19 +92,15 @@ namespace TRPGGame.Services
 
             var hairData = await _characterHairRepo.GetDataAsync();
             var baseData = await _characterBaseRepo.GetDataAsync();
-            IEnumerable<string> iconUris;
+            CharacterIconSet iconUris;
 
             try
             {
                 // Find the corresponding iconUris and arrange them in the correct order
                 var hair = hairData.First(h => h.Id == template.HairId).IconUri;
-                var body = baseData.First(b => b.Id == template.BaseId).IconUri;
 
-                iconUris = new List<string>
-                {
-                    body,
-                    hair
-                };
+                iconUris = new CharacterIconSet(entity.IconUris);
+                iconUris.HairIconUri = hair;
             }
             catch (ArgumentException e)
             {
@@ -143,6 +139,8 @@ namespace TRPGGame.Services
         /// <returns></returns>
         private async Task<bool> IsValidTemplateAsync(CharacterTemplate template, CombatEntity entity)
         {
+            var bases = await _characterBaseRepo.GetDataAsync();
+
             if (entity.OwnerId != template.OwnerId) return false;
             if (!await IsValidTemplateAsync(template)) return false;
             return true;

@@ -45,10 +45,10 @@ namespace TRPGGame.Services
                     OwnerGuid = ownerId,
                     Name = "User",
                     CurrentMapId = 1,
-                    IconUris = new string[]
+                    IconUris = new Entities.Data.CharacterIconSet
                     {
-                        "images/player/base/human_male.png",
-                        "images/player/hair/brown_1.png"
+                        BodyIconUri = "images/player/base/human_male.png",
+                        HairIconUri = "images/player/hair/brown_1.png"
                     },
                     Position = new TRPGShared.Coordinate() { PositionX = 1, PositionY = 1}
                 };

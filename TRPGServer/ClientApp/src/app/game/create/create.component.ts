@@ -51,6 +51,7 @@ export class CreateComponent implements OnInit {
       .subscribe({
         next: (entities) => {
           this.entities = entities;
+          console.log(this.entities);
         },
         complete: () => {
           if (loadedCreateData === true) this.initialize();
@@ -140,21 +141,32 @@ export class CreateComponent implements OnInit {
     this.isEditing = true;
     this.stats = JSON.parse(JSON.stringify(entity.stats));
     this.statPicker.freePoints = 0;
-    entity.iconUris.forEach(iconUri => {
-      for (let i = 0; i < this.hairs.length; i++) {
-        if (iconUri === this.hairs[i].iconUri) {
-          self.hairId = this.hairs[i].id;
-          return;
-        }
-      }
-      for (let i = 0; i < this.bases.length; i++) {
-        if (iconUri === this.bases[i].iconUri) {
-          self.baseId = this.bases[i].id;
-          self.selectedBase = this.bases[i];
-          return;
-        }
+    this.hairs.forEach(hair => {
+      if (hair.iconUri === entity.iconUris.hairIconUri) {
+        self.hairId = hair.id;
       }
     });
+    this.bases.forEach(base => {
+      if (base.iconUri === entity.iconUris.baseIconUri) {
+        self.baseId = base.id;
+        self.selectedBase = base;
+      }
+    })
+    //entity.iconUris.forEach(iconUri => {
+    //  for (let i = 0; i < this.hairs.length; i++) {
+    //    if (iconUri === this.hairs[i].iconUri) {
+    //      self.hairId = this.hairs[i].id;
+    //      return;
+    //    }
+    //  }
+    //  for (let i = 0; i < this.bases.length; i++) {
+    //    if (iconUri === this.bases[i].iconUri) {
+    //      self.baseId = this.bases[i].id;
+    //      self.selectedBase = this.bases[i];
+    //      return;
+    //    }
+    //  }
+    //});
 
     this.markFormsPristine();
   }
@@ -198,10 +210,12 @@ export class CreateComponent implements OnInit {
           complete: () => {
             let entity = this.entities.find(e => e.id === this.entityId);
             entity.name = template.name;
-            entity.iconUris = [
-              this.bases.find(b => b.id === template.baseId).iconUri,
-              this.hairs.find(h => h.id === template.hairId).iconUri
-            ];
+
+            let baseIconUri = this.bases.find(b => b.id === template.baseId).iconUri;
+            if (baseIconUri != null) entity.iconUris.baseIconUri = baseIconUri;
+            let hairIconUri = this.hairs.find(h => h.id === template.hairId).iconUri;
+            if (hairIconUri != null) entity.iconUris.hairIconUri = hairIconUri;
+
             this.markFormsPristine();
           }
         });
