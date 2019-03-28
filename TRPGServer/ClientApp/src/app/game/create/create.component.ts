@@ -92,6 +92,14 @@ export class CreateComponent implements OnInit {
     if (base != null) {
       this.selectedBase = base;
       this.baseId = baseId;
+
+      this.stats = new CharacterStats();
+      this.stats.strength = 5;
+      this.stats.dexterity = 5;
+      this.stats.agility = 5;
+      this.stats.intelligence = 5;
+      this.stats.constitution = 5;
+      this.statPicker.freePoints = 0;
     }
   }
 

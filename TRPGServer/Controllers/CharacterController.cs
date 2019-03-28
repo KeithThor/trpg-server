@@ -18,7 +18,7 @@ namespace TRPGServer.Controllers
     {
         private readonly IRepository<CharacterBase> _characterBaseRepo;
         private readonly IRepository<CharacterHair> _characterHairRepo;
-        private readonly CombatEntityManager _combatEntityManager;
+        private readonly ICombatEntityManager _combatEntityManager;
 
         // Remove once db context is established
         [Obsolete]
@@ -26,13 +26,11 @@ namespace TRPGServer.Controllers
 
         public CharacterController(IRepository<CharacterBase> characterBaseRepo,
                                    IRepository<CharacterHair> characterHairRepo,
-                                   CombatEntityManager combatEntityManager,
-                                   WorldEntityManager worldEntityManager)
+                                   ICombatEntityManager combatEntityManager)
         {
             _characterBaseRepo = characterBaseRepo;
             _characterHairRepo = characterHairRepo;
             _combatEntityManager = combatEntityManager;
-            _worldEntityManager = worldEntityManager;
         }
 
         [Route("base")]
@@ -95,8 +93,8 @@ namespace TRPGServer.Controllers
         {
             var playerId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-            var entities = _worldEntityManager.GetCombatEntities()
-                                              .Where(entity => entity.OwnerId == playerId);
+            var entities = _combatEntityManager.GetEntities()
+                                               .Where(entity => entity.OwnerId == playerId);
 
             return new JsonResult(entities);
         }

@@ -37,7 +37,7 @@ namespace TRPGGame
             containerBuilder.RegisterType<CharacterHairRepository>().As<IRepository<CharacterHair>>();
             containerBuilder.RegisterType<WorldEntityDbContext>();
             containerBuilder.RegisterType<WorldEntityManager>().SingleInstance();
-            containerBuilder.RegisterType<CombatEntityManager>().SingleInstance();
+            containerBuilder.RegisterType<CombatEntityManager>().As<ICombatEntityManager>().SingleInstance();
             containerBuilder.RegisterType<CombatEntityFactory>();
             containerBuilder.RegisterType<WorldEntityFactory>();
         }
