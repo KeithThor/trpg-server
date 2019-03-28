@@ -9,24 +9,16 @@ using TRPGGame.Repository;
 
 namespace TRPGGame.Services
 {
-    public class PlayerEntityFactory
+    public class CombatEntityFactory
     {
         private readonly IRepository<CharacterBase> _characterBaseRepo;
         private readonly IRepository<CharacterHair> _characterHairRepo;
 
-        // Todo: remove reference to WEM, save entities in dbset instead of in memory.
-        private readonly WorldEntityManager _worldEntityManager;
-        private readonly WorldEntityFactory _worldEntityFactory;
-
-        public PlayerEntityFactory(IRepository<CharacterBase> characterBaseRepo,
-                                   IRepository<CharacterHair> characterHairRepo,
-                                   WorldEntityManager worldEntityManager,
-                                   WorldEntityFactory worldEntityFactory)
+        public CombatEntityFactory(IRepository<CharacterBase> characterBaseRepo,
+                                   IRepository<CharacterHair> characterHairRepo)
         {
             _characterBaseRepo = characterBaseRepo;
             _characterHairRepo = characterHairRepo;
-            _worldEntityManager = worldEntityManager;
-            _worldEntityFactory = worldEntityFactory;
         }
 
         private static int _id = 0;
@@ -72,9 +64,7 @@ namespace TRPGGame.Services
                 OwnerName = template.OwnerName,
                 Stats = template.AllocatedStats
             };
-
-            _worldEntityManager.SaveCombatEntity(character);
-            await _worldEntityFactory.CreateAsync(character);
+            
             // Todo: Add to dbset here after creating EFCore migration
 
             return character;
@@ -140,7 +130,10 @@ namespace TRPGGame.Services
         private async Task<bool> IsValidTemplateAsync(CharacterTemplate template, CombatEntity entity)
         {
             var bases = await _characterBaseRepo.GetDataAsync();
+            var selectedBase = bases.FirstOrDefault(b => b.Id == template.BaseId);
 
+            if (selectedBase == null) return false;
+            if (entity.IconUris.BaseIconUri != selectedBase.IconUri) return false;
             if (entity.OwnerId != template.OwnerId) return false;
             if (!await IsValidTemplateAsync(template)) return false;
             return true;

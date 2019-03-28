@@ -38,7 +38,7 @@ namespace TRPGGame
             containerBuilder.RegisterType<WorldEntityDbContext>();
             containerBuilder.RegisterType<WorldEntityManager>().SingleInstance();
             containerBuilder.RegisterType<CombatEntityManager>().SingleInstance();
-            containerBuilder.RegisterType<PlayerEntityFactory>();
+            containerBuilder.RegisterType<CombatEntityFactory>();
             containerBuilder.RegisterType<WorldEntityFactory>();
         }
 
