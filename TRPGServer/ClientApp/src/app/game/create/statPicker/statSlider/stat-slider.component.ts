@@ -13,6 +13,7 @@ export class StatSliderComponent {
   @Input() maxStats: CharacterStats;
   @Input() allocatedStats: CharacterStats;
   @Input() clickHandler: (statName: string, changeAmount: number) => void;
+  @Input() mouseEnterHandler: (name: string) => void;
   public maxStatAsArray: number[];
 
   /**
@@ -74,6 +75,13 @@ export class StatSliderComponent {
     else {
       let changeAmount = position - this.allocatedStats[this.statName];
       this.clickHandler(this.statName, changeAmount);
+    }
+  }
+
+  /** Handler called whenever the user mouses over this component. */
+  public onMouseEnter(): void {
+    if (this.mouseEnterHandler != null) {
+      this.mouseEnterHandler(this.statName);
     }
   }
 

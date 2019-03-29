@@ -34,6 +34,7 @@
     <None Remove="ClientApp\src\app\game\chatbox\message.component.ts" />
     <None Remove="ClientApp\src\app\game\combatEntity\combat-entity.component.ts" />
     <None Remove="ClientApp\src\app\game\create\create.component.ts" />
+    <None Remove="ClientApp\src\app\game\create\description\description.component.ts" />
     <None Remove="ClientApp\src\app\game\create\statPicker\stat-icon.component.ts" />
     <None Remove="ClientApp\src\app\game\create\statPicker\stat-picker.component.ts" />
     <None Remove="ClientApp\src\app\game\create\statPicker\stat-slider.component.ts" />
@@ -62,6 +63,7 @@
 
   <ItemGroup>
     <TypeScriptCompile Include="ClientApp\src\app\game\chatbox\message.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\create\description\description.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\editEntity\edit-entity.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\create.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\statSlider\statIcon\stat-icon.component.ts" />

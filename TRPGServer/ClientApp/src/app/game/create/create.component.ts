@@ -2,14 +2,17 @@ import { Component, OnInit, ViewChild, PACKAGE_ROOT_URL } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { CreateCharacterData, CharacterHair, CharacterBase, CharacterTemplate } from "../model/character.model";
 import { CombatEntity } from "../model/combat-entity.model";
-import { NgForm, FormGroup } from "@angular/forms";
+import { NgForm } from "@angular/forms";
 import { CharacterStats } from "../model/character-stats.model";
 import { StatPickerComponent } from "./statPicker/stat-picker.component";
 
 @Component({
   selector: 'game-create-component',
   templateUrl: './create.component.html',
-  styleUrls: ['./create.component.css']
+  styleUrls: [
+    './create.component.css',
+    './editEntity/edit-entity.component.css'
+  ]
 })
 export class CreateComponent implements OnInit {
   constructor(private http: HttpClient) {
@@ -28,12 +31,14 @@ export class CreateComponent implements OnInit {
   public hairId: number = 0;
   public baseId: number = 0;
   public self = this;
+  public hoveredComponentName: string;
   @ViewChild("form") form: NgForm;
   @ViewChild("statPicker") statPicker: StatPickerComponent;
 
   ngOnInit(): void {
     let loadedCreateData: boolean = false;
     let loadedEntityData: boolean = false;
+    this.hoveredComponentName = "growth";
     this.stats = new CharacterStats();
 
     this.http.get<CreateCharacterData>("api/character")
@@ -103,6 +108,10 @@ export class CreateComponent implements OnInit {
     }
   }
 
+  public changeHoveredComponentName(name: string): void {
+    this.hoveredComponentName = name;
+  }
+
   /** Resets the form and fills it with data for a new character.
    * Will give the user a warning if the user has prior unsaved changes.*/
   public newEntity(): void {
@@ -159,22 +168,7 @@ export class CreateComponent implements OnInit {
         self.baseId = base.id;
         self.selectedBase = base;
       }
-    })
-    //entity.iconUris.forEach(iconUri => {
-    //  for (let i = 0; i < this.hairs.length; i++) {
-    //    if (iconUri === this.hairs[i].iconUri) {
-    //      self.hairId = this.hairs[i].id;
-    //      return;
-    //    }
-    //  }
-    //  for (let i = 0; i < this.bases.length; i++) {
-    //    if (iconUri === this.bases[i].iconUri) {
-    //      self.baseId = this.bases[i].id;
-    //      self.selectedBase = this.bases[i];
-    //      return;
-    //    }
-    //  }
-    //});
+    });
 
     this.markFormsPristine();
   }

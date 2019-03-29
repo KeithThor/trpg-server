@@ -21,6 +21,7 @@ import { EditEntityComponent } from "./create/editEntity/edit-entity.component";
 import { StatPickerComponent } from "./create/statPicker/stat-picker.component";
 import { StatSliderComponent } from "./create/statPicker/statSlider/stat-slider.component";
 import { StatIconComponent } from "./create/statPicker/statSlider/statIcon/stat-icon.component";
+import { DescriptionComponent } from "./create/description/description.component";
 
 @NgModule({
   declarations: [
@@ -34,7 +35,8 @@ import { StatIconComponent } from "./create/statPicker/statSlider/statIcon/stat-
     EditEntityComponent,
     StatPickerComponent,
     StatSliderComponent,
-    StatIconComponent
+    StatIconComponent,
+    DescriptionComponent
   ],
 
   imports: [

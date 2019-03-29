@@ -1,4 +1,4 @@
-<div>
+<div (mouseenter)="onMouseEnter()">
   <h6>{{getSliderText()}}</h6>
   <div>
     <game-stat-icon *ngFor="let index of getMaxStatAsArray()" [position]="index" [getImgSrcFunc]="getIconUri.bind(this)"

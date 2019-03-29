@@ -1,0 +1,91 @@
+<div class="description-root">
+  <div *ngIf="hoveredComponentName === 'growth'">
+    <h4>
+      Growth Points
+    </h4>
+    <p>
+      This section allows you to allocate points into stats of your choosing. These are
+      not representative of your character&#39;s actual stats, instead these represent
+      the chance your character has of gaining that stat point whenever it levels up.
+    </p>
+    <p>
+      <img src="images/dungeon/wall/crystal_wall_lightgreen.png" />
+      Green crystals represent your allocated points.
+    </p>
+    <p>
+      <img src="images/dungeon/wall/crystal_wall_lightcyan.png" />
+      Cyan crystals represent bonus points given by your race and sex.
+    </p>
+    <p>
+      <img src="images/dungeon/wall/crystal_wall_red.png" />
+      Red crystals represent point reductions given by your race and sex.
+    </p>
+    <p>
+      <img src="images/dungeon/wall/crystal_wall_lightgray.png" />
+      Gray crystals represent the maximum amount of points you can invest in a stat
+      given your race and sex.
+    </p>
+  </div>
+  <div *ngIf="hoveredComponentName === 'edit'">
+    <h4>
+      Edit Character
+    </h4>
+    <p>
+      You can choose any of your previously created characters and edit their name,
+      hair, and growth points freely. Their race and sex are locked however.
+    </p>
+  </div>
+  <div *ngIf="hoveredComponentName === 'strength'">
+    <h4>
+      Strength
+    </h4>
+    <p>
+      Strength is a measure of a character&#39;s physical prowess. The stat affects
+      the amount of damage dealt with melee weapons and physical skills.
+    </p>
+  </div>
+  <div *ngIf="hoveredComponentName === 'dexterity'">
+    <h4>
+      Dexterity
+    </h4>
+    <p>
+      Dexterity is a measure of a character&#39;s physical prowess. The stat affects
+      the amount of damage dealt with certain melee and ranged weapons and the damage
+      of a physical critical strike. Also increases the effectiveness of skills that
+      use dexterity as a base.
+    </p>
+  </div>
+  <div *ngIf="hoveredComponentName === 'agility'">
+    <h4>
+      Agility
+    </h4>
+    <p>
+      Agility is a measure of a character&#39;s ability to move about quickly. The stat affects
+      the likelihood of landing a critical hit. Agility is also used to determine which character acts
+      first in a round, with the highest agility character acting first. A character with very high agility
+      may be allowed to act multiple times in a round.
+    </p>
+  </div>
+  <div *ngIf="hoveredComponentName === 'intelligence'">
+    <h4>
+      Intelligence
+    </h4>
+    <p>
+      Intelligence is a measure of a character&#39;s mental acruity. The stat affects
+      the amount of damage dealt with magical attacks with staves, wands, and spells.
+      It also increases the amount of mana a character has, allowing it to cast more
+      spells.
+    </p>
+  </div>
+  <div *ngIf="hoveredComponentName === 'constitution'">
+    <h4>
+      Constitution
+    </h4>
+    <p>
+      Constitution is a measure of a character&#39;s physical endurance. The stat affects
+      the amount of hit points a character has, allowing it to take more damage before
+      fainting. It also increases the effectiveness of skills and spells that use constitution
+      as a base.
+    </p>
+  </div>
+</div>

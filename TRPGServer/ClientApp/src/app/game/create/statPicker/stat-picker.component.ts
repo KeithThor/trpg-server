@@ -10,11 +10,12 @@ import { CharacterBase } from "../../model/character.model";
 })
 export class StatPickerComponent {
   public freePoints: number = 0;
+  public self = this;
   @Output() statsChange = new EventEmitter<CharacterStats>();
+  @Output() onMouseEnterEvent = new EventEmitter<string>();
   @Input() stats: CharacterStats;
   @Input() base: CharacterBase;
   public isPristine: boolean = true;
-  public self = this;
 
   /** Returns true if the component is in a valid state to send data. */
   public isValid(): boolean {
@@ -27,6 +28,14 @@ export class StatPickerComponent {
     });
 
     return !foundInvalid;
+  }
+
+  /**
+   * Whenever the user's mouse hovers over a component, emit the value of the component name.
+   * @param componentName
+   */
+  public onMouseEnter(componentName: string): void {
+    this.onMouseEnterEvent.emit(componentName);
   }
 
   public getStatNames(): string[] {
