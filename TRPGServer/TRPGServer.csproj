@@ -17,6 +17,7 @@
     <PackageReference Include="Microsoft.AspNetCore.App" />
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.1.1" />
+    <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -39,11 +40,13 @@
     <None Remove="ClientApp\src\app\game\create\statPicker\stat-picker.component.ts" />
     <None Remove="ClientApp\src\app\game\create\statPicker\stat-slider.component.ts" />
     <None Remove="ClientApp\src\app\game\create\statPicker\StatConstants.ts" />
+    <None Remove="ClientApp\src\app\game\formation\formation.component.ts" />
     <None Remove="ClientApp\src\app\game\game\tile-node.component.ts" />
     <None Remove="ClientApp\src\app\game\mapTile\map-tile.component.ts" />
     <None Remove="ClientApp\src\app\game\model\character-stats.model.ts" />
     <None Remove="ClientApp\src\app\game\model\character.model.ts" />
     <None Remove="ClientApp\src\app\game\model\entity-location.model.ts" />
+    <None Remove="ClientApp\src\app\game\model\formation.model.ts" />
     <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.css" />
     <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
     <None Remove="ClientApp\src\app\shared\auth\auth.guard.ts" />
@@ -70,10 +73,12 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\stat-picker.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\statSlider\stat-slider.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\StatConstants.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\formation\formation.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\game\tile-node.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\character-stats.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\character.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\entity-location.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\formation.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.css" />
     <TypeScriptCompile Include="ClientApp\src\app\game\mapTile\map-tile.component.ts" />

@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Linq;
@@ -14,7 +15,8 @@ using TRPGGame.Services;
 namespace TRPGServer.Controllers
 {
     [Route("api/[controller]")]
-    public class CharacterController : Controller
+    [ApiController]
+    public class CharacterController : ControllerBase
     {
         private readonly IRepository<CharacterBase> _characterBaseRepo;
         private readonly IRepository<CharacterHair> _characterHairRepo;
@@ -122,7 +124,7 @@ namespace TRPGServer.Controllers
 
             var entity = await _combatEntityManager.UpdateAsync(template);
 
-            if (entity != null) return new StatusCodeResult(204);
+            if (entity != null) return new StatusCodeResult(StatusCodes.Status204NoContent);
             else return new BadRequestResult();
         }
 

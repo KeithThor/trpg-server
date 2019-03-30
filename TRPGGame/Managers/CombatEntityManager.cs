@@ -22,6 +22,15 @@ namespace TRPGGame.Managers
         }
 
         /// <summary>
+        /// Returns an IEnumerable of CombatEntities that can be modified.
+        /// </summary>
+        /// <returns></returns>
+        internal IEnumerable<CombatEntity> GetModifiableEntities()
+        {
+            return _combatEntities;
+        }
+
+        /// <summary>
         /// Returns an IEnumerable of IReadOnlyCombatEntity that contains all the combat entities in memory.
         /// </summary>
         /// <returns></returns>

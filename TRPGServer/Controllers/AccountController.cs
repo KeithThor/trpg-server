@@ -11,7 +11,8 @@ using TRPGServer.Services;
 namespace TRPGServer.Controllers
 {
     [Route("api/[controller]")]
-    public class AccountController : Controller
+    [ApiController]
+    public class AccountController : ControllerBase
     {
         private readonly TokenBuilder _tokenBuilder;
         private readonly UserManager<ApplicationUser> _userManager;

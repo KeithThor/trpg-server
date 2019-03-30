@@ -87,6 +87,7 @@ namespace TRPGServer
             services.AddSingleton(bootstrapper.GetInstance<IWorldState>());
             services.AddSingleton(bootstrapper.GetInstance<WorldEntityManager>());
             services.AddSingleton(bootstrapper.GetInstance<ICombatEntityManager>());
+            services.AddSingleton(bootstrapper.GetInstance<IFormationManager>());
             services.AddSingleton(bootstrapper.GetInstance<IRepository<CharacterBase>>());
             services.AddSingleton(bootstrapper.GetInstance<IRepository<CharacterHair>>());
             services.AddTransient(typeof(CombatEntityFactory), (provider) =>
