@@ -10,9 +10,16 @@
 }
 
 .entity-selection {
+  display: -webkit-box;
+  display: -ms-flexbox;
   display: flex;
   background-color: black;
   border-radius: 4px;
+  /* width: 450px; */
+  /* max-height: 500px; */
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .entity-viewer-container {
@@ -21,8 +28,12 @@
   background-color: dimgrey;
 }
 
-.entity-viewer {
-  
+.entity-selection-container {
+  max-width: 450px;
+  max-height: 500px;
+  background-color: red;
+  position:relative;
+  flex-wrap: wrap;
 }
 
 .entity-node {

@@ -49,7 +49,7 @@ namespace TRPGServer.Controllers
             var claims = await _userManager.GetClaimsAsync(foundUser);
             var token = _tokenBuilder.CreateToken(foundUser, claims);
 
-            return Json(new
+            return new JsonResult(new
             {
                 Token = token,
                 Username = user.Username
@@ -91,7 +91,7 @@ namespace TRPGServer.Controllers
                 {
                     var token = _tokenBuilder.CreateToken(newUser, claims);
                     
-                    return Json(new
+                    return new JsonResult(new
                     {
                         Token = token,
                         Username = user.Username

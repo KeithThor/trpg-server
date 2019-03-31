@@ -1,12 +1,14 @@
 <div class="container">
   <div class="row">
     <div class="col-md-5">
-      <div (mouseenter)="changeHoveredComponentName('edit')" class="entity-selection">
-        <game-edit-entity *ngFor="let entity of entities" [entity]="entity" [clickHandler]="selectEntity.bind(self)"></game-edit-entity>
-        <div class="edit-entity" (click)="newEntity()">
-          <div class="icon-label">New</div>
-          <div class="icon-container">
-            <img class="icon" src="images/misc/unseen_monster.png" draggable="false" />
+      <div class="entity-selection-container">
+        <div (mouseenter)="changeHoveredComponentName('edit')" class="entity-selection">
+          <game-edit-entity *ngFor="let entity of entities" [entity]="entity" [clickHandler]="selectEntity.bind(self)"></game-edit-entity>
+          <div class="edit-entity" (click)="newEntity()">
+            <div class="icon-label">New</div>
+            <div class="icon-container">
+              <img class="icon" src="images/misc/unseen_monster.png" draggable="false" />
+            </div>
           </div>
         </div>
       </div>
