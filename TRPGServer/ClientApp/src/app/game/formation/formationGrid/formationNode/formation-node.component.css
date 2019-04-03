@@ -1,0 +1,7 @@
+.formation-node {
+  background-color: black;
+  height: 64px;
+  width: 64px;
+  border: 2px solid white;
+  position: relative;
+}

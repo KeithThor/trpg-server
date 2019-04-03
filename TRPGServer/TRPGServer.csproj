@@ -40,13 +40,18 @@
     <None Remove="ClientApp\src\app\game\create\statPicker\stat-picker.component.ts" />
     <None Remove="ClientApp\src\app\game\create\statPicker\stat-slider.component.ts" />
     <None Remove="ClientApp\src\app\game\create\statPicker\StatConstants.ts" />
+    <None Remove="ClientApp\src\app\game\displayEntity\display-entity.component.ts" />
+    <None Remove="ClientApp\src\app\game\formation\formationGrid\formation-grid.component.ts" />
+    <None Remove="ClientApp\src\app\game\formation\formationGrid\formation-node.component.ts" />
     <None Remove="ClientApp\src\app\game\formation\formation.component.ts" />
     <None Remove="ClientApp\src\app\game\game\tile-node.component.ts" />
     <None Remove="ClientApp\src\app\game\mapTile\map-tile.component.ts" />
     <None Remove="ClientApp\src\app\game\model\character-stats.model.ts" />
     <None Remove="ClientApp\src\app\game\model\character.model.ts" />
+    <None Remove="ClientApp\src\app\game\model\display-entity.interface.ts" />
     <None Remove="ClientApp\src\app\game\model\entity-location.model.ts" />
     <None Remove="ClientApp\src\app\game\model\formation.model.ts" />
+    <None Remove="ClientApp\src\app\game\services\formation.factory.ts" />
     <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.css" />
     <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
     <None Remove="ClientApp\src\app\shared\auth\auth.guard.ts" />
@@ -58,6 +63,7 @@
     <None Remove="ClientApp\src\app\home\model\login-data.model.ts" />
     <None Remove="ClientApp\src\app\home\register\register.component.ts" />
     <None Remove="ClientApp\src\app\game\services\account.service.ts" />
+    <None Remove="ClientApp\src\app\shared\static\two-d-array.static.ts" />
   </ItemGroup>
 
   <ItemGroup>
@@ -73,12 +79,17 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\stat-picker.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\statSlider\stat-slider.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\StatConstants.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\displayEntity\display-entity.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\formation\formationGrid\formationNode\formation-node.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\formation\formationGrid\formation-grid.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\formation\formation.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\game\tile-node.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\character-stats.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\character.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\display-entity.interface.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\entity-location.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\formation.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\services\formation.factory.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.css" />
     <TypeScriptCompile Include="ClientApp\src\app\game\mapTile\map-tile.component.ts" />
@@ -91,6 +102,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\shared\model\user.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\home\register\register.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\shared\services\account.service.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\shared\static\two-d-array.static.ts" />
   </ItemGroup>
 
   <ItemGroup>

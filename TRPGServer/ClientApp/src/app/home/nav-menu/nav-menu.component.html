@@ -37,6 +37,11 @@
                 <img src="images/gui/startup/dungeon_sprint.png"> Create
               </a>
             </li>
+            <li [routerLinkActive]='["link-active"]'>
+              <a [routerLink]='["/formation"]' (click)='collapse()'>
+                <img src="images/gui/startup/dungeon_sprint.png"> Formation
+              </a>
+            </li>
             <li *ngIf="isAuthenticated()">
               <a [routerLink]='["/"]' (click)='logOut()'>
                 <img src="images/gui/startup/tutorial.png"> Log Out

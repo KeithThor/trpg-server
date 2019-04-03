@@ -1,0 +1,4 @@
+<div [ngClass]="getNodeState()" class="formation-node" (click)="onClick()"
+     (mouseenter)="setHoveredEntity(entity)" (mouseleave)="setHoveredEntity(null)">
+  <game-display-entity *ngIf="entity != null" [entity]="entity" [extraIcons]="getSpecialIcons(entity)"></game-display-entity>
+</div>

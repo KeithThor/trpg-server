@@ -11,7 +11,8 @@ import { StatPickerComponent } from "./statPicker/stat-picker.component";
   templateUrl: './create.component.html',
   styleUrls: [
     './create.component.css',
-    './editEntity/edit-entity.component.css'
+    './editEntity/edit-entity.component.css',
+    '../displayEntity/display-entity.component.css'
   ]
 })
 export class CreateComponent implements OnInit {

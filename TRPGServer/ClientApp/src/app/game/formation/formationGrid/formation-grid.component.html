@@ -1,0 +1,14 @@
+<div class="formation-grid">
+  <table *ngIf="formation != null">
+    <tr *ngFor="let row of formation.positions; let i = index" class="formation-row">
+      <td *ngFor="let entity of row; let j = index">
+        <game-formation-node [entity]="entity"
+                             [specialIconsFunc]="specialIconsFunc"
+                             [coordinate]="getCoordinate(i, j)"
+                             [clickHandler]="nodeClickHandler"
+                             [getNodeStateFunc]="getNodeStateFunc"
+                             [setHoveredEntityFunc]="setHoveredEntityFunc"></game-formation-node>
+      </td>
+    </tr>
+  </table>
+</div>

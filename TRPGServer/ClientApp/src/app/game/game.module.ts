@@ -22,11 +22,17 @@ import { StatPickerComponent } from "./create/statPicker/stat-picker.component";
 import { StatSliderComponent } from "./create/statPicker/statSlider/stat-slider.component";
 import { StatIconComponent } from "./create/statPicker/statSlider/statIcon/stat-icon.component";
 import { DescriptionComponent } from "./create/description/description.component";
+import { FormationComponent } from "./formation/formation.component";
+import { DisplayEntityComponent } from "./displayEntity/display-entity.component";
+import { FormationFactory } from "./services/formation.factory";
+import { FormationGridComponent } from "./formation/formationGrid/formation-grid.component";
+import { FormationNodeComponent } from "./formation/formationGrid/formationNode/formation-node.component";
 
 @NgModule({
   declarations: [
     GameComponent,
     CreateComponent,
+    FormationComponent,
     ChatboxComponent,
     MessageComponent,
     TileNodeComponent,
@@ -36,7 +42,10 @@ import { DescriptionComponent } from "./create/description/description.component
     StatPickerComponent,
     StatSliderComponent,
     StatIconComponent,
-    DescriptionComponent
+    DescriptionComponent,
+    DisplayEntityComponent,
+    FormationGridComponent,
+    FormationNodeComponent
   ],
 
   imports: [
@@ -47,7 +56,8 @@ import { DescriptionComponent } from "./create/description/description.component
     FormsModule,
     RouterModule.forChild([
       { path: 'game', component: GameComponent, canActivate: [AuthGuard] },
-      { path: 'create', component: CreateComponent, canActivate: [AuthGuard] }
+      { path: 'create', component: CreateComponent, canActivate: [AuthGuard] },
+      { path: 'formation', component: FormationComponent, canActivate: [AuthGuard] }
     ])
   ],
 
@@ -55,7 +65,8 @@ import { DescriptionComponent } from "./create/description/description.component
     WorldEntityService,
     MapService,
     GameStateService,
-    ChatService
+    ChatService,
+    FormationFactory
   ],
 
   exports: [

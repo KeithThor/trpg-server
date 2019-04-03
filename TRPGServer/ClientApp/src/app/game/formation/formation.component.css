@@ -1,0 +1,27 @@
+.formation-tab {
+  background-color: darkslategrey;
+}
+
+.entity-tab {
+  background-color: maroon;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.entity-node {
+  position: relative;
+  margin-left: 4px;
+  background-color: chocolate;
+}
+
+.node-active {
+  background-color: green;
+}
+
+.node-hovered {
+  background-color: blue;
+}

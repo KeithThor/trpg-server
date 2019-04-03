@@ -30,6 +30,11 @@ namespace TRPGGame.Entities
         public CombatEntity[][] Positions { get; set; }
 
         /// <summary>
+        /// Contains the unique identifier of the leader of this Formation.
+        /// </summary>
+        public int LeaderId { get; set; }
+
+        /// <summary>
         /// Returns a 2d array containing read-only versions of the CombatEntities who exist in the formation.
         /// </summary>
         IReadOnlyCombatEntity[][] IReadOnlyFormation.Positions => Positions;

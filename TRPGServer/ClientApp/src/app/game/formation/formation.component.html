@@ -1,3 +1,38 @@
 <div class="container">
-
+  <div class="row">
+    <div class="col-md-6">
+      <div class="formation-container">
+        <game-formation-grid *ngIf="isLoaded" [formation]="activeFormation"
+                                              [specialIconsFunc]="getExtraIcons.bind(this)"
+                                              [nodeClickHandler]="onNodeClick.bind(this)"
+                                              [getNodeStateFunc]="getNodeState.bind(this)"
+                                              [setHoveredEntityFunc]="setHoveredEntity.bind(this)"></game-formation-grid>
+      </div>
+    </div>
+    <div class="col-md-4"></div>
+    <div class="offset-md-4 col-md-2">
+      <div *ngIf="isLoaded" class="formation-tab">
+        <div *ngFor="let leader of getFormationLeaders(); let i = index">
+          <div>
+            {{formations[i].name}}
+          </div>
+          <game-display-entity [displayName]="false" [entity]="leader" (click)="selectFormation(i)"></game-display-entity>
+        </div>
+        <div class="new-formation" (click)="newFormation()">
+          <div>New Formation</div>
+          <img src="images/misc/unseen_monster.png" draggable="false" />
+        </div>
+      </div>
+      <button (click)="sendRequestAsync()">{{getButtonName()}}</button>
+    </div>
+  </div>
+  <div class="row">
+    <div *ngIf="isLoaded" class="entity-tab">
+      <div (mouseenter)="setHoveredEntity(entity)" (mouseleave)="setHoveredEntity(null)"
+           [ngClass]="getNodeState(entity)" *ngFor="let entity of entities" class="entity-node">
+        <game-display-entity [entity]="entity" [clickHandler]="selectEntity.bind(this)" [extraIcons]="getExtraIcons(entity)">
+        </game-display-entity>
+      </div>
+    </div>
+  </div>
 </div>

@@ -11,5 +11,6 @@ namespace TRPGGame.Entities
         Guid OwnerId { get; }
         IReadOnlyCombatEntity[][] Positions { get; }
         string Name { get; }
+        int LeaderId { get; }
     }
 }

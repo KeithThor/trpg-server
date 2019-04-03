@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TRPGGame.Entities;
 using TRPGGame.Managers;
+using TRPGShared;
 
 namespace TRPGGame.Services
 {
@@ -27,7 +28,7 @@ namespace TRPGGame.Services
         {
             if (template.Positions == null) return null;
             if (template.Positions.Length != GameplayConstants.MaxFormationRows) return null;
-            if (template.Positions.LongLength != GameplayConstants.MaxFormationSize) return null;
+            if (template.Positions.GetTotalSize() != GameplayConstants.MaxFormationSize) return null;
 
             var ids = new List<int>();
             foreach (var row in template.Positions)
@@ -68,7 +69,9 @@ namespace TRPGGame.Services
             {
                 Id = _id++,
                 OwnerId = template.OwnerId,
-                Positions = positions
+                Positions = positions,
+                LeaderId = template.LeaderId,
+                Name = template.Name
             };
         }
     }

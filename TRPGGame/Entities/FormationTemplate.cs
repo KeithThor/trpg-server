@@ -28,5 +28,10 @@ namespace TRPGGame.Entities
         /// The name to give the newly created formation.
         /// </summary>
         public string Name { get; set; }
+
+        /// <summary>
+        /// Contains the unique identifier of the leader of the Formation.
+        /// </summary>
+        public int LeaderId { get; set; }
     }
 }
