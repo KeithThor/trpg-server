@@ -4,7 +4,7 @@ using System.Text;
 
 namespace TRPGGame.Entities.Data
 {
-    public class CharacterStats
+    public class CharacterStats : IReadOnlyCharacterStats
     {
         public int Strength { get; set; }
         public int Dexterity { get; set; }

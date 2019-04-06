@@ -1,9 +1,19 @@
 export class CharacterStats {
-  public strength: number;
-  public dexterity: number;
-  public agility: number;
-  public intelligence: number;
-  public constitution: number;
+  public strength: number = 0;
+  public dexterity: number = 0;
+  public agility: number = 0;
+  public intelligence: number = 0;
+  public constitution: number = 0;
+
+  public static asArray(stats: CharacterStats): number[] {
+    return [
+      stats.strength,
+      stats.dexterity,
+      stats.agility,
+      stats.intelligence,
+      stats.constitution
+    ];
+  }
 
   /**
    * Retrieves the value of a stat given the name of the stat.

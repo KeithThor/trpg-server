@@ -45,6 +45,25 @@ namespace TRPGGame.Entities
         /// </summary>
         public CharacterStats Stats { get; set; }
 
+        /// <summary>
+        /// Represents a character's in-game secondary stats.
+        /// </summary>
+        public SecondaryStat SecondaryStats { get; set; }
+
+        /// <summary>
+        /// Contains all of the attacks, spells, and skills this character can use.
+        /// </summary>
+        public List<Ability> Abilities { get; set; }
+
+        /// <summary>
+        /// Contains all of the status effects that are affecting this character.
+        /// </summary>
+        public List<StatusEffect> StatusEffects { get; set; }
+
         IReadOnlyCharacterIconSet IReadOnlyCombatEntity.IconUris => IconUris;
+        IReadOnlyCharacterStats IReadOnlyCombatEntity.Stats => Stats;
+        IEnumerable<Ability> IReadOnlyCombatEntity.Abilities => Abilities;
+        IEnumerable<StatusEffect> IReadOnlyCombatEntity.StatusEffects => StatusEffects;
+        IReadOnlySecondaryStat IReadOnlyCombatEntity.SecondaryStats => SecondaryStats;
     }
 }

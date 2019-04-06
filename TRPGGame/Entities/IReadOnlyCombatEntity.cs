@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using TRPGGame.Entities.Data;
 
 namespace TRPGGame.Entities
@@ -8,11 +9,54 @@ namespace TRPGGame.Entities
     /// </summary>
     public interface IReadOnlyCombatEntity
     {
+        /// <summary>
+        /// The unique identifier for the combat group this entity belongs to. Can be null.
+        /// </summary>
         int? GroupId { get; }
+
+        /// <summary>
+        /// The uris that point to the icons that make up the appearance of this entity. Does not include equipment uris.
+        /// </summary>
         IReadOnlyCharacterIconSet IconUris { get; }
+
+        /// <summary>
+        /// The unique identifier for this entity.
+        /// </summary>
         int Id { get; }
+
+        /// <summary>
+        /// The display name of this entity.
+        /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// The guid that represents the player who owns this entity.
+        /// </summary>
         Guid OwnerId { get; }
+
+        /// <summary>
+        /// The display name of the owner of this entity.
+        /// </summary>
         string OwnerName { get; }
+
+        /// <summary>
+        /// Represents the character's in-game stats that determine combat efficiency.
+        /// </summary>
+        IReadOnlyCharacterStats Stats { get; }
+
+        /// <summary>
+        /// Represents a character's in-game secondary stats.
+        /// </summary>
+        IReadOnlySecondaryStat SecondaryStats { get; }
+
+        /// <summary>
+        /// Contains all of the attacks, spells, and skills this character can use.
+        /// </summary>
+        IEnumerable<Ability> Abilities { get; }
+
+        /// <summary>
+        /// Contains all of the status effects that are affecting this character.
+        /// </summary>
+        IEnumerable<StatusEffect> StatusEffects { get; }
     }
 }

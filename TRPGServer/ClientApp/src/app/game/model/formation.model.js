@@ -20,6 +20,8 @@ var FormationConstants = /** @class */ (function () {
         [4, 5, 6],
         [7, 8, 9]
     ];
+    FormationConstants.maxColumns = 3;
+    FormationConstants.maxRows = 3;
     return FormationConstants;
 }());
 exports.FormationConstants = FormationConstants;

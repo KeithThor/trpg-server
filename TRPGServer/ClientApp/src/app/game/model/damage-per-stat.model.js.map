@@ -1,0 +1,1 @@
+{"version":3,"file":"damage-per-stat.model.js","sourceRoot":"","sources":["damage-per-stat.model.ts"],"names":[],"mappings":";;AAEA;IAAA;IAgBA,CAAC;IATe,qBAAO,GAArB,UAAsB,aAA4B;QAChD,OAAO;YACL,aAAa,CAAC,QAAQ;YACtB,aAAa,CAAC,SAAS;YACvB,aAAa,CAAC,OAAO;YACrB,aAAa,CAAC,YAAY;YAC1B,aAAa,CAAC,YAAY;SAC3B,CAAC;IACJ,CAAC;IACH,oBAAC;AAAD,CAAC,AAhBD,IAgBC;AAhBY,sCAAa"}

@@ -2,7 +2,25 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 var CharacterStats = /** @class */ (function () {
     function CharacterStats() {
+        this.strength = 0;
+        this.dexterity = 0;
+        this.agility = 0;
+        this.intelligence = 0;
+        this.constitution = 0;
     }
+    CharacterStats.asArray = function (stats) {
+        return [
+            stats.strength,
+            stats.dexterity,
+            stats.agility,
+            stats.intelligence,
+            stats.constitution
+        ];
+    };
+    /**
+     * Retrieves the value of a stat given the name of the stat.
+     * @param statName The name of the stat to retrieve.
+     */
     CharacterStats.prototype.getStat = function (statName) {
         switch (statName) {
             case StatNames.strength:

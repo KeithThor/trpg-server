@@ -22,4 +22,5 @@ export class FormationConstants {
   ];
   public static readonly maxColumns: number = 3;
   public static readonly maxRows: number = 3;
+  public static readonly maxFormationSize: number = 9;
 }
