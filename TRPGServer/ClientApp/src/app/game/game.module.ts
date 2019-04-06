@@ -27,6 +27,12 @@ import { DisplayEntityComponent } from "./displayEntity/display-entity.component
 import { FormationFactory } from "./services/formation.factory";
 import { FormationGridComponent } from "./formation/formationGrid/formation-grid.component";
 import { FormationNodeComponent } from "./formation/formationGrid/formationNode/formation-node.component";
+import { IconDisplayComponent } from "./iconDisplay/icon-display.component";
+import { CombatPanelComponent } from "./combatPanel/combat-panel.component";
+import { AbilityPanelComponent } from "./combatPanel/abilityPanel/ability-panel.component";
+import { CategoryPanelComponent } from "./combatPanel/categoryPanel/category-panel.component";
+import { DescriptionPanelComponent } from "./combatPanel/descriptionPanel/description-panel.component";
+import { TargetsGridComponent } from "./combatPanel/descriptionPanel/targetsGrid/targets-grid.component";
 
 @NgModule({
   declarations: [
@@ -45,7 +51,13 @@ import { FormationNodeComponent } from "./formation/formationGrid/formationNode/
     DescriptionComponent,
     DisplayEntityComponent,
     FormationGridComponent,
-    FormationNodeComponent
+    FormationNodeComponent,
+    IconDisplayComponent,
+    CombatPanelComponent,
+    AbilityPanelComponent,
+    CategoryPanelComponent,
+    DescriptionPanelComponent,
+    TargetsGridComponent
   ],
 
   imports: [

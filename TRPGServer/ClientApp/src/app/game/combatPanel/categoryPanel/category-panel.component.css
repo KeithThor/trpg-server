@@ -1,0 +1,24 @@
+.category-panel {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  background-color: black;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+}
+
+.panel-button {
+  width: 50%;
+  float: left;
+  background-color: dimgray;
+  border-radius: 4px;
+  color: cornsilk;
+  position: relative;
+}
+
+.panel-button:hover {
+  border-color: cyan;
+  color: white;
+}

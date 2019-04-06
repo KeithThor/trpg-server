@@ -1,0 +1,9 @@
+.pane {
+  background-color: bisque;
+  border-radius: 5px;
+  margin: 5px;
+}
+
+.icon-container {
+  position: relative;
+}

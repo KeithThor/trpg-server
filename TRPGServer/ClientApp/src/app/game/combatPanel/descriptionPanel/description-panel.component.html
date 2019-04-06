@@ -1,0 +1,182 @@
+<div class="description-panel">
+
+  <!--Command descriptions-->
+  <div *ngIf="getActiveObjectName() === 'command'">
+    <div *ngIf="getDisplayCommand() === 'Attack'">
+      Attacks are a mostly physical means of dealing damage to your enemies.
+      They cost no resources to perform and usually cost less action points to
+      perform than other actions. Different attacks are available for different
+      weapons.
+    </div>
+    <div *ngIf="getDisplayCommand() === 'Defend'">
+      Defending allows one character to pass its turn over to other characters
+      who have more than 0 action points. It also significantly reduces the
+      damage the defending character will take when hit.
+
+      A defending character cannot receive a free turn from another character
+      who defends.
+    </div>
+    <div *ngIf="getDisplayCommand() === 'Spells'">
+      Spells are magical means of dealing damage and applying status effects.
+      They usually cost mana to cast and are usually higher in action point cost
+      than other actions.
+
+      A character will not be able to cast spells if silenced.
+    </div>
+    <div *ngIf="getDisplayCommand() === 'Skills'">
+      Skills are special physical actions your character can perform to deal damage
+      or apply status effects. They don&#39;t cost any mana to perform, although they
+      cost more action points to use than Attacks.
+
+      Unlike Spells, a character can still use skills if silenced.
+    </div>
+    <div *ngIf="getDisplayCommand() === 'Items'">
+      A character can use consumable items and any equipment it has equipped that can
+      be activated here.
+    </div>
+    <div *ngIf="getDisplayCommand() === 'Flee'">
+      You can use up this character&#39;s turn to attempt to flee combat after your
+      enemy&#39;s turn. Every character set to flee will increase your chances of
+      fleeing combat by 20%.
+
+      If a fleeing character is stunned, it will reduce your chances of fleeing by
+      20%.
+    </div>
+  </div>
+
+  <!--Category descriptions-->
+  <div *ngIf="getActiveObjectName() === 'category'">
+    <h4 class="icon-container">
+      {{getDisplayCategory().name}}
+      <game-icon-display [iconUris]="getDisplayCategory().iconUris"></game-icon-display>
+    </h4>
+    <div class="description">
+      {{getDisplayCategory().description}}
+    </div>
+  </div>
+
+  <!--Ability descriptions-->
+  <div *ngIf="getActiveObjectName() === 'ability'">
+    <h4 class="icon-container">
+      {{getDisplayAbility().name}}
+      <game-icon-display [iconUris]="getDisplayAbility().iconUris"></game-icon-display>
+    </h4>
+
+    <!--Costs pane-->
+    <div class="pane">
+      <ul>
+        <li *ngIf="notNullOrZero(getDisplayAbility().healthCost)">
+          Health Cost: <span class="health">{{getDisplayAbility().healthCost}}</span>
+        </li>
+        <li *ngIf="notNullOrZero(getDisplayAbility().healthPercentCost)">
+          Max Health % Cost: <span class="health">{{getDisplayAbility().healthPercentCost}}</span>%
+        </li>
+        <li *ngIf="notNullOrZero(getDisplayAbility().manaCost)">
+          Mana Cost: <span class="mana">{{getDisplayAbility().manaCost}}</span>
+        </li>
+        <li *ngIf="notNullOrZero(getDisplayAbility().manaPercentCost)">
+          Max Mana % Cost: <span class="mana">{{getDisplayAbility().manaPercentCost}}</span>%
+        </li>
+        <li *ngIf="notNullOrZero(getDisplayAbility().actionPointCost)">
+          Action Point Cost: <span class="action-point">{{getDisplayAbility().actionPointCost}}</span>
+        </li>
+      </ul>
+    </div>
+
+    <!--Description pane-->
+    <div class="description pane">
+      {{getDisplayAbility().description}}
+    </div>
+
+    <!--Targets pane-->
+    <div class="pane">
+      <game-targets-grid [ability]="getDisplayAbility()"></game-targets-grid>
+    </div>
+
+    <!--Targets information pane-->
+    <ul class="pane">
+      <li *ngIf="getDisplayAbility().isPointBlank">Is performed using this character as the target.</li>
+      <li *ngIf="getDisplayAbility().isPositionStatic">Cannot move the target position of this ability.</li>
+      <li *ngIf="getDisplayAbility().canTargetBeBlocked || getDisplayAbility().isPointBlank || getDisplayAbility().isPositionStatic; else cantBeBlocked">
+        You cannot target enemies hiding behind other enemy characters with this ability.
+      </li>
+      <ng-template #cantBeBlocked>
+        <li>You can target any position in any formation with this ability.</li>
+      </ng-template>
+    </ul>
+
+    <!--Damage pane-->
+    <ul class="pane" *ngIf="notNullOrZero(getDamage())">
+      <li *ngIf="notNullOrZero(getDamage().blunt)">
+        {{getDamage().blunt}} <span class="blunt">Blunt Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDamage().sharp)">
+        {{getDamage().sharp}} <span class="sharp">Sharp Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDamage().fire)">
+        {{getDamage().fire}} <span class="fire">Fire Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDamage().frost)">
+        {{getDamage().frost}} <span class="frost">Frost Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDamage().lightning)">
+        {{getDamage().lightning}} <span class="lightning">Lightning Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDamage().earth)">
+        {{getDamage().earth}} <span class="earth">Earth Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDamage().holy)">
+        {{getDamage().holy}} <span class="holy">Holy Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDamage().shadow)">
+        {{getDamage().shadow}} <span class="shadow">Shadow Damage</span>
+      </li>
+    </ul>
+
+    <!--Damage as Percentage pane-->
+    <ul class="pane" *ngIf="notNullOrZero(getDisplayAbility().percentDamage)">
+      <li *ngIf="notNullOrZero(getDisplayAbility().percentDamage.blunt)">
+        {{getDisplayAbility().percentDamage.blunt}}% max health as <span class="blunt">Blunt Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDisplayAbility().percentDamage.sharp)">
+        {{getDisplayAbility().percentDamage.sharp}}% max health as <span class="sharp">Sharp Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDisplayAbility().percentDamage.fire)">
+        {{getDisplayAbility().percentDamage.fire}}% max health as <span class="fire">Fire Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDisplayAbility().percentDamage.frost)">
+        {{getDisplayAbility().percentDamage.frost}}% max health as <span class="frost">Frost Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDisplayAbility().percentDamage.lightning)">
+        {{getDisplayAbility().percentDamage.lightning}}% max health as <span class="lightning">Lightning Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDisplayAbility().percentDamage.earth)">
+        {{getDisplayAbility().percentDamage.earth}}% max health as <span class="earth">Earth Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDisplayAbility().percentDamage.holy)">
+        {{getDisplayAbility().percentDamage.holy}}% max health as <span class="holy">Holy Damage</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDisplayAbility().percentDamage.shadow)">
+        {{getDisplayAbility().percentDamage.shadow}}% max health as <span class="shadow">Shadow Damage</span>
+      </li>
+    </ul>
+
+    <!--Healing panel-->
+    <ul class="pane">
+      <li *ngIf="notNullOrZero(getHealing())">
+        Heals {{getHealing()}} <span class="health">Health</span>
+      </li>
+      <li *ngIf="notNullOrZero(getDisplayAbility().percentHeal)">
+        Heals {{getDisplayAbility().percentHeal}}% of <span class="health">Max Health</span>
+      </li>
+    </ul>
+
+    <!--Status effects panel-->
+    <div class="pane applied-status-effects">
+
+    </div>
+    <div class="pane self-status-effects">
+
+    </div>
+  </div>
+</div>

@@ -1,0 +1,10 @@
+<div class="category-panel container">
+  <div class="panel-button"
+          *ngFor="let category of categories"
+          (click)="onClick(category)"
+          (mouseenter)="onMouseEnter(category)"
+          (mouseleave)="onMouseLeave(category)">
+    <game-icon-display [iconUris]="category.iconUris"></game-icon-display>
+    {{category.name}}
+  </div>
+</div>

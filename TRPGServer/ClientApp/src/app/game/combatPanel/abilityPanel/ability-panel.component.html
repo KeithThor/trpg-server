@@ -1,0 +1,10 @@
+<div class="ability-panel container">
+  <div class="panel-button"
+          *ngFor="let ability of abilities"
+          (click)="onClick(ability)"
+          (mouseenter)="onMouseEnter(ability)"
+          (mouseleave)="onMouseLeave(ability)">
+      <game-icon-display [iconUris]="ability.iconUris"></game-icon-display>
+    {{ability.name}}
+  </div>
+</div>

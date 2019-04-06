@@ -28,6 +28,7 @@
   </div>
   <div class="row">
     <div *ngIf="isLoaded" class="entity-tab">
+      <game-combat-panel [activeEntity]="selectedEntity"></game-combat-panel>
       <div (mouseenter)="setHoveredEntity(entity)" (mouseleave)="setHoveredEntity(null)"
            [ngClass]="getNodeState(entity)" *ngFor="let entity of entities" class="entity-node">
         <game-display-entity [entity]="entity" [clickHandler]="selectEntity.bind(this)" [extraIcons]="getExtraIcons(entity)">

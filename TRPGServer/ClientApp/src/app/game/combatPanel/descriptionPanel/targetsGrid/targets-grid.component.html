@@ -1,0 +1,11 @@
+<div>
+  <h5>Targets</h5>
+  <div>
+    <div *ngFor="let formationIndex of getFormationLimitAsArray()">
+      <div class="grid-row" *ngFor="let row of getPositions()">
+        <div class="grid-node" [ngClass]="getStyleForPosition(getPosition(formationIndex, position))" *ngFor="let position of row">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

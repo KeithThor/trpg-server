@@ -1,13 +1,3 @@
-.icon {
-  position: absolute;
-  margin-left: auto;
-  margin-right: auto;
-  left: 0;
-  right: 0;
-  height: 32px;
-  width: 32px;
-}
-
 .icon-label {
   text-align: center;
   word-wrap: hyphenate;
@@ -16,8 +6,4 @@
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
-}
-
-.icon-container {
-  height: 40px;
 }

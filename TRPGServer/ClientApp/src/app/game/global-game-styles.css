@@ -1,0 +1,43 @@
+.health {
+  color: #ba0000;
+}
+
+.mana {
+  color: #030072;
+}
+
+.action-point {
+  color: #05890c;
+}
+
+.blunt {
+  color: #b7b7b7;
+}
+
+.sharp {
+  color: #e5e5e5;
+}
+
+.fire {
+  color: #db0000;
+}
+
+.frost {
+  color: #4ee0d1;
+}
+
+.lightning {
+  color: #c1b207;
+}
+
+.earth {
+  color: #007703;
+}
+
+.holy {
+  color: #f7c759;
+}
+
+.shadow {
+  color: #540043;
+}

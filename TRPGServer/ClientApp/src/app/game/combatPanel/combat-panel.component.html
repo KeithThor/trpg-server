@@ -1,0 +1,39 @@
+<div class="container combat-panel">
+  <div class="row">
+    <div class="col-md-4" id="command-panel">
+      <h4>Commands</h4>
+      <button *ngFor="let command of getCommands()"
+              (click)="onCommandClick(command)"
+              (mouseenter)="onMouseEnterCommand(command)"
+              (mouseleave)="onMouseLeaveCommand(command)">
+        {{command}}
+      </button>
+    </div>
+    <div *ngIf="inActionPanel; else categoryPanel" class="col-md-4" id="ability-panel">
+      <h4>Abilities</h4>
+      <game-ability-panel [abilities]="getAbilities()"
+                          [clickHandler]="onAbilityClick.bind(this)"
+                          [mouseEnterHandler]="onMouseEnterAbility.bind(this)"
+                          [mouseLeaveHandler]="onMouseLeaveAbility.bind(this)"></game-ability-panel>
+    </div>
+    <ng-template #categoryPanel>
+      <div class="col-md-4" id="category-panel">
+        <h4>Categories</h4>
+        <game-category-panel [categories]="getCategories()"
+                             [clickHandler]="onCategoryClick.bind(this)"
+                             [mouseEnterHandler]="onMouseEnterCategory.bind(this)"
+                             [mouseLeaveHandler]="onMouseLeaveCategory.bind(this)"></game-category-panel>
+      </div>
+    </ng-template>
+    <div class="col-md-4" id="description-panel">
+      <h4>Description</h4>
+      <game-description-panel [activeEntity]="activeEntity"
+                              [activeCommand]="activeCommand"
+                              [activeAbility]="activeAbility"
+                              [activeCategory]="activeCategory"
+                              [hoveredCommand]="hoveredCommand"
+                              [hoveredAbility]="hoveredAbility"
+                              [hoveredCategory]="hoveredCategory"></game-description-panel>
+    </div>
+  </div>
+</div>

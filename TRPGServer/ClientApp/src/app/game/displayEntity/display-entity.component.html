@@ -2,8 +2,5 @@
   <div *ngIf="displayName" class="icon-label">
     {{entity.name}}
   </div>
-  <div class="icon-container">
-    <img class="icon" *ngFor="let iconUri of getIconArray()" src="{{iconUri}}" draggable="false" />
-    <img class="icon" *ngFor="let uri of extraIcons" src="{{uri}}" draggable="false"/>
-  </div>
+  <game-icon-display [iconUris]="getIconArray()"></game-icon-display>
 </div>

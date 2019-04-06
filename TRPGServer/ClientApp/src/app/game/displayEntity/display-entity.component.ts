@@ -19,7 +19,9 @@ export class DisplayEntityComponent {
   @Input() extraIcons: string[];
 
   public getIconArray(): string[] {
-    return CharacterIconSet.asArray(this.entity.iconUris);
+    let arr = CharacterIconSet.asArray(this.entity.iconUris);
+    if (this.extraIcons != null) arr.concat(this.extraIcons);
+    return arr;
   }
 
   public onClick(): void {
