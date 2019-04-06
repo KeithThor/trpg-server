@@ -1,0 +1,26 @@
+[
+    {
+        "id": 1,
+        "name": "Burning",
+        "description": "This character is on fire and will take fire damage every turn.",
+        "iconUris": [
+            "images/gui/spells/fire/conjure_flame_old.png"
+        ],
+        "duration": 2,
+        "stackSize": 1,
+        "isDebuff": true,
+        "damagePerTurn": {
+            "fire": 5
+        },
+        "damagePerStatPerTurn": {
+            "intelligence": {
+                "fire": 1
+            }
+        },
+        "modifiedSecondaryStats": {
+            "armorPercentage": {
+                "fire": -15
+            }
+        }
+    }
+]

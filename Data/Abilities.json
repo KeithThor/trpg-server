@@ -1,0 +1,109 @@
+[
+  {
+    "id": 1,
+    "name": "Punch",
+    "abilityPointCost": 20,
+    "description": "Swing at your target with your fists.",
+    "iconUris": [
+      "images/gui/spells/components/hand_4.png"
+    ],
+    "categoryId": 1,
+    "targets": [ 5 ],
+    "centerOfTargets": 5,
+    "isPointBlank": false,
+    "isPositionStatic": false,
+    "canTargetBeBlocked": true,
+    "damagePerStat": {
+      "strength": {
+        "blunt": 1
+      }
+    }
+  },
+  {
+    "id": 2,
+    "name": "Wide Slice",
+    "abilityPointCost": 50,
+    "description": "Swings wide with your weapon, hitting a row of targets.",
+    "iconUris": [
+      "images/gui/spells/translocation/portal_projectile_old.png"
+    ],
+    "categoryId": 1,
+    "targets": [ 2, 5, 8 ],
+    "centerOfTargets": 5,
+    "isPointBlank": false,
+    "isPositionStatic": false,
+    "canTargetBeBlocked": true,
+    "damagePerStat": {
+      "strength": {
+        "blunt": 2
+      },
+      "dexterity": {
+        "sharp": 2
+      }
+    }
+  },
+  {
+    "id": 3,
+    "name": "Fireball",
+    "abilityPointCost": 40,
+    "manaCost": 40,
+    "isSpell": true,
+    "description": "Unleashes a large ball of fire into the ranks of your enemies.",
+    "iconUris": [
+      "images/gui/spells/fire/fireball_old.png"
+    ],
+    "categoryId": 2,
+    "targets": [ 2, 4, 5, 6, 8 ],
+    "centerOfTargets": 5,
+    "isPointBlank": false,
+    "isPositionStatic": false,
+    "canTargetBeBlocked": false,
+    "damage": {
+      "fire": 15
+    },
+    "damagePerStat": {
+      "intelligence": {
+        "fire": 3
+      }
+    },
+    "appliedStatusEffectIds": [ 1 ]
+  },
+  {
+    "id": 4,
+    "name": "Heal Wave",
+    "abilityPointCost": 40,
+    "manaCost": 40,
+    "isSpell": true,
+    "description": "Releases a wave of healing energies to any allies standing adjacent to you.",
+    "iconUris": [
+      "images/gui/spells/necromancy/symbol_of_torment_old.png"
+    ],
+    "categoryId": 3,
+    "targets": [ 2, 4, 5, 6, 8 ],
+    "centerOfTargets": 5,
+    "isPointBlank": true,
+    "isPositionStatic": true,
+    "canTargetBeBlocked": false,
+    "heal": 30,
+    "healPerStat": {
+      "intelligence": 2
+    }
+  },
+  {
+    "id": 5,
+    "name": "Recuperate",
+    "abilityPointCost": 40,
+    "isSkill": true,
+    "description": "Spend the turn recovering your lost health.",
+    "iconUris": [
+      "images/gui/spells/components/person_2.png"
+    ],
+    "categoryId": 4,
+    "targets": [ 5 ],
+    "centerOfTargets": 5,
+    "isPointBlank": true,
+    "isPositionStatic": true,
+    "canTargetBeBlocked": false,
+    "percentHeal": 25
+  }
+]

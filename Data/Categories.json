@@ -1,0 +1,38 @@
+[
+  {
+    "id": 1,
+    "name": "Attacks",
+    "description": "Attacks should not have their categories displayed.",
+    "iconUris": [
+      "images/gui/skills/enabled-base.png",
+      "images/gui/skills/long_blades.png"
+    ]
+  },
+  {
+    "id": 2,
+    "name": "Fire Spells",
+    "description": "Fire spells are destructive in nature, with high damage and nasty debuffs.",
+    "iconUris": [
+      "images/gui/skills/enabled-base.png",
+      "images/gui/skills/fire_magic.png"
+    ]
+  },
+  {
+    "id": 3,
+    "name": "Healing Spells",
+    "description": "Healing spells provide an assortment of spells that restore health to your party whether over time or immediately.",
+    "iconUris": [
+      "images/gui/skills/enabled-base.png",
+      "images/gui/skills/invocations.png"
+    ]
+  },
+  {
+    "id": 4,
+    "name": "Fighter Skills",
+    "description": "Fighter skills provide various means of dealing damage and abilities that help you prolong a fight.",
+    "iconUris": [
+      "images/gui/skills/enabled-base.png",
+      "images/gui/skills/fighting.png"
+    ]
+  }
+]

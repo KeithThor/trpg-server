@@ -13,12 +13,15 @@ namespace TRPGGame.Services
     {
         private readonly IRepository<CharacterBase> _characterBaseRepo;
         private readonly IRepository<CharacterHair> _characterHairRepo;
+        private readonly IRepository<Ability> _abilityRepo;
 
         public CombatEntityFactory(IRepository<CharacterBase> characterBaseRepo,
-                                   IRepository<CharacterHair> characterHairRepo)
+                                   IRepository<CharacterHair> characterHairRepo,
+                                   IRepository<Ability> abilityRepo)
         {
             _characterBaseRepo = characterBaseRepo;
             _characterHairRepo = characterHairRepo;
+            _abilityRepo = abilityRepo;
         }
 
         private static int _id = 0;
@@ -33,6 +36,7 @@ namespace TRPGGame.Services
             if (!await IsValidTemplateAsync(template)) return null;
             var hairData = await _characterHairRepo.GetDataAsync();
             var baseData = await _characterBaseRepo.GetDataAsync();
+            var abilities = await _abilityRepo.GetDataAsync();
             CharacterIconSet iconUris;
 
             try
@@ -54,6 +58,7 @@ namespace TRPGGame.Services
                 return null;
             }
 
+            // Todo: Calculate secondary stats
             var character = new CombatEntity
             {
                 Id = _id++,
@@ -62,7 +67,10 @@ namespace TRPGGame.Services
                 IconUris = iconUris,
                 GroupId = template.GroupId,
                 OwnerName = template.OwnerName,
-                Stats = template.AllocatedStats
+                Stats = template.AllocatedStats,
+                Abilities = abilities.ToList(),
+                SecondaryStats = new SecondaryStat(),
+                StatusEffects = new List<StatusEffect>()
             };
             
             // Todo: Add to dbset here after creating EFCore migration
@@ -106,6 +114,8 @@ namespace TRPGGame.Services
             modifiedEntity.OwnerId = entity.OwnerId;
             modifiedEntity.OwnerName = entity.OwnerName;
             modifiedEntity.Stats = template.AllocatedStats;
+            modifiedEntity.SecondaryStats = entity.SecondaryStats;
+            modifiedEntity.Abilities = entity.Abilities;
 
             return modifiedEntity;
         }

@@ -45,6 +45,9 @@ namespace TRPGGame
             containerBuilder.RegisterType<FormationFactory>();
             containerBuilder.RegisterType<CombatEntityFactory>();
             containerBuilder.RegisterType<WorldEntityFactory>();
+            containerBuilder.RegisterType<CategoryRepository>().As<IRepository<Category>>();
+            containerBuilder.RegisterType<StatusEffectRepository>().As<IRepository<StatusEffect>>();
+            containerBuilder.RegisterType<AbilityRepository>().As<IRepository<Ability>>();
         }
 
         /// <summary>
