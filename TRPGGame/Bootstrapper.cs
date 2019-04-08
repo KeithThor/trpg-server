@@ -48,6 +48,8 @@ namespace TRPGGame
             containerBuilder.RegisterType<CategoryRepository>().As<IRepository<Category>>();
             containerBuilder.RegisterType<StatusEffectRepository>().As<IRepository<StatusEffect>>();
             containerBuilder.RegisterType<AbilityRepository>().As<IRepository<Ability>>();
+            containerBuilder.RegisterType<ItemTypeRepository>().As<IRepository<ItemType>>();
+            containerBuilder.RegisterType<ItemRepository>().As<IRepository<Item>>();
         }
 
         /// <summary>
