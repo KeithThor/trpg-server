@@ -22,6 +22,7 @@ var FormationConstants = /** @class */ (function () {
     ];
     FormationConstants.maxColumns = 3;
     FormationConstants.maxRows = 3;
+    FormationConstants.maxFormationSize = 9;
     return FormationConstants;
 }());
 exports.FormationConstants = FormationConstants;

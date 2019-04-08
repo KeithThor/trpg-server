@@ -4,7 +4,7 @@
       <td *ngFor="let entity of row; let j = index">
         <game-formation-node [entity]="entity"
                              [specialIconsFunc]="specialIconsFunc"
-                             [coordinate]="getCoordinate(i, j)"
+                             [coordinate]="getCoordinate(j, i)"
                              [clickHandler]="nodeClickHandler"
                              [getNodeStateFunc]="getNodeStateFunc"
                              [setHoveredEntityFunc]="setHoveredEntityFunc"></game-formation-node>

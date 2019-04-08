@@ -64,6 +64,7 @@
     <None Remove="ClientApp\src\app\game\model\formation.model.ts" />
     <None Remove="ClientApp\src\app\game\model\secondary-stat.model.ts" />
     <None Remove="ClientApp\src\app\game\model\status-effect.model.ts" />
+    <None Remove="ClientApp\src\app\game\services\formation-targeter.static.ts" />
     <None Remove="ClientApp\src\app\game\services\formation.factory.ts" />
     <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.css" />
     <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
@@ -115,6 +116,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\model\formation.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\secondary-stat.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\status-effect.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\services\formation-targeter.static.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\services\formation.factory.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.css" />

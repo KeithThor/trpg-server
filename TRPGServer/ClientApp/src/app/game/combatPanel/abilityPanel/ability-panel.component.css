@@ -6,7 +6,7 @@
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .panel-button {

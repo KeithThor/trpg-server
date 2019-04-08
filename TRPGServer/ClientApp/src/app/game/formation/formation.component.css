@@ -18,6 +18,12 @@
   background-color: chocolate;
 }
 
+.leader-icon {
+  position: relative;
+  display: inline-block;
+  background-color: black;
+}
+
 .node-active {
   background-color: green;
 }

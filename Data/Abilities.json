@@ -105,5 +105,31 @@
     "isPositionStatic": true,
     "canTargetBeBlocked": false,
     "percentHeal": 25
+  },
+  {
+    "id": 6,
+    "name": "Fire Column",
+    "abilityPointCost": 40,
+    "manaCost": 30,
+    "isSpell": true,
+    "description": "Unleashes a column of fire outwards from your hands that scorches your enemies.",
+    "iconUris": [
+      "images/gui/spells/fire/bolt_of_fire_new.png"
+    ],
+    "categoryId": 2,
+    "targets": [ 1, 2 ,3 ],
+    "centerOfTargets": 1,
+    "isPointBlank": false,
+    "isPositionStatic": false,
+    "canTargetBeBlocked": false,
+    "damage": {
+      "fire": 15
+    },
+    "damagePerStat": {
+      "intelligence": {
+        "fire": 3
+      }
+    },
+    "appliedStatusEffectIds": [ 1 ]
   }
 ]

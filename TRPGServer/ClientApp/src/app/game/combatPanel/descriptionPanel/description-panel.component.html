@@ -83,28 +83,6 @@
       </ul>
     </div>
 
-    <!--Description pane-->
-    <div class="description pane">
-      {{getDisplayAbility().description}}
-    </div>
-
-    <!--Targets pane-->
-    <div class="pane">
-      <game-targets-grid [ability]="getDisplayAbility()"></game-targets-grid>
-    </div>
-
-    <!--Targets information pane-->
-    <ul class="pane">
-      <li *ngIf="getDisplayAbility().isPointBlank">Is performed using this character as the target.</li>
-      <li *ngIf="getDisplayAbility().isPositionStatic">Cannot move the target position of this ability.</li>
-      <li *ngIf="getDisplayAbility().canTargetBeBlocked || getDisplayAbility().isPointBlank || getDisplayAbility().isPositionStatic; else cantBeBlocked">
-        You cannot target enemies hiding behind other enemy characters with this ability.
-      </li>
-      <ng-template #cantBeBlocked>
-        <li>You can target any position in any formation with this ability.</li>
-      </ng-template>
-    </ul>
-
     <!--Damage pane-->
     <ul class="pane" *ngIf="notNullOrZero(getDamage())">
       <li *ngIf="notNullOrZero(getDamage().blunt)">
@@ -171,9 +149,31 @@
       </li>
     </ul>
 
+    <!--Description pane-->
+    <div class="description pane">
+      {{getDisplayAbility().description}}
+    </div>
+
+    <!--Targets pane-->
+    <div class="pane">
+      <game-targets-grid [ability]="getDisplayAbility()" [entityPosition]="activeEntityPosition"></game-targets-grid>
+    </div>
+
+    <!--Targets information pane-->
+    <ul class="pane">
+      <li *ngIf="getDisplayAbility().isPointBlank">Is performed using this character as the target.</li>
+      <li *ngIf="getDisplayAbility().isPositionStatic">Cannot move the target position of this ability.</li>
+      <li *ngIf="getDisplayAbility().canTargetBeBlocked || getDisplayAbility().isPointBlank || getDisplayAbility().isPositionStatic; else cantBeBlocked">
+        You cannot target enemies hiding behind other enemy characters with this ability.
+      </li>
+      <ng-template #cantBeBlocked>
+        <li>You can target any position in any formation with this ability.</li>
+      </ng-template>
+    </ul>
+
     <!--Status effects panel-->
     <div class="pane applied-status-effects">
-
+      
     </div>
     <div class="pane self-status-effects">
 

@@ -93,8 +93,8 @@ export class TwoDArray<T> {
         let j = 0;
         while (!found && j < array[i].length) {
           if (array[i][j] != null && predicate(array[i][j])) {
-            indeces.push(i);
             indeces.push(j);
+            indeces.push(i);
             found = true;
           }
           j++;

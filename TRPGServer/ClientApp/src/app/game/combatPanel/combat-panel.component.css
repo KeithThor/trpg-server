@@ -1,5 +1,16 @@
 .combat-panel {
   background-color: #3f4a5b;
   border-radius: 8px;
-  color: #282828;
+  color: #131416;
+}
+
+.command-button {
+  display: block;
+  width: 100%;
+  margin: 3px;
+}
+
+.panel-header {
+  text-align: center;
+  color: black;
 }

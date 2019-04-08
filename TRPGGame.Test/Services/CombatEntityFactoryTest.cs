@@ -17,7 +17,8 @@ namespace TRPGGame.Test.Services
         public CombatEntityFactoryTest()
         {
             _combatEntityFactory = new CombatEntityFactory(new CharacterBaseRepoStub(),
-                                                           new CharacterHairRepoStub());
+                                                           new CharacterHairRepoStub(),
+                                                           new AbilityRepoStub());
         }
 
         [Theory]
@@ -555,6 +556,19 @@ namespace TRPGGame.Test.Services
                 };
 
                 return hair;
+            });
+        }
+    }
+
+    public class AbilityRepoStub : IRepository<Ability>
+    {
+        public Task<IEnumerable<Ability>> GetDataAsync()
+        {
+            return Task.Run(() =>
+            {
+                IEnumerable<Ability> abilities = new List<Ability>();
+
+                return abilities;
             });
         }
     }

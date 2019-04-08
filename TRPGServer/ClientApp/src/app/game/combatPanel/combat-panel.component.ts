@@ -4,6 +4,8 @@ import { CommandTypesConstants } from "../gameplay-constants.static";
 import { Category } from "../model/category.model";
 import { Ability } from "../model/ability.model";
 
+/**A component that allows the user to choose an Ability from a CombatEntity. Contains components
+ * that help the user visualize the Ability being selected.*/
 @Component({
   selector: "game-combat-panel",
   templateUrl: "./combat-panel.component.html",
@@ -13,11 +15,14 @@ export class CombatPanelComponent {
   public activeCommand: string;
   public activeCategory: Category;
   @Input() activeEntity: CombatEntity;
+  private activeEntityId: number;
+  @Input() activeEntityPosition: number;
   public activeAbility: Ability;
 
   public inActionPanel: boolean;
   public inCategoryPanel: boolean;
-  
+
+  @Input() hoveredEntity: CombatEntity;
   public hoveredCommand: string;
   public hoveredCategory: Category;
   public hoveredAbility: Ability;
@@ -26,6 +31,19 @@ export class CombatPanelComponent {
     return CommandTypesConstants.asArray;
   }
 
+  /**Resets the state of the CombatPanel. */
+  private resetState(): void {
+    this.activeAbility = null;
+    this.activeCategory = null;
+    this.activeCommand = null;
+    this.hoveredAbility = null;
+    this.hoveredCategory = null
+    this.inActionPanel = false;
+    this.inCategoryPanel = false;
+  }
+
+  /**Returns an array of Abilities that belong to the currently active entity filtered by
+   * the currently active Category and command.*/
   public getAbilities(): Ability[] {
     if (this.activeEntity == null || this.activeCommand == null) return null;
     if (this.activeCategory == null) return this.activeEntity.abilities;
@@ -53,6 +71,8 @@ export class CombatPanelComponent {
     }
   }
 
+  /**Gets all the unique Categories that belong to the currently active entity for the currently
+   active command.*/
   public getCategories(): Category[] {
     if (this.activeEntity == null) return null;
     // Todo: Add case for items
@@ -71,6 +91,10 @@ export class CombatPanelComponent {
     }
   }
 
+  /**
+   * Given an array of Abilities, returns an array containing the unique Categories of those Abilities.
+   * @param abilities The Abilities to return the Categories of.
+   */
   private abilitiesToCategories(abilities: Ability[]): Category[] {
     let categories: Category[] = [];
     abilities.forEach(ability => {
@@ -83,21 +107,30 @@ export class CombatPanelComponent {
     return categories;
   }
 
+  /**
+   * Whenever a command is clicked, reset the state of the CombatPanel and set the active
+   * command to the clicked command.
+   * @param command The name of the clicked command.
+   */
   public onCommandClick(command: string): void {
     if (command != null) {
       if (command === this.activeCommand) {
-        this.activeCommand = null;
-        this.inActionPanel = false;
-        this.inCategoryPanel = false;
+        this.resetState();
       }
       else {
+        this.resetState();
+
         this.activeCommand = command;
         this.inCategoryPanel = true;
-        this.inActionPanel = false;
       }
     }
   }
 
+  /**
+   * When an AbilityPanel button is clicked, set the active Ability to the Ability that belongs to that
+   * AbilityPanel button.
+   * @param ability The ability that was clicked.
+   */
   public onAbilityClick(ability: Ability): void {
     if (ability != null) {
       if (ability === this.activeAbility) {
@@ -109,6 +142,11 @@ export class CombatPanelComponent {
     }
   }
 
+  /**
+   * When a CategoryPanel button is clicked, set the active Category to the Category that belongs to that
+   * CategoryPanel button.
+   * @param category The Category that was clicked.
+   */
   public onCategoryClick(category: Category): void {
     if (category != null) {
       this.activeCategory = category;
@@ -116,31 +154,56 @@ export class CombatPanelComponent {
     }
   }
 
+  /**
+   * Sets the hoveredCommand to the command the user's mouse entered.
+   * @param command The command to set the hoveredCommand to.
+   */
   public onMouseEnterCommand(command: string): void {
     if (command != null) {
       this.hoveredCommand = command;
     }
   }
 
+  /**
+   * Sets the hoveredAbility to the Ability the user's mouse entered.
+   * @param ability The ability to set the hoveredAbility to.
+   */
   public onMouseEnterAbility(ability: Ability): void {
     if (ability != null) {
       this.hoveredAbility = ability;
     }
   }
 
+  /**
+   * Sets the hoveredCategory to the Category the user's mouse entered.
+   * @param category The Category to set the hoveredCategory to.
+   */
   public onMouseEnterCategory(category: Category): void {
     if (category != null) {
       this.hoveredCategory = category;
     }
   }
 
+  /**
+   * Sets the hoveredCommand to null whenever the user's mouse leaves the command.
+   * @param command The command that the user's mouse left.
+   */
   public onMouseLeaveCommand(command: string): void {
     this.hoveredCommand = null;
   }
 
+  /**
+   * Sets the hoveredAbility to null whenever the user's mouse leaves the Ability.
+   * @param command The Ability that the user's mouse left.
+   */
   public onMouseLeaveAbility(ability: Ability): void {
     this.hoveredAbility = null;
   }
+
+  /**
+   * Sets the hoveredCategory to null whenever the user's mouse leaves the Category.
+   * @param command The Category that the user's mouse left.
+   */
   public onMouseLeaveCategory(category: Category): void {
     this.hoveredCategory = null;
   }

@@ -4,6 +4,7 @@ import { Ability } from "../../model/ability.model";
 import { CombatEntity } from "../../model/combat-entity.model";
 import { DamageCalculator } from "../../services/damage-calculator.static";
 import { DamageTypes } from "../../model/damage-types.model";
+import { Coordinate } from "../../model/coordinate.model";
 
 @Component({
   selector: "game-description-panel",
@@ -18,9 +19,11 @@ export class DescriptionPanelComponent {
   @Input() activeCategory: Category;
   @Input() activeAbility: Ability;
   @Input() activeEntity: CombatEntity;
+  @Input() activeEntityPosition: Coordinate;
   @Input() hoveredCommand: string;
   @Input() hoveredCategory: Category;
   @Input() hoveredAbility: Ability;
+  @Input() hoveredEntity: CombatEntity;
 
   private tempAbilityId: number;
   private tempEntityId: number;
@@ -34,6 +37,16 @@ export class DescriptionPanelComponent {
 
   public notNullOrZero(value: number): boolean {
     return (value != null && value !== 0);
+  }
+
+  public getDisplayEntity(): CombatEntity {
+    if (this.activeEntity == null) return this.hoveredEntity;
+    if (this.getDisplayAbility != null ||
+      this.getDisplayCategory != null ||
+      this.getDisplayCommand != null) {
+      return this.activeEntity;
+    }
+    else return this.hoveredEntity;
   }
 
   public getDisplayCommand(): string {

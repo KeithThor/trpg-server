@@ -2,20 +2,33 @@
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
-  background-color: black;
   width: 100%;
   display: flex;
   flex-wrap: wrap;
-  overflow-y: scroll;
+  overflow-y: auto;
+}
+
+.category-icon {
+  display: inline-block;
+  position: relative;
+  width: 48px;
+  height: 48px;
+}
+
+.category-text {
+  text-align: center;
+  display: inline-block;
 }
 
 .panel-button {
-  width: 50%;
+  width: calc(50% - 8px);
   float: left;
   background-color: dimgray;
   border-radius: 4px;
+  margin: 4px;
   color: cornsilk;
   position: relative;
+  text-align: center;
 }
 
 .panel-button:hover {

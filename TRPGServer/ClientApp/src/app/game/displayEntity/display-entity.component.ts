@@ -18,12 +18,14 @@ export class DisplayEntityComponent {
   @Input() clickHandler: (entity: DisplayableEntity) => void;
   @Input() extraIcons: string[];
 
+  /**Returns an array of string containing the uris of icons to display.*/
   public getIconArray(): string[] {
     let arr = CharacterIconSet.asArray(this.entity.iconUris);
-    if (this.extraIcons != null) arr.concat(this.extraIcons);
+    if (this.extraIcons != null) arr = arr.concat(this.extraIcons);
     return arr;
   }
 
+  /**Calls the click handler whenever a click event is called from the template. */
   public onClick(): void {
     if (this.clickHandler != null) this.clickHandler(this.entity);
   }

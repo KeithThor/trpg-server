@@ -4,7 +4,11 @@
           (click)="onClick(category)"
           (mouseenter)="onMouseEnter(category)"
           (mouseleave)="onMouseLeave(category)">
-    <game-icon-display [iconUris]="category.iconUris"></game-icon-display>
-    {{category.name}}
+    <div class="category-icon">
+      <game-icon-display [iconUris]="category.iconUris"></game-icon-display>
+    </div>
+    <div class="category-text">
+      {{category.name}}
+    </div>
   </div>
 </div>

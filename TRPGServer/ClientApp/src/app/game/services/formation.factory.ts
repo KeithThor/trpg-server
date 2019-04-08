@@ -21,8 +21,8 @@ export class FormationFactory {
   }
 
   /**
-   * Returns a deep copy of the given Formation.
-   * @param formation The combat Formation to create a deep copy of.
+   * Returns a shallow copy of the given Formation.
+   * @param formation The combat Formation to create a shallow copy of.
    */
   public copyFormation(formation: Formation): Formation {
     let newFormation = new Formation();

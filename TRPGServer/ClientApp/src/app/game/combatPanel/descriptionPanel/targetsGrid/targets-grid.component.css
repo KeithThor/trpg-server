@@ -5,6 +5,7 @@
   border-radius: 3px;
   margin: 3px;
   background-color: dimgray;
+  display: inline-block;
 }
 
 .grid-node-active {
@@ -19,6 +20,17 @@
   background-color: #e22c00;
 }
 
+.grid-node-point-blank {
+  background-color: red;
+}
+
 .grid-row {
+  display: block;
+  margin-bottom: 0px;
+  text-align: center;
+}
+
+.grid-block {
   display: inline-block;
+  margin-left: 8px;
 }

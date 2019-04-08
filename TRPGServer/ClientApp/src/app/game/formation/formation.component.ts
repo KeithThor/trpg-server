@@ -24,6 +24,7 @@ export class FormationComponent implements OnInit {
   public activeFormationName: string;
   public formations: Formation[];
   public isLoaded: boolean;
+  public isChoosingLeader: boolean;
   public entities: CombatEntity[];
   public selectedEntity: CombatEntity;
   public hoveredEntity: DisplayableEntity;
@@ -34,6 +35,8 @@ export class FormationComponent implements OnInit {
     let loadedFormations = false;
     let loadedEntities = false;
     this.isEditing = false;
+    this.isChoosingLeader = false;
+    this.newFormation();
     this.http.get<Formation[]>("api/formation").subscribe({
       next: (formations: Formation[]) => {
         this.formations = formations;
@@ -58,7 +61,6 @@ export class FormationComponent implements OnInit {
 
   /** Called whenever the component is finished loading server-side data.*/
   private initialize(): void {
-    this.newFormation();
     this.isLoaded = true;
   }
 
@@ -66,8 +68,9 @@ export class FormationComponent implements OnInit {
   public newFormation(): void {
     this.activeFormation = this.formationFactory.createFormation();
     this.activeFormationLeader = null;
-    this.activeFormationName = "Formation Name";
+    this.activeFormation.name = "Formation Name";
     this.isEditing = false;
+    this.isChoosingLeader = false;
   }
 
   /** Transforms the formations array into an array of DisplayableEntities using the leaders of each formation. */
@@ -87,13 +90,36 @@ export class FormationComponent implements OnInit {
    * @param entity The display entity to stack icons on top of.
    */
   public getExtraIcons(entity: DisplayableEntity): string[] {
-    if (this.selectedEntity == null) return null;
-    if (this.selectedEntity.id !== entity.id) {
-      return null;
+    if (entity == null) return null;
+    if (this.activeFormationLeader != null && this.activeFormationLeader.id === entity.id) {
+      return ["images/misc/tutorial_cursor.png"];
     }
-    else {
+    else if (this.selectedEntity == null) return null;
+    else if (this.selectedEntity.id === entity.id) {
       return ["images/misc/cursor.png"];
     }
+    else {
+      return null;
+    }
+  }
+
+  /** Gets the CombatEntity that should have its abilities and details displayed in the CombatPanel. */
+  public getCombatPanelEntity(): CombatEntity {
+    if (this.hoveredEntity != null) {
+      let entity = this.entities.find(e => e.id === this.hoveredEntity.id);
+      if (entity == null) return this.selectedEntity;
+      else return entity;
+    }
+    else return this.selectedEntity;
+  }
+
+  /** Returns the formation position of the CombatEntity who should have its abilities and
+   * details displayed in the CombatPanel*/
+  public getCombatPanelEntityPosition(): Coordinate {
+    if (this.hoveredEntity != null) {
+      return this.findOccupiedPosition(this.getCombatPanelEntity(), this.activeFormation);
+    }
+    else return this.findOccupiedPosition(this.selectedEntity, this.activeFormation);
   }
 
   /**
@@ -104,7 +130,11 @@ export class FormationComponent implements OnInit {
     let match = this.entities.find(e => e.id === entity.id);
     if (match == null) return;
     else {
-      if (this.selectedEntity === match) this.selectedEntity = null;
+      if (this.isChoosingLeader) {
+        this.activeFormationLeader = match;
+        this.isChoosingLeader = false;
+      }
+      else if (this.selectedEntity === match) this.selectedEntity = null;
       else this.selectedEntity = match;
     }
   }
@@ -115,13 +145,28 @@ export class FormationComponent implements OnInit {
    */
   public selectFormation(index: number): void {
     let formation = this.formations[index];
+    this.selectedEntity = null;
+    this.isChoosingLeader = false;
     if (formation != null) {
       this.isEditing = true;
       this.activeFormation = this.formationFactory.copyFormation(formation);
       this.activeFormationLeader = TwoDArray.find(formation.positions, (entity) => {
         return entity.id === formation.leaderId;
       });
-      this.activeFormationName = formation.name;
+      this.activeFormation.name = formation.name;
+    }
+  }
+
+  /** Handler called whenever the choose leader button is clicked.
+   *
+   * Allows the user to select a leader from the Entities in its formation.*/
+  public chooseLeaderClicked(): void {
+    if (this.isChoosingLeader) {
+      this.isChoosingLeader = false;
+    }
+    else {
+      this.selectedEntity = null;
+      this.isChoosingLeader = true;
     }
   }
 
@@ -139,20 +184,27 @@ export class FormationComponent implements OnInit {
    */
   public onNodeClick(entity: DisplayableEntity, position: Coordinate): void {
     if (this.selectedEntity == null && entity == null) return;
-    else if (this.selectedEntity == null && entity != null) this.selectEntity(entity);
+    else if (this.selectedEntity == null && entity != null) {
+      if (this.isChoosingLeader) {
+        this.isChoosingLeader = false;
+        this.activeFormationLeader = this.activeFormation.positions[position.positionY][position.positionX];
+      }
+      else this.selectEntity(entity);
+    }
     else if (entity != null && this.selectedEntity.id === entity.id) this.selectedEntity = null;
     else if (this.selectedEntity != null) {
-      let occupyingEntity = this.activeFormation.positions[position.positionX][position.positionY];
+      let entityAsCombatEntity = this.activeFormation.positions[position.positionY][position.positionX];
       let previousPosition = this.findOccupiedPosition(this.selectedEntity, this.activeFormation);
+      if (this.activeFormationLeader == null) this.activeFormationLeader = this.selectedEntity;
       // Place selected entity into position, removing the occupying entity from the formation
       if (previousPosition == null) {
-        this.activeFormation.positions[position.positionX][position.positionY] = this.selectedEntity;
+        this.activeFormation.positions[position.positionY][position.positionX] = this.selectedEntity;
         this.selectedEntity = null;
       }
       // Swap positions with occupying entity
       else {
-        this.activeFormation.positions[position.positionX][position.positionY] = this.selectedEntity;
-        this.activeFormation.positions[previousPosition.positionX][previousPosition.positionY] = occupyingEntity;
+        this.activeFormation.positions[position.positionY][position.positionX] = this.selectedEntity;
+        this.activeFormation.positions[previousPosition.positionY][previousPosition.positionX] = entityAsCombatEntity;
         this.selectedEntity = null;
       }
     }
@@ -166,10 +218,13 @@ export class FormationComponent implements OnInit {
    * @param formation The formation to find the entity in.
    */
   private findOccupiedPosition(entity: DisplayableEntity, formation: Formation): Coordinate {
+    if (entity == null || formation == null) return null;
     let coord = new Coordinate();
-    let found = false;
-    let i = 0;
-    let indeces = TwoDArray.findIndex(formation.positions, e => e.id === entity.id);
+    let indeces = TwoDArray.findIndex(formation.positions, e => {
+      if (e == null) return false;
+      if (e.id === entity.id) return true;
+      else return false;
+    });
     if (indeces == null) return null;
 
     coord.positionX = indeces[0];
@@ -210,12 +265,12 @@ export class FormationComponent implements OnInit {
   public sendRequestAsync(): void {
     let template = new FormationTemplate();
     template.id = this.activeFormation.id;
-    template.name = this.activeFormationName;
+    template.name = this.activeFormation.name;
 
     // Todo: Add in way to select leader
     let uniques = TwoDArray.getUnique(this.activeFormation.positions);
     if (uniques == null) return;
-    template.leaderId = uniques[0].id;
+    template.leaderId = this.activeFormationLeader.id;
     let positions: number[][] = [];
 
     this.activeFormation.positions.forEach(row => {
@@ -238,6 +293,7 @@ export class FormationComponent implements OnInit {
           complete: () => {
             let index = this.formations.findIndex(f => f.id === this.activeFormation.id);
             if (index !== -1) {
+              this.activeFormation.leaderId = this.activeFormationLeader.id;
               this.formations[index] = this.activeFormation;
               this.selectFormation(index);
             }
