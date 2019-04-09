@@ -9,11 +9,23 @@ namespace TRPGGame.Entities
     /// </summary>
     public class DamagePerStat : IReadOnlyDamagePerStat
     {
-        public DamageTypes Strength { get; set; }
-        public DamageTypes Dexterity { get; set; }
-        public DamageTypes Agility { get; set; }
-        public DamageTypes Intelligence { get; set; }
-        public DamageTypes Constitution { get; set; }
+        public DamageTypes Strength { get; set; } = new DamageTypes();
+        public DamageTypes Dexterity { get; set; } = new DamageTypes();
+        public DamageTypes Agility { get; set; } = new DamageTypes();
+        public DamageTypes Intelligence { get; set; } = new DamageTypes();
+        public DamageTypes Constitution { get; set; } = new DamageTypes();
+
+        public static DamagePerStat operator + (DamagePerStat first, DamagePerStat second)
+        {
+            return new DamagePerStat
+            {
+                Strength = first.Strength + second.Strength,
+                Dexterity = first.Dexterity + second.Dexterity,
+                Agility = first.Agility + second.Agility,
+                Intelligence = first.Intelligence + second.Intelligence,
+                Constitution = first.Constitution + second.Constitution
+            };
+        }
 
         IReadOnlyDamageTypes IReadOnlyDamagePerStat.Agility => Agility;
 

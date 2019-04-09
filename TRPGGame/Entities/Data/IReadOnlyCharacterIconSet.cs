@@ -6,6 +6,7 @@
     public interface IReadOnlyCharacterIconSet
     {
         string BaseIconUri { get; }
+        string BootsIconUri { get; }
         string HairIconUri { get; }
         string CloakIconUri { get; }
         string LeftHandIconUri { get; }

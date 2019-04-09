@@ -19,11 +19,11 @@ namespace TRPGGame.Entities
         /// The name of this ability.
         /// </summary>
         public string Name { get; set; }
-        
+
         /// <summary>
         /// The category this ability belongs to.
         /// </summary>
-        public Category Category { get; set; }
+        public Category Category { get; set; } = new Category();
 
         /// <summary>
         /// The description of this ability.
@@ -33,13 +33,13 @@ namespace TRPGGame.Entities
         /// <summary>
         /// The string paths of the uris that creates the icons that represents this ability.
         /// </summary>
-        public IEnumerable<string> IconUris { get; set; }
+        public IEnumerable<string> IconUris { get; set; } = new List<string>();
 
         /// <summary>
         /// The positions this ability targets.
         /// <para>Friendly positions are 1-9, enemy positions are 10-18.</para>
         /// </summary>
-        public IEnumerable<int> Targets { get; set; }
+        public IEnumerable<int> Targets { get; set; } = new List<int>();
 
         /// <summary>
         /// The center of this ability's target positions. This is what the player uses to aim the ability.
@@ -100,12 +100,12 @@ namespace TRPGGame.Entities
         /// <summary>
         /// The initial amount of damage this ability deals without being modified by anything else.
         /// </summary>
-        public DamageTypes Damage { get; set; }
+        public DamageTypes Damage { get; set; } = new DamageTypes();
 
         /// <summary>
         /// The amount of each type of damage increased by each point of stat the caster has.
         /// </summary>
-        public DamagePerStat DamagePerStat { get; set; }
+        public DamagePerStat DamagePerStat { get; set; } = new DamagePerStat();
 
         /// <summary>
         /// The initial amount of hit points healed to the targets of this ability before any bonuses are applied.
@@ -115,12 +115,12 @@ namespace TRPGGame.Entities
         /// <summary>
         /// The amount of hit points healed increased by each point of stat the caster has.
         /// </summary>
-        public CharacterStats HealPerStat { get; set; }
+        public CharacterStats HealPerStat { get; set; } = new CharacterStats();
 
         /// <summary>
         /// The amount of damage in percentage of max health done by this ability against the targets.
         /// </summary>
-        public DamageTypes PercentDamage { get; set; }
+        public DamageTypes PercentDamage { get; set; } = new DamageTypes();
 
         /// <summary>
         /// The amount of health in percentage of max health healed by this ability.
@@ -130,12 +130,12 @@ namespace TRPGGame.Entities
         /// <summary>
         /// Status effects applied by this ability to its targets.
         /// </summary>
-        public IEnumerable<StatusEffect> AppliedStatusEffects { get; set; }
+        public IEnumerable<StatusEffect> AppliedStatusEffects { get; set; } = new List<StatusEffect>();
 
         /// <summary>
         /// Status effects applied by thisa ability to the caster.
         /// </summary>
-        public IEnumerable<StatusEffect> SelfAppliedStatusEffects { get; set; }
+        public IEnumerable<StatusEffect> SelfAppliedStatusEffects { get; set; } = new List<StatusEffect>();
 
         IReadOnlyDamageTypes IReadOnlyAbility.Damage => Damage;
 

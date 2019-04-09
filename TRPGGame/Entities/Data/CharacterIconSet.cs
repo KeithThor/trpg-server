@@ -12,6 +12,7 @@ namespace TRPGGame.Entities.Data
         public CharacterIconSet(CharacterIconSet iconSet)
         {
             BaseIconUri = iconSet.BaseIconUri;
+            BootsIconUri = iconSet.BootsIconUri;
             HairIconUri = iconSet.HairIconUri;
             CloakIconUri = iconSet.CloakIconUri;
             LeftHandIconUri = iconSet.LeftHandIconUri;
@@ -24,6 +25,7 @@ namespace TRPGGame.Entities.Data
         }
 
         public string BaseIconUri { get; set; }
+        public string BootsIconUri { get; set; }
         public string HairIconUri { get; set; }
         public string CloakIconUri { get; set; }
         public string LeftHandIconUri { get; set; }

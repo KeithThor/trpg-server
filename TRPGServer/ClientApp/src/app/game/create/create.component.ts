@@ -5,6 +5,7 @@ import { CombatEntity } from "../model/combat-entity.model";
 import { NgForm } from "@angular/forms";
 import { CharacterStats } from "../model/character-stats.model";
 import { StatPickerComponent } from "./statPicker/stat-picker.component";
+import { ClassTemplate } from "../model/class-template.model";
 
 @Component({
   selector: 'game-create-component',
@@ -24,8 +25,10 @@ export class CreateComponent implements OnInit {
   public isEditing: boolean = false;
   public hairs: CharacterHair[] = [];
   public bases: CharacterBase[] = [];
+  public selectedClassId: number;
+  public classTemplates: ClassTemplate[] = [];
   public entities: CombatEntity[] = [];
-  public stats: CharacterStats;
+  public growthPoints: CharacterStats;
   public selectedBase: CharacterBase;
   public entityId: number = 0;
   public name: string = "Name";
@@ -40,13 +43,14 @@ export class CreateComponent implements OnInit {
     let loadedCreateData: boolean = false;
     let loadedEntityData: boolean = false;
     this.hoveredComponentName = "growth";
-    this.stats = new CharacterStats();
+    this.growthPoints = new CharacterStats();
 
     this.http.get<CreateCharacterData>("api/character")
       .subscribe({
         next: (data) => {
           this.bases = data.bases;
           this.hairs = data.hairs;
+          this.classTemplates = data.classTemplates;
         },
         complete: () => {
           if (loadedEntityData === true) this.initialize();
@@ -99,12 +103,12 @@ export class CreateComponent implements OnInit {
       this.selectedBase = base;
       this.baseId = baseId;
 
-      this.stats = new CharacterStats();
-      this.stats.strength = 5;
-      this.stats.dexterity = 5;
-      this.stats.agility = 5;
-      this.stats.intelligence = 5;
-      this.stats.constitution = 5;
+      this.growthPoints = new CharacterStats();
+      this.growthPoints.strength = 5;
+      this.growthPoints.dexterity = 5;
+      this.growthPoints.agility = 5;
+      this.growthPoints.intelligence = 5;
+      this.growthPoints.constitution = 5;
       this.statPicker.freePoints = 0;
     }
   }
@@ -127,12 +131,13 @@ export class CreateComponent implements OnInit {
     this.baseId = this.bases[0].id;
     this.hairId = this.hairs[0].id;
     this.name = "Name";
-    this.stats = new CharacterStats();
-    this.stats.strength = 5;
-    this.stats.dexterity = 5;
-    this.stats.agility = 5;
-    this.stats.intelligence = 5;
-    this.stats.constitution = 5;
+    this.growthPoints = new CharacterStats();
+    this.growthPoints.strength = 5;
+    this.growthPoints.dexterity = 5;
+    this.growthPoints.agility = 5;
+    this.growthPoints.intelligence = 5;
+    this.growthPoints.constitution = 5;
+    this.selectedClassId = 1;
 
     // Deep copy array
     this.selectedBase = this.bases[0];
@@ -157,7 +162,8 @@ export class CreateComponent implements OnInit {
     this.entityId = entity.id;
     this.name = entity.name;
     this.isEditing = true;
-    this.stats = JSON.parse(JSON.stringify(entity.stats));
+    this.growthPoints = JSON.parse(JSON.stringify(entity.growthPoints));
+    this.selectedClassId = 1;
     this.statPicker.freePoints = 0;
     this.hairs.forEach(hair => {
       if (hair.iconUri === entity.iconUris.hairIconUri) {
@@ -202,7 +208,13 @@ export class CreateComponent implements OnInit {
     template.name = this.name;
     template.baseId = this.baseId;
     template.hairId = this.hairId;
-    template.allocatedStats = this.stats;
+    template.allocatedStats = this.growthPoints;
+
+    if (!this.isEditing && this.selectedClassId == null) {
+      alert("Please select a starting class before creating a new character.");
+      return;
+    }
+    else if (!this.isEditing) template.classTemplateId = this.selectedClassId;
 
     if (this.isEditing) {
       this.http.patch("api/character", template)

@@ -14,6 +14,7 @@ namespace TRPGGame.Entities
         public string OwnerName { get; set; }
         public int BaseId { get; set; }
         public int HairId { get; set; }
+        public int? ClassTemplateId { get; set; }
         public int? GroupId { get; set; }
         public CharacterStats AllocatedStats { get; set; }
 

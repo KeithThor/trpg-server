@@ -45,6 +45,31 @@ namespace TRPGGame.Entities
         bool IsMagical { get; }
 
         /// <summary>
+        /// If true, this StatusEffect will not be able to be removed in combat.
+        /// </summary>
+        bool IsPermanent { get; }
+
+        /// <summary>
+        /// If true, the CombatEntity this StatusEffect is applied to will not be able to act in combat.
+        /// </summary>
+        bool IsStunned { get; }
+
+        /// <summary>
+        /// If true, the CombatEntity this StatusEffect is applied to will not be able to cast spells in combat. 
+        /// </summary>
+        bool IsSilenced { get; }
+
+        /// <summary>
+        /// If true, the CombatEntity this StatusEffect is applied to will not be able to use attacks or skills in combat. 
+        /// </summary>
+        bool IsRestricted { get; }
+
+        /// <summary>
+        /// If true, will not display this StatusEffect in the UI.
+        /// </summary>
+        bool IsHidden { get; }
+
+        /// <summary>
         /// If true, this StatusEffect will be considered a debuff, if false, it will be considered a buff.
         /// </summary>
         bool IsDebuff { get; }

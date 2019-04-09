@@ -2,7 +2,7 @@
   {
     "id": 1,
     "name": "Punch",
-    "abilityPointCost": 20,
+    "actionPointCost": 20,
     "description": "Swing at your target with your fists.",
     "iconUris": [
       "images/gui/spells/components/hand_4.png"
@@ -22,7 +22,7 @@
   {
     "id": 2,
     "name": "Wide Slice",
-    "abilityPointCost": 50,
+    "actionPointCost": 50,
     "description": "Swings wide with your weapon, hitting a row of targets.",
     "iconUris": [
       "images/gui/spells/translocation/portal_projectile_old.png"
@@ -45,7 +45,7 @@
   {
     "id": 3,
     "name": "Fireball",
-    "abilityPointCost": 40,
+    "actionPointCost": 40,
     "manaCost": 40,
     "isSpell": true,
     "description": "Unleashes a large ball of fire into the ranks of your enemies.",
@@ -71,7 +71,7 @@
   {
     "id": 4,
     "name": "Heal Wave",
-    "abilityPointCost": 40,
+    "actionPointCost": 40,
     "manaCost": 40,
     "isSpell": true,
     "description": "Releases a wave of healing energies to any allies standing adjacent to you.",
@@ -92,7 +92,7 @@
   {
     "id": 5,
     "name": "Recuperate",
-    "abilityPointCost": 40,
+    "actionPointCost": 40,
     "isSkill": true,
     "description": "Spend the turn recovering your lost health.",
     "iconUris": [
@@ -109,7 +109,7 @@
   {
     "id": 6,
     "name": "Fire Column",
-    "abilityPointCost": 40,
+    "actionPointCost": 50,
     "manaCost": 30,
     "isSpell": true,
     "description": "Unleashes a column of fire outwards from your hands that scorches your enemies.",
@@ -117,7 +117,7 @@
       "images/gui/spells/fire/bolt_of_fire_new.png"
     ],
     "categoryId": 2,
-    "targets": [ 1, 2 ,3 ],
+    "targets": [ 1, 2, 3 ],
     "centerOfTargets": 1,
     "isPointBlank": false,
     "isPositionStatic": false,
@@ -131,5 +131,100 @@
       }
     },
     "appliedStatusEffectIds": [ 1 ]
+  },
+  {
+    "id": 7,
+    "name": "Firebolt",
+    "actionPointCost": 20,
+    "manaCost": 20,
+    "isSpell": true,
+    "description": "Unleashes a small bolt of fire at a target enemy.",
+    "iconUris": [
+      "images/gui/spells/fire/bolt_of_magma_old.png"
+    ],
+    "categoryId": 2,
+    "targets": [ 5 ],
+    "centerOfTargets": 5,
+    "isPointBlank": false,
+    "isPositionStatic": false,
+    "canTargetBeBlocked": false,
+    "damage": {
+      "fire": 10
+    },
+    "damagePerStat": {
+      "intelligence": {
+        "fire": 2
+      }
+    },
+    "appliedStatusEffectIds": [ 1 ]
+  },
+  {
+    "id": 8,
+    "name": "Swing",
+    "actionPointCost": 30,
+    "description": "Swing at your target with the blunt end of your weapon.",
+    "iconUris": [
+      "images/gui/spells/components/sword.png"
+    ],
+    "categoryId": 1,
+    "targets": [ 5 ],
+    "centerOfTargets": 5,
+    "isPointBlank": false,
+    "isPositionStatic": false,
+    "canTargetBeBlocked": true,
+    "damagePerStat": {
+      "strength": {
+        "blunt": 2
+      }
+    }
+  },
+  {
+    "id": 9,
+    "name": "Smite",
+    "actionPointCost": 30,
+    "manaCost": 20,
+    "isSpell": true,
+    "description": "Enchants your weapon with holy power and strikes at your enemy.",
+    "iconUris": [
+      "images/gui/spells/components/hand_3.png"
+    ],
+    "categoryId": 2,
+    "targets": [ 5 ],
+    "centerOfTargets": 5,
+    "isPointBlank": false,
+    "isPositionStatic": false,
+    "canTargetBeBlocked": true,
+    "damage": {
+      "holy": 10
+    },
+    "damagePerStat": {
+      "strength": {
+        "blunt": 1
+      },
+      "dexterity": {
+        "sharp": 1
+      },
+      "intelligence": {
+        "holy": 1
+      }
+    }
+  },
+  {
+    "id": 10,
+    "name": "Minor Blessing of Protection",
+    "actionPointCost": 20,
+    "manaCost": 20,
+    "isSpell": true,
+    "description": "Places a blessing a person that will shield them from harm.",
+    "iconUris": [
+      "images/gui/spells/components/hand_3.png"
+    ],
+    "categoryId": 2,
+    "targets": [ 5 ],
+    "centerOfTargets": 5,
+    "isPointBlank": false,
+    "isPositionStatic": false,
+    "canTargetBeBlocked": true,
+    "appliedStatusEffectIds": [ 2 ]
   }
 ]

@@ -28,7 +28,7 @@ namespace TRPGGame.Entities
         /// <summary>
         /// The string paths of the uris that creates the icons that represents this StatusEffect.
         /// </summary>
-        public IEnumerable<string> IconUris { get; set; }
+        public IEnumerable<string> IconUris { get; set; } = new List<string>();
 
         /// <summary>
         /// The max duration of this StatusEffect.
@@ -47,6 +47,31 @@ namespace TRPGGame.Entities
         public bool IsMagical { get; set; }
 
         /// <summary>
+        /// If true, this StatusEffect will not be able to be removed in combat.
+        /// </summary>
+        public bool IsPermanent { get; set; }
+
+        /// <summary>
+        /// If true, the CombatEntity this StatusEffect is applied to will not be able to act in combat.
+        /// </summary>
+        public bool IsStunned { get; set; }
+
+        /// <summary>
+        /// If true, the CombatEntity this StatusEffect is applied to will not be able to cast spells in combat. 
+        /// </summary>
+        public bool IsSilenced { get; set; }
+
+        /// <summary>
+        /// If true, the CombatEntity this StatusEffect is applied to will not be able to use attacks or skills in combat. 
+        /// </summary>
+        public bool IsRestricted { get; set; }
+
+        /// <summary>
+        /// If true, will not display this StatusEffect in the UI.
+        /// </summary>
+        public bool IsHidden { get; set; }
+
+        /// <summary>
         /// If true, this StatusEffect will be considered a debuff, if false, it will be considered a buff.
         /// </summary>
         public bool IsDebuff { get; set; }
@@ -54,12 +79,12 @@ namespace TRPGGame.Entities
         /// <summary>
         /// Initial damage dealt per turn to the target of this StatusEffect.
         /// </summary>
-        public DamageTypes DamagePerTurn { get; set; }
+        public DamageTypes DamagePerTurn { get; set; } = new DamageTypes();
 
         /// <summary>
         /// Damage dealt per turn per point of stat of the character who applied the StatusEffect.
         /// </summary>
-        public DamagePerStat DamagePerStatPerTurn { get; set; }
+        public DamagePerStat DamagePerStatPerTurn { get; set; } = new DamagePerStat();
 
         /// <summary>
         /// Initial health healed per turn to the target of this StatusEffect.
@@ -74,22 +99,22 @@ namespace TRPGGame.Entities
         /// <summary>
         /// Amount of health healed per point of stat of the character who applied the StatusEffect.
         /// </summary>
-        public CharacterStats HealPerStatPerTurn { get; set; }
+        public CharacterStats HealPerStatPerTurn { get; set; } = new CharacterStats();
 
         /// <summary>
         /// Amount of primary stats modified by this StatusEffect.
         /// </summary>
-        public CharacterStats ModifiedStats { get; set; }
+        public CharacterStats ModifiedStats { get; set; } = new CharacterStats();
 
         /// <summary>
         /// Amount of primary stats modified in percentage by this StatusEffect.
         /// </summary>
-        public CharacterStats ModifiedStatPercentages { get; set; }
+        public CharacterStats ModifiedStatPercentages { get; set; } = new CharacterStats();
 
         /// <summary>
         /// The amount of secondary stats modified by this StatusEffect.
         /// </summary>
-        public SecondaryStat ModifiedSecondaryStats { get; set; }
+        public SecondaryStat ModifiedSecondaryStats { get; set; } = new SecondaryStat();
 
         IReadOnlyDamageTypes IReadOnlyStatusEffect.DamagePerTurn => DamagePerTurn;
 

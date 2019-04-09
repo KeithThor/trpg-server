@@ -22,5 +22,27 @@
                 "fire": -15
             }
         }
+    },
+    {
+        "id": 2,
+        "name": "Minor Blessing of Protection",
+        "description": "This character is protected by a blessing, reducing the damage it takes in combat.",
+        "iconUris": [
+            "images/gui/spells/components/hand_3.png"
+        ],
+        "duration": 2,
+        "stackSize": 1,
+        "modifiedSecondaryStats": {
+            "resistances": {
+                "blunt": 15,
+                "sharp": 15,
+                "fire": 15,
+                "frost": 15,
+                "lightning": 15,
+                "earth": 15,
+                "holy": 15,
+                "shadow": 15
+            }
+        }
     }
 ]

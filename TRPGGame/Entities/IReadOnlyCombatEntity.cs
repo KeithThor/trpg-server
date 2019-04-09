@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using TRPGGame.Entities.Combat;
 using TRPGGame.Entities.Data;
 
 namespace TRPGGame.Entities
@@ -45,6 +46,16 @@ namespace TRPGGame.Entities
         IReadOnlyCharacterStats Stats { get; }
 
         /// <summary>
+        /// Represents the character's in-game stats unmodified by any other effects.
+        /// </summary>
+        IReadOnlyCharacterStats UnmodifiedStats { get; }
+
+        /// <summary>
+        /// Represents the amount of each stat to gain whenever this CombatEntity levels up.
+        /// </summary>
+        IReadOnlyCharacterStats GrowthPoints { get; }
+
+        /// <summary>
         /// Represents a character's in-game secondary stats.
         /// </summary>
         IReadOnlySecondaryStat SecondaryStats { get; }
@@ -52,11 +63,16 @@ namespace TRPGGame.Entities
         /// <summary>
         /// Contains all of the attacks, spells, and skills this character can use.
         /// </summary>
-        IEnumerable<Ability> Abilities { get; }
+        IEnumerable<IReadOnlyAbility> Abilities { get; }
 
         /// <summary>
         /// Contains all of the status effects that are affecting this character.
         /// </summary>
-        IEnumerable<StatusEffect> StatusEffects { get; }
+        IEnumerable<IReadOnlyAppliedStatusEffect> StatusEffects { get; }
+
+        /// <summary>
+        /// Contains all of the items this character currently has equipped.
+        /// </summary>
+        IEnumerable<IReadOnlyItem> EquippedItems { get; }
     }
 }

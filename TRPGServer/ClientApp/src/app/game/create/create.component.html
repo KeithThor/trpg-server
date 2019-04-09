@@ -43,8 +43,11 @@
           {{getButtonText()}}
         </button>
       </form>
-      <game-stat-picker *ngIf="isLoaded" #statPicker [base]="selectedBase" [(stats)]="stats"
+      <game-stat-picker *ngIf="isLoaded" #statPicker [base]="selectedBase" [(stats)]="growthPoints"
                         (onMouseEnterEvent)="changeHoveredComponentName($event)"></game-stat-picker>
+      <game-class-picker [(selectedClassId)]="selectedClassId"
+                         [classTemplates]="classTemplates"
+                         [canChooseClass]="!isEditing"></game-class-picker>
     </div>
   </div>
 </div>

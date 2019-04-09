@@ -41,12 +41,12 @@ export class DescriptionPanelComponent {
 
   public getDisplayEntity(): CombatEntity {
     if (this.activeEntity == null) return this.hoveredEntity;
-    if (this.getDisplayAbility != null ||
-      this.getDisplayCategory != null ||
-      this.getDisplayCommand != null) {
-      return this.activeEntity;
-    }
-    else return this.hoveredEntity;
+    //if (this.getDisplayAbility() != null ||
+    //  this.getDisplayCategory() != null ||
+    //  this.getDisplayCommand() != null) {
+    //  return this.activeEntity;
+    //}
+    else return this.activeEntity;
   }
 
   public getDisplayCommand(): string {
@@ -76,7 +76,7 @@ export class DescriptionPanelComponent {
   }
 
   public getHealing(): number {
-    if (this.activeAbility == null || this.activeEntity == null) return 0;
-    return DamageCalculator.getAbilityHeal(this.activeEntity, this.activeAbility);
+    if (this.getDisplayAbility() == null && this.getDisplayEntity() == null) return 0;
+    return DamageCalculator.getAbilityHeal(this.getDisplayEntity(), this.getDisplayAbility());
   }
 }

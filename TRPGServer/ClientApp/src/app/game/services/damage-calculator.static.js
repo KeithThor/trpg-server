@@ -16,9 +16,41 @@ var DamageCalculator = /** @class */ (function () {
     DamageCalculator.getAbilityDamage = function (owner, ability) {
         if (this.doesNoDamage(ability.damage))
             return new damage_types_model_1.DamageTypes();
-        var damageWithBonuses = this.addDamage(owner.secondaryStats.damage, ability.damage, this.getDamageFromStats(ability.damagePerStat, owner.stats));
+        var damageWithBonuses = this.addDamage(this.getBonusDamage(owner, ability), ability.damage, this.getDamageFromStats(ability.damagePerStat, owner.stats));
         return this.getPercentDamage(damageWithBonuses, owner.secondaryStats.damagePercentage);
     };
+    /**
+     * Returns a DamageTypes object containing the amount of bonus damage for each damage type
+     * if an ability does not do 0 damage with that type.
+     * @param owner The CombatEntity that the ability belongs to.
+     * @param ability The ability to calculate bonus damage for.
+     */
+    DamageCalculator.getBonusDamage = function (owner, ability) {
+        var bonusDamage = owner.secondaryStats.damage;
+        var result = new damage_types_model_1.DamageTypes();
+        if (ability.damage.blunt != null || ability.damage.blunt != 0)
+            result.blunt = bonusDamage.blunt;
+        if (ability.damage.sharp != null || ability.damage.sharp != 0)
+            result.sharp = bonusDamage.sharp;
+        if (ability.damage.fire != null || ability.damage.fire != 0)
+            result.fire = bonusDamage.fire;
+        if (ability.damage.frost != null || ability.damage.frost != 0)
+            result.frost = bonusDamage.frost;
+        if (ability.damage.lightning != null || ability.damage.lightning != 0)
+            result.lightning = bonusDamage.lightning;
+        if (ability.damage.earth != null || ability.damage.earth != 0)
+            result.earth = bonusDamage.earth;
+        if (ability.damage.holy != null || ability.damage.holy != 0)
+            result.holy = bonusDamage.holy;
+        if (ability.damage.shadow != null || ability.damage.shadow != 0)
+            result.shadow = bonusDamage.shadow;
+        return result;
+    };
+    /**
+     * Gets the amount of healing an ability does after applying all bonuses.
+     * @param owner The CombatEntity who owns the ability to get healing for.
+     * @param ability The ability to calculate healing for.
+     */
     DamageCalculator.getAbilityHeal = function (owner, ability) {
         if (!this.abilityDoesHeal(ability))
             return 0;

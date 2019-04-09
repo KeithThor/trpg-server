@@ -25,6 +25,11 @@ namespace TRPGGame.Entities
         public int?[][] Positions { get; set; }
 
         /// <summary>
+        /// Contains the id of the class the player has chosen for this CombatEntity.
+        /// </summary>
+        public int ClassId { get; set; }
+
+        /// <summary>
         /// The name to give the newly created formation.
         /// </summary>
         public string Name { get; set; }
