@@ -1,7 +1,10 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
+var character_stats_model_1 = require("./character-stats.model");
 var CharacterTemplate = /** @class */ (function () {
     function CharacterTemplate() {
+        this.allocatedStats = new character_stats_model_1.CharacterStats();
+        this.name = "";
     }
     return CharacterTemplate;
 }());
@@ -14,6 +17,8 @@ var CharacterHair = /** @class */ (function () {
 exports.CharacterHair = CharacterHair;
 var CharacterBase = /** @class */ (function () {
     function CharacterBase() {
+        this.maxStats = new character_stats_model_1.CharacterStats();
+        this.bonusStats = new character_stats_model_1.CharacterStats();
     }
     return CharacterBase;
 }());
@@ -29,6 +34,8 @@ var CharacterIconSet = /** @class */ (function () {
             arr.push(iconSet.baseIconUri);
         if (iconSet.legsIconUri != null)
             arr.push(iconSet.legsIconUri);
+        if (iconSet.bootsIconUri != null)
+            arr.push(iconSet.bootsIconUri);
         if (iconSet.bodyIconUri != null)
             arr.push(iconSet.bodyIconUri);
         if (iconSet.glovesIconUri != null)
@@ -50,6 +57,9 @@ var CharacterIconSet = /** @class */ (function () {
 exports.CharacterIconSet = CharacterIconSet;
 var CreateCharacterData = /** @class */ (function () {
     function CreateCharacterData() {
+        this.hairs = [];
+        this.bases = [];
+        this.classTemplates = [];
     }
     return CreateCharacterData;
 }());

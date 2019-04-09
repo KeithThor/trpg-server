@@ -30,6 +30,21 @@ namespace TRPGGame.Entities
         string Description { get; }
 
         /// <summary>
+        /// The cost in gold to buy this item.
+        /// </summary>
+        int Cost { get; }
+
+        /// <summary>
+        /// Whether the player can stack multiple versions of this item together.
+        /// </summary>
+        bool IsStackable { get; }
+
+        /// <summary>
+        /// The maximum count that this item can stack to.
+        /// </summary>
+        int StackSize { get; }
+
+        /// <summary>
         /// If true, this item is removed from the inventory of a character when it is out of charges.
         /// </summary>
         bool DestroyedWhenOutOfCharges { get; }
@@ -43,6 +58,11 @@ namespace TRPGGame.Entities
         /// The amount of secondary stats this item grants the user while equipped.
         /// </summary>
         IReadOnlySecondaryStat SecondaryStats { get; }
+
+        /// <summary>
+        /// The uri of the icon that is shown on the player's character when this item is equipped.
+        /// </summary>
+        string EquipIconUri { get; }
 
         /// <summary>
         /// An IEnumerable of Abilities that this item grants a character when equipped.

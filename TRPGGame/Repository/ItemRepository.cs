@@ -10,7 +10,7 @@ using TRPGGame.Entities;
 
 namespace TRPGGame.Repository
 {
-    public class ItemRepository
+    public class ItemRepository: IRepository<Item>
     {
         private readonly IRepository<StatusEffect> _statusEffectRepo;
         private readonly IRepository<Ability> _abilityRepo;

@@ -19,5 +19,10 @@
         /// The name of this ItemType.
         /// </summary>
         string Name { get; }
+
+        /// <summary>
+        /// The name of the position to equip an item who is of this item type.
+        /// </summary>
+        string EquipPosition { get; }
     }
 }

@@ -26,24 +26,44 @@ namespace TRPGGame.Entities
         public string Description { get; set; }
 
         /// <summary>
+        /// The cost in gold to buy this item.
+        /// </summary>
+        public int Cost { get; set; }
+
+        /// <summary>
+        /// Whether the player can stack multiple versions of this item together.
+        /// </summary>
+        public bool IsStackable { get; set; }
+
+        /// <summary>
+        /// The maximum count that this item can stack to.
+        /// </summary>
+        public int StackSize { get; set; }
+
+        /// <summary>
         /// An IEnumerable of strings that contain the uris to the paths of the icons that represent this item.
         /// </summary>
-        public IEnumerable<string> IconUris { get; set; }
+        public IEnumerable<string> IconUris { get; set; } = new List<string>();
+
+        /// <summary>
+        /// The uri of the icon that is shown on the player's character when this item is equipped.
+        /// </summary>
+        public string EquipIconUri { get; set; }
 
         /// <summary>
         /// The type this item is categorized as.
         /// </summary>
-        public ItemType Type { get; set; }
+        public ItemType Type { get; set; } = new ItemType();
 
         /// <summary>
         /// The amount of primary stats this item grants the user while equipped.
         /// </summary>
-        public CharacterStats Stats { get; set; }
+        public CharacterStats Stats { get; set; } = new CharacterStats();
 
         /// <summary>
         /// The amount of secondary stats this item grants the user while equipped.
         /// </summary>
-        public SecondaryStat SecondaryStats { get; set; }
+        public SecondaryStat SecondaryStats { get; set; } = new SecondaryStat();
 
         /// <summary>
         /// Returns true if this item can be equipped by a character.
@@ -53,7 +73,7 @@ namespace TRPGGame.Entities
         /// <summary>
         /// An IEnumerable of Abilities that this item grants a character when equipped.
         /// </summary>
-        public IEnumerable<Ability> EquippedAbilities { get; set; }
+        public IEnumerable<Ability> EquippedAbilities { get; set; } = new List<Ability>();
 
         /// <summary>
         /// Returns true if this item has an ability that can be activated by the character without being equipped.
@@ -79,13 +99,13 @@ namespace TRPGGame.Entities
         /// Contains status effects that are applied to the character whenever this item is equipped. The status
         /// effects are applied on the first turn of combat.
         /// </summary>
-        public IEnumerable<StatusEffect> SelfAppliedStatusEffects { get; set; }
+        public IEnumerable<StatusEffect> SelfAppliedStatusEffects { get; set; } = new List<StatusEffect>();
 
         /// <summary>
         /// Contains status effects that are applied to any character struck by the character who has this item
         /// equipped.
         /// </summary>
-        public IEnumerable<StatusEffect> AppliedStatusEffects { get; set; }
+        public IEnumerable<StatusEffect> AppliedStatusEffects { get; set; } = new List<StatusEffect>();
 
         IEnumerable<IReadOnlyStatusEffect> IReadOnlyItem.AppliedStatusEffects => AppliedStatusEffects;
 

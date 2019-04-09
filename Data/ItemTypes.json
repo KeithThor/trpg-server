@@ -1,0 +1,51 @@
+[
+    {
+        "id": 1,
+        "name": "Headgear",
+        "equipPosition": "head"
+    },
+    {
+        "id": 2,
+        "name": "Chestpiece",
+        "equipPosition": "body"
+    },
+    {
+        "id": 3,
+        "name": "Footwear",
+        "equipPosition": "boots"
+    },
+    {
+        "id": 4,
+        "name": "Cloaks",
+        "equipPosition": "cloak"
+    },
+    {
+        "id": 5,
+        "name": "Gloves",
+        "equipPosition": "gloves",
+    },
+    {
+        "id": 6,
+        "name": "Weapon",
+        "equipPosition": "righthand"
+    },
+    {
+        "id": 7,
+        "name": "Offhand",
+        "equipPosition": "lefthand"
+    },
+    {
+        "id": 8,
+        "name": "Legwear",
+        "equipPosition": "legs"
+    },
+    {
+        "id": 9,
+        "name": "Special",
+        "equipPosition": "extra"
+    },
+    {
+        "id": 10,
+        "name": "Other"
+    }
+]

@@ -5,6 +5,25 @@ import { CharacterStats } from "./character-stats.model";
 import { StatusEffect } from "./status-effect.model";
 
 export class Ability {
+  constructor() {
+    this.name = "";
+    this.description = "";
+    this.targets = [];
+    this.damage = new DamageTypes();
+    this.damagePerStat = new DamagePerStat();
+    this.healPerStat = new CharacterStats();
+    this.percentDamage = new DamageTypes();
+    this.appliedStatusEffects = [];
+    this.selfAppliedStatusEffects = [];
+    this.actionPointCost = 0;
+    this.healthCost = 0;
+    this.healthPercentCost = 0;
+    this.manaCost = 0;
+    this.manaPercentCost = 0;
+    this.heal = 0;
+    this.percentHeal = 0;
+  }
+
   public id: number;
   public name: string;
   public description: string;

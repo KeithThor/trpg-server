@@ -1,0 +1,30 @@
+[
+    {
+        "id": 1,
+        "name": "Fire Mage",
+        "description": "A spellcaster with a focus on destructive fire spells. A perfect class for those who wish to deal large amounts of damage to many enemies.",
+        "stats": {
+            "strength": 5,
+            "dexterity": 5,
+            "intelligence": 14,
+            "agility": 8,
+            "constitution": 8
+        },
+        "abilityIds": [6, 7],
+        "equippedItemIds": [5, 6]
+    },
+    {
+        "id": 2,
+        "name": "Paladin",
+        "description": "A warrior of the light that uses its god-given powers to defend the living.",
+        "stats": {
+            "strength": 10,
+            "dexterity": 5,
+            "intelligence": 8,
+            "agility": 5,
+            "constitution": 12
+        },
+        "abilityIds": [9, 10],
+        "equippedItemIds": [7, 8, 9]
+    }
+]

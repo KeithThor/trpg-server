@@ -23,5 +23,10 @@ namespace TRPGGame.Entities
         /// The description of this ItemType. Might not be used.
         /// </summary>
         public string Description { get; set; }
+
+        /// <summary>
+        /// The name of the position to equip an item who is of this item type.
+        /// </summary>
+        public string EquipPosition { get; set; }
     }
 }

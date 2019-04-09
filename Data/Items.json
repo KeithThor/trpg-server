@@ -1,0 +1,187 @@
+[
+    {
+        "id": 1,
+        "name": "Leather Armor",
+        "description": "Basic leather armor which provides decent protection against sharp weapon attacks.",
+        "cost": 100,
+        "iconUris": [
+            "images/gui/spells/disciplines/divination.png",
+            "images/item/armor/torso/leather_armor_1.png"
+        ],
+        "equipIconUri": "images/player/body/leather_armor.png",
+        "itemTypeId": 2,
+        "isEquippable": true,
+        "secondaryStats": {
+            "armor": {
+                "blunt": 10,
+                "sharp": 25
+            }
+        }
+    },
+    {
+        "id": 2,
+        "name": "Plate Armor of the Lion",
+        "description": "Enchanted plate armor emblazoned with the logo of a lion.",
+        "cost": 1500,
+        "iconUris": [
+            "images/gui/spells/disciplines/transmutation.png",
+            "images/item/armor/torso/plate_1.png"
+        ],
+        "equipIconUri": "images/player/body/plate_and_cloth.png",
+        "itemTypeId": 2,
+        "isEquippable": true,
+        "stats": {
+            "strength": 10
+        },
+        "secondaryStats": {
+            "armor": {
+                "blunt": 45,
+                "sharp": 110
+            }
+        }
+    },
+    {
+        "id": 3,
+        "name": "Axe",
+        "description": "Basic axe, more suited for woodchopping than combat.",
+        "cost": 125,
+        "iconUris": [
+            "images/gui/spells/disciplines/divination.png",
+            "images/item/weapon/axe.png"
+        ],
+        "equipIconUri": "images/player/hand_right/axe.png",
+        "itemTypeId": 6,
+        "isEquippable": true,
+        "secondaryStats": {
+            "damage": {
+                "blunt": 10,
+                "sharp": 10
+            }
+        },
+        "equippedAbilityIds": [2]
+    },
+    {
+        "id": 4,
+        "name": "Gyvan's Glaive",
+        "description": "A magical enchanted glaive of elven make. Runes are etched across the blade that glimmer when in combat.",
+        "cost": 25000,
+        "iconUris": [
+            "images/gui/spells/disciplines/summoning.png",
+            "images/item/weapon/artefact/urand_guard_new.png"
+        ],
+        "equipIconUri": "images/player/hand_right/artefact/glaive_of_the_guard_new.png",
+        "itemTypeId": 6,
+        "isEquippable": true,
+        "stats": {
+            "agility": 20
+        },
+        "secondaryStats": {
+            "damage": {
+                "blunt": 85,
+                "sharp": 320,
+                "shadow": 120
+            },
+            "critChance": 5,
+            "critDamage": 20
+        },
+        "equippedAbilityIds": [2]
+    },
+    {
+        "id": 5,
+        "name": "Fire Mage Initiate Robe",
+        "description": "Robes issued to every new initiate of the Fire Mage's circle. Provides minor protection in combat.",
+        "cost": 50,
+        "iconUris": [
+            "images/gui/spells/disciplines/divination.png",
+            "images/item/armor/torso/robe_ego_1.png"
+        ],
+        "equipIconUri": "images/player/body/robe_red.png",
+        "itemTypeId": 2,
+        "isEquippable": true,
+        "secondaryStats": {
+            "armor": {
+                "blunt": 5,
+                "sharp": 5
+            }
+        }
+    },
+    {
+        "id": 6,
+        "name": "Fire Mage Initiate Staff",
+        "description": "Non-magical staff issued to every new initiate of the Fire Mage's circle. More of a walking stick than a weapon.",
+        "cost": 50,
+        "iconUris": [
+            "images/gui/spells/disciplines/divination.png",
+            "images/item/staff/staff_2.png"
+        ],
+        "equipIconUri": "images/player/hand_right/quarterstaff_3.png",
+        "itemTypeId": 6,
+        "isEquippable": true,
+        "secondaryStats": {
+            "damage": {
+                "blunt": 5,
+                "sharp": 5
+            }
+        },
+        "equippedAbilityIds": [8]
+    },
+    {
+        "id": 7,
+        "name": "Paladin Initiate Chestplate",
+        "description": "Plate armor that covers just the chest and ribcage of the wearer. Basic armor given to every paladin initiate.",
+        "cost": 100,
+        "iconUris": [
+            "images/gui/spells/disciplines/divination.png",
+            "images/item/armor/torso/plate_1.png"
+        ],
+        "equipIconUri": "images/player/body/half_plate.png",
+        "itemTypeId": 2,
+        "isEquippable": true,
+        "secondaryStats": {
+            "bonusActionPointsPercentage": -5,
+            "armor": {
+                "blunt": 8,
+                "sharp": 10
+            }
+        }
+    },
+    {
+        "id": 8,
+        "name": "Wooden Buckler",
+        "description": "Wooden buckler that looks like the lid of a barrel stolen from a tavern.",
+        "cost": 100,
+        "iconUris": [
+            "images/gui/spells/disciplines/divination.png",
+            "images/item/armor/shields/buckler_1_old.png"
+        ],
+        "equipIconUri": "images/player/hand_left/shield_round_small.png",
+        "itemTypeId": 7,
+        "isEquippable": true,
+        "secondaryStats": {
+            "bonusActionPointsPercentage": -5,
+            "armor": {
+                "blunt": 10,
+                "sharp": 5
+            }
+        }
+    },
+    {
+        "id": 9,
+        "name": "Paladin Initiate Mace",
+        "description": "A basic mace given to the more unproven paladin initiates.",
+        "cost": 50,
+        "iconUris": [
+            "images/gui/spells/disciplines/divination.png",
+            "images/item/weapon/mace_1_old.png"
+        ],
+        "equipIconUri": "images/player/hand_right/mace_old.png",
+        "itemTypeId": 6,
+        "isEquippable": true,
+        "secondaryStats": {
+            "damage": {
+                "blunt": 10
+            }
+        },
+        "equippedAbilityIds": [8]
+    }
+]

@@ -20,4 +20,8 @@ export class Item {
   public destroyedWhenOutOfCharges: boolean;
   public selfAppliedStatusEffects: StatusEffect[];
   public appliedStatusEffects: StatusEffect[];
+  public isStackable: boolean;
+  public stackSize: number;
+  public cost: number;
+  public equipIconUri: string;
 }
