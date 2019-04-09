@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TRPGGame.Entities;
 using TRPGGame.Entities.Data;
+using TRPGGame.Managers;
 using TRPGGame.Repository;
 using TRPGGame.Services;
 using Xunit;
@@ -18,7 +19,8 @@ namespace TRPGGame.Test.Services
         {
             _combatEntityFactory = new CombatEntityFactory(new CharacterBaseRepoStub(),
                                                            new CharacterHairRepoStub(),
-                                                           new AbilityRepoStub());
+                                                           new ClassTemplateRepoStub(),
+                                                           new EquipmentManagerStub());
         }
 
         [Theory]
@@ -560,16 +562,24 @@ namespace TRPGGame.Test.Services
         }
     }
 
-    public class AbilityRepoStub : IRepository<Ability>
+    public class ClassTemplateRepoStub : IRepository<ClassTemplate>
     {
-        public Task<IEnumerable<Ability>> GetDataAsync()
+        public Task<IEnumerable<ClassTemplate>> GetDataAsync()
         {
-            return Task.Run(() =>
-            {
-                IEnumerable<Ability> abilities = new List<Ability>();
+            return Task.Run(() => new List<ClassTemplate>() as IEnumerable<ClassTemplate>);
+        }
+    }
 
-                return abilities;
-            });
+    public class EquipmentManagerStub : IEquipmentManager
+    {
+        public bool Equip(CombatEntity entity, Item item)
+        {
+            return true;
+        }
+
+        public void Unequip(CombatEntity entity, Item item)
+        {
+            return;
         }
     }
 }

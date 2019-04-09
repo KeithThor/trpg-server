@@ -39,6 +39,7 @@
     <None Remove="ClientApp\src\app\game\combatPanel\combat-panel.component.ts" />
     <None Remove="ClientApp\src\app\game\combatPanel\descriptionPanel\description-panel.component.ts" />
     <None Remove="ClientApp\src\app\game\combatPanel\descriptionPanel\targetsGrid\targets-grid.component.ts" />
+    <None Remove="ClientApp\src\app\game\create\classPicker\class-picker.component.ts" />
     <None Remove="ClientApp\src\app\game\create\create.component.ts" />
     <None Remove="ClientApp\src\app\game\create\description\description.component.ts" />
     <None Remove="ClientApp\src\app\game\create\statPicker\stat-icon.component.ts" />
@@ -57,11 +58,14 @@
     <None Remove="ClientApp\src\app\game\model\category.model.ts" />
     <None Remove="ClientApp\src\app\game\model\character-stats.model.ts" />
     <None Remove="ClientApp\src\app\game\model\character.model.ts" />
+    <None Remove="ClientApp\src\app\game\model\class-template.model.ts" />
     <None Remove="ClientApp\src\app\game\model\damage-per-stat.model.ts" />
     <None Remove="ClientApp\src\app\game\model\damage-types.model.ts" />
     <None Remove="ClientApp\src\app\game\model\display-entity.interface.ts" />
     <None Remove="ClientApp\src\app\game\model\entity-location.model.ts" />
     <None Remove="ClientApp\src\app\game\model\formation.model.ts" />
+    <None Remove="ClientApp\src\app\game\model\item-type.model.ts" />
+    <None Remove="ClientApp\src\app\game\model\item.model.ts" />
     <None Remove="ClientApp\src\app\game\model\secondary-stat.model.ts" />
     <None Remove="ClientApp\src\app\game\model\status-effect.model.ts" />
     <None Remove="ClientApp\src\app\game\services\formation-targeter.static.ts" />
@@ -91,6 +95,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\combatPanel\combat-panel.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\combatPanel\descriptionPanel\description-panel.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\combatPanel\descriptionPanel\targetsGrid\targets-grid.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\create\classPicker\class-picker.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\description\description.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\editEntity\edit-entity.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\create.component.ts" />
@@ -109,11 +114,14 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\model\category.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\character-stats.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\character.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\class-template.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\damage-per-stat.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\damage-types.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\display-entity.interface.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\entity-location.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\formation.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\item-type.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\item.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\secondary-stat.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\status-effect.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\services\formation-targeter.static.ts" />

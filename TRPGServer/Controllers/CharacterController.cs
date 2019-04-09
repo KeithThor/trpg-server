@@ -20,18 +20,17 @@ namespace TRPGServer.Controllers
     {
         private readonly IRepository<CharacterBase> _characterBaseRepo;
         private readonly IRepository<CharacterHair> _characterHairRepo;
+        private readonly IRepository<IReadOnlyClassTemplate> _classTemplateRepo;
         private readonly ICombatEntityManager _combatEntityManager;
-
-        // Remove once db context is established
-        [Obsolete]
-        private readonly WorldEntityManager _worldEntityManager;
 
         public CharacterController(IRepository<CharacterBase> characterBaseRepo,
                                    IRepository<CharacterHair> characterHairRepo,
+                                   IRepository<IReadOnlyClassTemplate> classTemplateRepo,
                                    ICombatEntityManager combatEntityManager)
         {
             _characterBaseRepo = characterBaseRepo;
             _characterHairRepo = characterHairRepo;
+            _classTemplateRepo = classTemplateRepo;
             _combatEntityManager = combatEntityManager;
         }
 
@@ -73,6 +72,25 @@ namespace TRPGServer.Controllers
             }
         }
 
+        [Route("classtemplates")]
+        [HttpGet]
+        public async Task<IActionResult> GetClassTemplates(int? templateId)
+        {
+            var templates = await _classTemplateRepo.GetDataAsync();
+
+            if (templateId == null)
+            {
+                return new JsonResult(templates);
+            }
+            else
+            {
+                var result = templates.FirstOrDefault(cHair => cHair.Id == templateId.Value);
+
+                if (result == null) return new NotFoundResult();
+                else return new JsonResult(result);
+            }
+        }
+
         [Route("")]
         [HttpGet]
         public async Task<IActionResult> Get()
@@ -80,11 +98,13 @@ namespace TRPGServer.Controllers
             // Get all data parts
             var hair = await _characterHairRepo.GetDataAsync();
             var cBase = await _characterBaseRepo.GetDataAsync();
+            var templates = await _classTemplateRepo.GetDataAsync();
 
             return new JsonResult(new
             {
                 Hairs = hair,
-                Bases = cBase
+                Bases = cBase,
+                ClassTemplates = templates
             });
         }
 

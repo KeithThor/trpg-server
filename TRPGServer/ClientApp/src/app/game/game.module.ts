@@ -33,6 +33,7 @@ import { AbilityPanelComponent } from "./combatPanel/abilityPanel/ability-panel.
 import { CategoryPanelComponent } from "./combatPanel/categoryPanel/category-panel.component";
 import { DescriptionPanelComponent } from "./combatPanel/descriptionPanel/description-panel.component";
 import { TargetsGridComponent } from "./combatPanel/descriptionPanel/targetsGrid/targets-grid.component";
+import { ClassPickerComponent } from "./create/classPicker/class-picker.component";
 
 @NgModule({
   declarations: [
@@ -57,7 +58,8 @@ import { TargetsGridComponent } from "./combatPanel/descriptionPanel/targetsGrid
     AbilityPanelComponent,
     CategoryPanelComponent,
     DescriptionPanelComponent,
-    TargetsGridComponent
+    TargetsGridComponent,
+    ClassPickerComponent
   ],
 
   imports: [

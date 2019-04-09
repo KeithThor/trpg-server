@@ -12,6 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Threading.Tasks;
 using TRPGGame;
+using TRPGGame.Entities;
 using TRPGGame.Entities.Data;
 using TRPGGame.Managers;
 using TRPGGame.Repository;
@@ -90,6 +91,7 @@ namespace TRPGServer
             services.AddSingleton(bootstrapper.GetInstance<IFormationManager>());
             services.AddSingleton(bootstrapper.GetInstance<IRepository<CharacterBase>>());
             services.AddSingleton(bootstrapper.GetInstance<IRepository<CharacterHair>>());
+            services.AddSingleton(bootstrapper.GetInstance<IRepository<IReadOnlyClassTemplate>>());
             services.AddTransient(typeof(CombatEntityFactory), (provider) =>
             {
                 return bootstrapper.GetInstance<CombatEntityFactory>();

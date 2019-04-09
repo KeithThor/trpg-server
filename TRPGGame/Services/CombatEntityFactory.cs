@@ -4,7 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TRPGGame.Entities;
+using TRPGGame.Entities.Combat;
 using TRPGGame.Entities.Data;
+using TRPGGame.Managers;
 using TRPGGame.Repository;
 
 namespace TRPGGame.Services
@@ -13,15 +15,18 @@ namespace TRPGGame.Services
     {
         private readonly IRepository<CharacterBase> _characterBaseRepo;
         private readonly IRepository<CharacterHair> _characterHairRepo;
-        private readonly IRepository<Ability> _abilityRepo;
+        private readonly IRepository<ClassTemplate> _classTemplateRepo;
+        private readonly IEquipmentManager _equipmentManager;
 
         public CombatEntityFactory(IRepository<CharacterBase> characterBaseRepo,
                                    IRepository<CharacterHair> characterHairRepo,
-                                   IRepository<Ability> abilityRepo)
+                                   IRepository<ClassTemplate> classTemplateRepo,
+                                   IEquipmentManager equipmentManager)
         {
             _characterBaseRepo = characterBaseRepo;
             _characterHairRepo = characterHairRepo;
-            _abilityRepo = abilityRepo;
+            _classTemplateRepo = classTemplateRepo;
+            _equipmentManager = equipmentManager;
         }
 
         private static int _id = 0;
@@ -34,9 +39,11 @@ namespace TRPGGame.Services
         public async Task<CombatEntity> CreateAsync(CharacterTemplate template)
         {
             if (!await IsValidTemplateAsync(template)) return null;
+            if (template.ClassTemplateId == null) return null;
             var hairData = await _characterHairRepo.GetDataAsync();
             var baseData = await _characterBaseRepo.GetDataAsync();
-            var abilities = await _abilityRepo.GetDataAsync();
+            var classTemplates = await _classTemplateRepo.GetDataAsync();
+            ClassTemplate cTemplate;
             CharacterIconSet iconUris;
 
             try
@@ -45,6 +52,7 @@ namespace TRPGGame.Services
                 // bottom layer to top
                 var hair = hairData.First(h => h.Id == template.HairId).IconUri;
                 var cBase = baseData.First(b => b.Id == template.BaseId).IconUri;
+                cTemplate = classTemplates.First(temp => temp.Id == template.ClassTemplateId);
 
                 iconUris = new CharacterIconSet
                 {
@@ -67,12 +75,20 @@ namespace TRPGGame.Services
                 IconUris = iconUris,
                 GroupId = template.GroupId,
                 OwnerName = template.OwnerName,
-                Stats = template.AllocatedStats,
-                Abilities = abilities.ToList(),
-                SecondaryStats = new SecondaryStat(),
-                StatusEffects = new List<StatusEffect>()
+                GrowthPoints = template.AllocatedStats,
+                Abilities = cTemplate.Abilities.ToList(),
+                SecondaryStats = cTemplate.SecondaryStats.Copy(),
+                StatusEffects = new List<AppliedStatusEffect>(),
+                UnmodifiedStats = cTemplate.Stats.Copy(),
+                Stats = cTemplate.Stats.Copy(),
+                EquippedItems = new List<Item>()
             };
-            
+
+            foreach (var equipment in cTemplate.EquippedItems)
+            {
+                _equipmentManager.Equip(character, equipment);
+            }
+
             // Todo: Add to dbset here after creating EFCore migration
 
             return character;
@@ -106,16 +122,23 @@ namespace TRPGGame.Services
                 return null;
             }
 
-            var modifiedEntity = new CombatEntity();
-            modifiedEntity.Name = template.Name;
-            modifiedEntity.GroupId = template.GroupId;
-            modifiedEntity.IconUris = iconUris;
-            modifiedEntity.Id = entity.Id;
-            modifiedEntity.OwnerId = entity.OwnerId;
-            modifiedEntity.OwnerName = entity.OwnerName;
-            modifiedEntity.Stats = template.AllocatedStats;
-            modifiedEntity.SecondaryStats = entity.SecondaryStats;
-            modifiedEntity.Abilities = entity.Abilities;
+            var modifiedEntity = new CombatEntity
+            {
+                Name = template.Name,
+                GroupId = template.GroupId,
+                IconUris = entity.IconUris,
+                Id = entity.Id,
+                OwnerId = entity.OwnerId,
+                OwnerName = entity.OwnerName,
+                GrowthPoints = template.AllocatedStats,
+                SecondaryStats = entity.SecondaryStats,
+                Stats = entity.Stats,
+                Abilities = entity.Abilities,
+                EquippedItems = entity.EquippedItems,
+                UnmodifiedStats = entity.UnmodifiedStats,
+                StatusEffects = entity.StatusEffects
+            };
+            modifiedEntity.IconUris.HairIconUri = iconUris.HairIconUri;
 
             return modifiedEntity;
         }
