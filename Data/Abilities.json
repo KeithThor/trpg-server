@@ -226,5 +226,25 @@
     "isPositionStatic": false,
     "canTargetBeBlocked": true,
     "appliedStatusEffectIds": [ 2 ]
+  },
+  {
+    "id": 11,
+    "name": "Claw",
+    "actionPointCost": 20,
+    "description": "Drags your claw against the enemy's flesh.",
+    "iconUris": [
+      "images/gui/spells/components/hand_4.png"
+    ],
+    "categoryId": 1,
+    "targets": [ 5 ],
+    "centerOfTargets": 5,
+    "isPointBlank": false,
+    "isPositionStatic": false,
+    "canTargetBeBlocked": true,
+    "damagePerStat": {
+      "agility": {
+        "sharp": 2
+      }
+    }
   }
 ]

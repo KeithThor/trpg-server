@@ -44,5 +44,49 @@
                 "shadow": 15
             }
         }
+    },
+    {
+        "id": 3,
+        "name": "Defending",
+        "description": "This character is currently defending against all incoming damage.",
+        "iconUris": [
+            "images/item/armor/shields/shield_3.png"
+        ],
+        "duration": 1,
+        "stackSize": 1,
+        "modifiedSecondaryStats": {
+            "resistances": {
+                "blunt": 35,
+                "sharp": 35,
+                "fire": 35,
+                "frost": 35,
+                "lightning": 35,
+                "earth": 35,
+                "holy": 35,
+                "shadow": 35
+            }
+        }
+    },
+    {
+        "id": 4,
+        "name": "Fleeing",
+        "description": "This character is currently preparing to flee combat.",
+        "iconUris": [
+            "images/gui/startup/dungeon_sprint.png"
+        ],
+        "duration": 1,
+        "stackSize": 1,
+        "modifiedSecondaryStats": {
+            "resistances": {
+                "blunt": -15,
+                "sharp": -15,
+                "fire": -15,
+                "frost": -15,
+                "lightning": -15,
+                "earth": -15,
+                "holy": -15,
+                "shadow": -15
+            }
+        }
     }
 ]
