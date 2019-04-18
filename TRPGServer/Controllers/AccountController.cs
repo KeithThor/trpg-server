@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using TRPGGame.Managers;
 using TRPGServer.Data;
 using TRPGServer.Models;
 using TRPGServer.Services;
@@ -16,13 +17,16 @@ namespace TRPGServer.Controllers
     {
         private readonly TokenBuilder _tokenBuilder;
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly IStateManager _stateManager;
 
         public AccountController(TokenBuilder tokenBuilder,
                                  UserManager<ApplicationUser> userManager,
-                                 UserBuilder userBuilder)
+                                 UserBuilder userBuilder,
+                                 IStateManager stateManager)
         {
             _tokenBuilder = tokenBuilder;
             _userManager = userManager;
+            _stateManager = stateManager;
         }
 
         [Route("login")]
@@ -75,10 +79,11 @@ namespace TRPGServer.Controllers
                 UserName = user.Username,
                 Id = Guid.NewGuid().ToString()
             };
+            var userId = Guid.NewGuid();
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),
-                new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
                 new Claim(ClaimTypes.Role, "Player")
             };
 
@@ -90,7 +95,8 @@ namespace TRPGServer.Controllers
                 if (result.Succeeded)
                 {
                     var token = _tokenBuilder.CreateToken(newUser, claims);
-                    
+                    _stateManager.SetPlayerMakeCharacter(userId);
+
                     return new JsonResult(new
                     {
                         Token = token,

@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using TRPGGame;
 using TRPGGame.Entities;
 using TRPGGame.Managers;
 
@@ -17,10 +18,16 @@ namespace TRPGServer.Controllers
     public class FormationController : ControllerBase
     {
         private readonly IFormationManager _formationManager;
+        private readonly IStateManager _stateManager;
+        private readonly WorldEntityManager _worldEntityManager;
 
-        public FormationController(IFormationManager formationManager)
+        public FormationController(IFormationManager formationManager,
+                                   IStateManager stateManager,
+                                   WorldEntityManager worldEntityManager)
         {
             _formationManager = formationManager;
+            _stateManager = stateManager;
+            _worldEntityManager = worldEntityManager;
         }
 
         [HttpGet]
@@ -41,7 +48,14 @@ namespace TRPGServer.Controllers
             var formation = _formationManager.CreateFormation(template);
 
             if (formation == null) return new BadRequestResult();
-            else return new CreatedAtActionResult("post", "formation", template, formation);
+
+            if (template.MakeActive)
+            {
+                _worldEntityManager.CreateWorldEntity(template.OwnerId, formation.Id);
+                if (_stateManager.GetPlayerState(template.OwnerId) != PlayerStateConstants.InCombat)
+                    _stateManager.SetPlayerFree(template.OwnerId);
+            }
+            return new CreatedAtActionResult("post", "formation", template, formation);
         }
 
         [HttpPatch]

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
 using TRPGGame.Entities;
+using TRPGGame.Entities.Combat;
 using TRPGGame.Entities.Data;
 using TRPGGame.Managers;
 using TRPGGame.Repository;
@@ -20,7 +21,8 @@ namespace TRPGGame.Test.Services
             _combatEntityFactory = new CombatEntityFactory(new CharacterBaseRepoStub(),
                                                            new CharacterHairRepoStub(),
                                                            new ClassTemplateRepoStub(),
-                                                           new EquipmentManagerStub());
+                                                           new EquipmentManagerStub(),
+                                                           new StatusEffectManagerStub());
         }
 
         [Theory]
@@ -577,9 +579,52 @@ namespace TRPGGame.Test.Services
             return true;
         }
 
+        public void ReduceCharges(CombatEntity entity, Item item)
+        {
+            throw new NotImplementedException();
+        }
+
         public void Unequip(CombatEntity entity, Item item)
         {
             return;
+        }
+    }
+
+    public class StatusEffectManagerStub : IStatusEffectManager
+    {
+        public void Apply(CombatEntity recipient, CombatEntity applicator, StatusEffect statusEffect, bool isCrit = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Apply(CombatEntity recipient, CombatEntity applicator, IEnumerable<StatusEffect> statusEffects, bool isCrit = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(CombatEntity entity, AppliedStatusEffect appliedStatusEffect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(CombatEntity entity, int statusId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool Remove(CombatEntity entity, StatusEffect statusEffect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveAll(CombatEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RemoveAll(CombatEntity entity, Func<AppliedStatusEffect, bool> predicate)
+        {
+            throw new NotImplementedException();
         }
     }
 }

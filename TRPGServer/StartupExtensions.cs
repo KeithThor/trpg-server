@@ -78,6 +78,7 @@ namespace TRPGServer
             services.AddSingleton<UserBuilder>();
             services.AddSingleton<JwtSecurityTokenHandler>();
             services.AddSingleton<MapListenerContainer>();
+            services.AddSingleton<BattleListenerContainer>();
 
             services.AddSingleton<GameDataHandler>();
             services.AddTransient<MapDataHandler>();
@@ -92,6 +93,8 @@ namespace TRPGServer
             services.AddSingleton(bootstrapper.GetInstance<IRepository<CharacterBase>>());
             services.AddSingleton(bootstrapper.GetInstance<IRepository<CharacterHair>>());
             services.AddSingleton(bootstrapper.GetInstance<IRepository<IReadOnlyClassTemplate>>());
+            services.AddSingleton(bootstrapper.GetInstance<PlayerEntityManagerFactory>());
+            services.AddSingleton(bootstrapper.GetInstance<IStateManager>());
             services.AddTransient(typeof(CombatEntityFactory), (provider) =>
             {
                 return bootstrapper.GetInstance<CombatEntityFactory>();

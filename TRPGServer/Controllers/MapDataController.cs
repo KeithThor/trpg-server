@@ -30,7 +30,7 @@ namespace TRPGServer.Controllers
             if (mapId == null)
             {
                 var userGuid = Guid.Parse(User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
-                var manager = await _entityManager.GetPlayerEntityManagerAsync(userGuid);
+                var manager = _entityManager.GetPlayerEntityManager(userGuid);
                 mapId = manager.GetCurrentMap().Id;
             }
             return Json(new

@@ -40,7 +40,7 @@ namespace TRPGServer.Hubs
             }
             else if (message.MessageType == MessageTypeConstants.Local)
             {
-                var manager = await _worldEntityManager.GetPlayerEntityManagerAsync(Guid.Parse(Context.UserIdentifier));
+                var manager = _worldEntityManager.GetPlayerEntityManager(Guid.Parse(Context.UserIdentifier));
                 int mapId = manager.GetCurrentMap().Id;
                 await Clients.Group($"map:{mapId}").SendAsync("receiveMessage", message);
             }
@@ -59,7 +59,7 @@ namespace TRPGServer.Hubs
         /// <returns></returns>
         public async Task AddToMap()
         {
-            var manager = await _worldEntityManager.GetPlayerEntityManagerAsync(Guid.Parse(Context.UserIdentifier));
+            var manager = _worldEntityManager.GetPlayerEntityManager(Guid.Parse(Context.UserIdentifier));
             int mapId = manager.GetCurrentMap().Id;
             await Groups.AddToGroupAsync(Context.ConnectionId, $"map:{mapId}");
         }

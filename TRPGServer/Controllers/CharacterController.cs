@@ -22,16 +22,19 @@ namespace TRPGServer.Controllers
         private readonly IRepository<CharacterHair> _characterHairRepo;
         private readonly IRepository<IReadOnlyClassTemplate> _classTemplateRepo;
         private readonly ICombatEntityManager _combatEntityManager;
+        private readonly IStateManager _stateManager;
 
         public CharacterController(IRepository<CharacterBase> characterBaseRepo,
                                    IRepository<CharacterHair> characterHairRepo,
                                    IRepository<IReadOnlyClassTemplate> classTemplateRepo,
-                                   ICombatEntityManager combatEntityManager)
+                                   ICombatEntityManager combatEntityManager,
+                                   IStateManager stateManager)
         {
             _characterBaseRepo = characterBaseRepo;
             _characterHairRepo = characterHairRepo;
             _classTemplateRepo = classTemplateRepo;
             _combatEntityManager = combatEntityManager;
+            _stateManager = stateManager;
         }
 
         [Route("base")]
@@ -130,7 +133,12 @@ namespace TRPGServer.Controllers
             template.OwnerName = User.FindFirst(ClaimTypes.Name).Value;
             var entity = await _combatEntityManager.CreateAsync(template);
 
-            if (entity != null) return new CreatedAtActionResult("create", "character", template, entity);
+            if (entity != null)
+            {
+                if (_stateManager.GetPlayerState(template.OwnerId) == PlayerStateConstants.MakeCharacter)
+                    _stateManager.SetPlayerMakeFormation(template.OwnerId);
+                return new CreatedAtActionResult("create", "character", template, entity);
+            }
             else return new BadRequestResult();
         }
 

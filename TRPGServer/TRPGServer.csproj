@@ -18,6 +18,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Razor.Design" Version="2.1.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.AspNetCore.SpaServices.Extensions" Version="2.1.1" />
     <PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="2.1.1" />
+    <PackageReference Include="Ngrok.AspNetCore" Version="1.0.6" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,6 +33,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="ClientApp\src\app\game\battle\battle.component.ts" />
     <None Remove="ClientApp\src\app\game\chatbox\message.component.ts" />
     <None Remove="ClientApp\src\app\game\combatEntity\combat-entity.component.ts" />
     <None Remove="ClientApp\src\app\game\combatPanel\abilityPanel\ability-panel.component.ts" />
@@ -55,6 +57,9 @@
     <None Remove="ClientApp\src\app\game\iconDisplay\icon-display.component.ts" />
     <None Remove="ClientApp\src\app\game\mapTile\map-tile.component.ts" />
     <None Remove="ClientApp\src\app\game\model\ability.model.ts" />
+    <None Remove="ClientApp\src\app\game\model\ActionsPerFormation.ts" />
+    <None Remove="ClientApp\src\app\game\model\battle-action.model.ts" />
+    <None Remove="ClientApp\src\app\game\model\battle.model.ts" />
     <None Remove="ClientApp\src\app\game\model\category.model.ts" />
     <None Remove="ClientApp\src\app\game\model\character-stats.model.ts" />
     <None Remove="ClientApp\src\app\game\model\character.model.ts" />
@@ -66,10 +71,15 @@
     <None Remove="ClientApp\src\app\game\model\formation.model.ts" />
     <None Remove="ClientApp\src\app\game\model\item-type.model.ts" />
     <None Remove="ClientApp\src\app\game\model\item.model.ts" />
+    <None Remove="ClientApp\src\app\game\model\ResourceStats.ts" />
     <None Remove="ClientApp\src\app\game\model\secondary-stat.model.ts" />
+    <None Remove="ClientApp\src\app\game\model\start-of-turn-data.model.ts" />
     <None Remove="ClientApp\src\app\game\model\status-effect.model.ts" />
+    <None Remove="ClientApp\src\app\game\player-state-constants.static.ts" />
     <None Remove="ClientApp\src\app\game\services\formation-targeter.static.ts" />
     <None Remove="ClientApp\src\app\game\services\formation.factory.ts" />
+    <None Remove="ClientApp\src\app\game\services\state-handler.service.ts" />
+    <None Remove="ClientApp\src\app\game\services\target-translator.static.ts" />
     <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.css" />
     <None Remove="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
     <None Remove="ClientApp\src\app\shared\auth\auth.guard.ts" />
@@ -89,6 +99,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <TypeScriptCompile Include="ClientApp\src\app\game\battle\battle.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\chatbox\message.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\combatPanel\abilityPanel\ability-panel.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\combatPanel\categoryPanel\category-panel.component.ts" />
@@ -111,6 +122,9 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\game\tile-node.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\iconDisplay\icon-display.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\ability.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\ActionsPerFormation.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\battle-action.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\battle.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\category.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\character-stats.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\character.model.ts" />
@@ -122,10 +136,15 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\model\formation.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\item-type.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\item.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\ResourceStats.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\secondary-stat.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\start-of-turn-data.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\status-effect.model.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\player-state-constants.static.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\services\formation-targeter.static.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\services\formation.factory.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\services\state-handler.service.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\services\target-translator.static.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\worldEntity\world-entity.component.css" />
     <TypeScriptCompile Include="ClientApp\src\app\game\mapTile\map-tile.component.ts" />

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using TRPGGame.Entities.Data;
 
 namespace TRPGServer.Models
@@ -8,5 +9,6 @@ namespace TRPGServer.Models
         public int Id { get; set; }
         public IReadOnlyCharacterIconSet IconUris { get; set; }
         public string Name { get; set; }
+        public Guid OwnerId { get; set; }
     }
 }

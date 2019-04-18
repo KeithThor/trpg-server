@@ -47,7 +47,7 @@ namespace TRPGServer.Services
                 Location = kvp.Value
             });
 
-            _hubContext.Clients.Group(MapId).SendAsync("updateEntities", e.MapSpaces, entityLocations);
+            _hubContext.Clients.Group(MapId).SendAsync("updateEntities", entityLocations);
         }
 
         private void OnWorldEntitiesAdded(object sender, WorldEntityAddedArgs e)
@@ -59,7 +59,8 @@ namespace TRPGServer.Services
                 {
                     Id = entity.Id,
                     IconUris = entity.IconUris,
-                    Name = entity.Name
+                    Name = entity.Name,
+                    OwnerId = entity.OwnerGuid
                 });
             }
             _displayEntities.AddRange(entities);

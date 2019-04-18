@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TRPGGame;
+using TRPGGame.Managers;
 using TRPGServer.Models;
 using TRPGServer.Services;
 using TRPGShared;
@@ -19,15 +20,18 @@ namespace TRPGServer.Hubs
     {
         private readonly WorldEntityManager _worldEntityManager;
         private readonly MapListenerContainer _listenerContainer;
-        private readonly IWorldState _worldState;
+        private readonly BattleListenerContainer _battleListenerContainer;
+        private readonly IStateManager _stateManager;
 
         public WorldEntityHub(WorldEntityManager worldEntityManager,
                               MapListenerContainer container,
-                              IWorldState worldState)
+                              BattleListenerContainer battleListenerContainer,
+                              IStateManager stateManager)
         {
             _worldEntityManager = worldEntityManager;
             _listenerContainer = container;
-            _worldState = worldState;
+            _battleListenerContainer = battleListenerContainer;
+            _stateManager = stateManager;
         }
 
         /// <summary>
@@ -37,7 +41,19 @@ namespace TRPGServer.Hubs
         /// <returns></returns>
         public async Task StartConnection()
         {
-            var manager = await _worldEntityManager.GetPlayerEntityManagerAsync(Guid.Parse(Context.UserIdentifier));
+            var userId = Guid.Parse(Context.UserIdentifier);
+            var state = _stateManager.GetPlayerState(userId);
+            if (state != PlayerStateConstants.Free)
+            {
+                if (state == null)
+                {
+                    _stateManager.SetPlayerMakeCharacter(userId);
+                    state = PlayerStateConstants.MakeCharacter;
+                }
+                await Clients.Caller.SendAsync("invalidState", _stateManager.GetPlayerState(userId));
+                return;
+            }
+            var manager = _worldEntityManager.GetPlayerEntityManager(userId);
             int mapId = manager.GetCurrentMap().Id;
             await Groups.AddToGroupAsync(Context.ConnectionId, mapId.ToString());
         }
@@ -46,9 +62,9 @@ namespace TRPGServer.Hubs
         /// Puts the PlayerEntityManager into a playable state and inserts the player's entity into the game map.
         /// </summary>
         /// <returns></returns>
-        public async Task BeginPlay()
+        public void BeginPlay()
         {
-            var manager = await _worldEntityManager.GetPlayerEntityManagerAsync(Guid.Parse(Context.UserIdentifier));
+            var manager = _worldEntityManager.GetPlayerEntityManager(Guid.Parse(Context.UserIdentifier));
             manager.BeginPlay();
         }
 
@@ -58,12 +74,12 @@ namespace TRPGServer.Hubs
         /// <returns></returns>
         public async Task ChangeMaps()
         {
-            var manager = await _worldEntityManager.GetPlayerEntityManagerAsync(Guid.Parse(Context.UserIdentifier));
+            var manager = _worldEntityManager.GetPlayerEntityManager(Guid.Parse(Context.UserIdentifier));
             // Calling ChangeMap will restart an inactive connection with the server
             if (!manager.IsActive)
             {
                 await StartConnection();
-                await BeginPlay();
+                BeginPlay();
             }
             int previousMapId = manager.GetCurrentMap().Id;
             int newMapId = -1;
@@ -77,23 +93,6 @@ namespace TRPGServer.Hubs
             }
         }
 
-        ///// <summary>
-        ///// Called whenever the client requests to change maps.
-        ///// </summary>
-        ///// <param name="newMapId">The id of the map to change to.</param>
-        ///// <returns></returns>
-        //public async Task ChangeMap(int newMapId)
-        //{
-        //    var manager = await _worldEntityManager.GetPlayerEntityManagerAsync(Guid.Parse(Context.UserIdentifier));
-        //    int previousMapId = manager.GetCurrentMap().Id;
-        //    var success = manager.ChangeMaps(newMapId);
-        //    if (success)
-        //    {
-        //        await Groups.RemoveFromGroupAsync(Context.ConnectionId, previousMapId.ToString());
-        //        await Groups.AddToGroupAsync(Context.ConnectionId, newMapId.ToString());
-        //    }
-        //}
-
         /// <summary>
         /// Called whenever the client logs out or terminates the connection to the website, signaling a removal of their
         /// world entity and player manager.
@@ -101,7 +100,7 @@ namespace TRPGServer.Hubs
         public void EndConnection()
         {
             var removedManager = _worldEntityManager.RemovePlayerEntityManager(Guid.Parse(Context.UserIdentifier));
-            if (removedManager != null)
+            if (removedManager != null && removedManager.GetCurrentMap() != null)
             {
                 int mapId = removedManager.GetCurrentMap().Id;
                 Groups.RemoveFromGroupAsync(Context.ConnectionId, mapId.ToString());
@@ -116,19 +115,58 @@ namespace TRPGServer.Hubs
         /// <returns></returns>
         public async Task MoveEntity(Coordinate delta)
         {
-            var manager = await _worldEntityManager.GetPlayerEntityManagerAsync(Guid.Parse(Context.UserIdentifier));
+            var manager = _worldEntityManager.GetPlayerEntityManager(Guid.Parse(Context.UserIdentifier));
             // Calling this method will restart an inactive connection with the server.
             if (!manager.IsActive)
             {
                 await StartConnection();
-                await BeginPlay();
+                BeginPlay();
             }
-            bool success = manager.MoveEntity(delta.PositionX, delta.PositionY);
+            bool success = manager.MoveEntity(delta.PositionX, delta.PositionY, out bool canStartBattle);
 
+            // Potentially useless code
             if (success)
             {
                 int mapId = manager.GetCurrentMap().Id;
-                await Clients.Group(mapId.ToString()).SendAsync("updateMovement", manager.GetEntity().Position);
+                await Clients.Group(mapId.ToString()).SendAsync("updateMovement", manager.Entity.Position);
+                if (canStartBattle) await Clients.Caller.SendAsync("canStartBattle");
+            }
+        }
+
+        public async Task InitiateBattle()
+        {
+            var manager = _worldEntityManager.GetPlayerEntityManager(Guid.Parse(Context.UserIdentifier));
+            var battleManager = manager.StartBattle();
+            if (battleManager != null)
+            {
+                _battleListenerContainer.CreateListener(battleManager);
+                var tasks = new List<Task>();
+                var participantIds = battleManager.GetParticipantIds();
+                foreach (var id in participantIds)
+                {
+                    tasks.Add(Clients.User(id).SendAsync("battleInitiated"));
+                }
+                await Task.WhenAll(tasks);
+            }
+        }
+
+        public async Task JoinBattle(Guid joinUserId, bool asAttacker)
+        {
+            var userId = Guid.Parse(Context.UserIdentifier);
+            var playerState = _stateManager.GetPlayerState(userId);
+            if (playerState != PlayerStateConstants.Free)
+            {
+                await Clients.Caller.SendAsync("invalidState", playerState);
+                return;
+            }
+
+            var callerManager = _worldEntityManager.GetPlayerEntityManager(userId);
+            var joinManager = _worldEntityManager.GetPlayerEntityManager(joinUserId);
+
+            var battleManager = joinManager.JoinMyBattle(callerManager, asAttacker);
+            if (battleManager != null)
+            {
+                await Clients.Caller.SendAsync("battleInitiated");
             }
         }
 
@@ -139,7 +177,7 @@ namespace TRPGServer.Hubs
         /// <returns></returns>
         public async Task RequestEntityData(IEnumerable<int> entityIds)
         {
-            var manager = await _worldEntityManager.GetPlayerEntityManagerAsync(Guid.Parse(Context.UserIdentifier));
+            var manager = _worldEntityManager.GetPlayerEntityManager(Guid.Parse(Context.UserIdentifier));
             int mapId = manager.GetCurrentMap().Id;
             var entities = _listenerContainer.GetDisplayEntityStore(mapId)
                                              .GetDisplayEntities()
