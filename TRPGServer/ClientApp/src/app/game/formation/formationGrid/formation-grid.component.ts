@@ -2,6 +2,7 @@ import { Component, Input } from "@angular/core";
 import { Formation } from "../../model/formation.model";
 import { DisplayableEntity } from "../../model/display-entity.interface";
 import { Coordinate } from "../../model/coordinate.model";
+import { CombatEntity } from "../../model/combat-entity.model";
 
 /** A component that represents a Formation Grid. */
 @Component({
@@ -11,10 +12,11 @@ import { Coordinate } from "../../model/coordinate.model";
 })
 export class FormationGridComponent {
   @Input() formation: Formation;
-  @Input() specialIconsFunc: (entity: DisplayableEntity) => string[];
+  @Input() specialIconsFunc: (entity: CombatEntity) => string[];
   @Input() nodeClickHandler: (entity: DisplayableEntity, position: Coordinate) => void;
   @Input() getNodeStateFunc: (entity: DisplayableEntity) => string;
   @Input() setHoveredEntityFunc: (entity: DisplayableEntity) => void;
+  @Input() onHoveredHandler: (entity: DisplayableEntity, position: Coordinate) => void;
 
   /**
    * Creates a new Coordinate object given an X and Y position.

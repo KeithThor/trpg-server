@@ -5,3 +5,19 @@
   border: 2px solid white;
   position: relative;
 }
+
+.formation-node-active {
+  background-color: teal;
+}
+
+.formation-node-center {
+  background-color: aqua;
+}
+
+.formation-node-static {
+  background-color: #e22c00;
+}
+
+.formation-node-point-blank {
+  background-color: red;
+}

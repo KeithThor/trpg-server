@@ -91,8 +91,16 @@ export class GameComponent implements OnInit {
     await this.gameStateService.initializeAsync()
       .catch(err => console.log(err));
     this.worldEntityService.onUpdateLocations(this.onUpdateLocation.bind(this));
+    this.worldEntityService.canStartBattleHandler = this.canStartBattleAsync.bind(this);
     this.worldEntityService.onChangeMaps(this.onChangeMaps.bind(this));
     await this.gameStateService.beginPlayAsync();
+  }
+
+  private async canStartBattleAsync(): Promise<void> {
+    let accept = confirm("Do you want to start a battle?");
+    if (accept) {
+      await this.worldEntityService.initiateBattleAsync();
+    }
   }
 
   /** Ends connections with each of the game services and this components subscriptions. */
@@ -178,7 +186,7 @@ export class GameComponent implements OnInit {
    * @param entities A grid showing which entity occupies which space.
    * @param entityLocations An array of entity locations, giving the id of the entity and its current position on the map.
    */
-  private onUpdateLocation(entities: number[][], entityLocations: EntityLocation[]): void {
+  private onUpdateLocation(entityLocations: EntityLocation[]): void {
     if (this.entityLocations == null || this.entityLocations.length === 0) {
       this.entityLocations = entityLocations;
     }

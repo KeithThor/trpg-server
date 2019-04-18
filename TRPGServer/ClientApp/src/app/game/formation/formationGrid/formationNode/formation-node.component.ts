@@ -1,6 +1,7 @@
 import { Component, Input } from "@angular/core";
 import { DisplayableEntity } from "../../../model/display-entity.interface";
 import { Coordinate } from "../../../model/coordinate.model";
+import { CombatEntity } from "../../../model/combat-entity.model";
 
 /** A component that wraps around a DisplayEntityComponent and handles coordination with a FormationComponent.*/
 @Component({
@@ -12,10 +13,11 @@ import { Coordinate } from "../../../model/coordinate.model";
   ]
 })
 export class FormationNodeComponent {
-  @Input() entity: DisplayableEntity;
-  @Input() specialIconsFunc: (entity: DisplayableEntity) => string[];
+  @Input() entity: CombatEntity;
+  @Input() specialIconsFunc: (entity: CombatEntity) => string[];
   @Input() coordinate: Coordinate;
   @Input() clickHandler: (entity: DisplayableEntity, position: Coordinate) => void;
+  @Input() onHoverHandler: (entity: DisplayableEntity, position: Coordinate) => void;
   @Input() getNodeStateFunc: (entity: DisplayableEntity) => string;
   @Input() setHoveredEntityFunc: (entity: DisplayableEntity) => void;
 
@@ -23,8 +25,8 @@ export class FormationNodeComponent {
    * Returns an array of string containing the uris of special icons to stack on top of a DisplayableEntity.
    * @param entity The entity to stack special icons on top of.
    */
-  public getSpecialIcons(entity: DisplayableEntity): string[] {
-    if (this.specialIconsFunc != null) return this.specialIconsFunc(entity);
+  public getSpecialIcons(): string[] {
+    if (this.specialIconsFunc != null) return this.specialIconsFunc(this.entity);
     else return null;
   }
 
@@ -40,8 +42,9 @@ export class FormationNodeComponent {
    * Sets the HoveredEntity to null if the user leaves this component.
    * @param entity The entity to set the HoveredEntity to.
    */
-  public setHoveredEntity(entity: DisplayableEntity): void {
-    if (this.setHoveredEntityFunc != null) this.setHoveredEntityFunc(entity);
+  public setHoveredEntity(): void {
+    if (this.setHoveredEntityFunc != null) this.setHoveredEntityFunc(this.entity);
+    if (this.onHoverHandler != null) this.onHoverHandler(this.entity, this.coordinate);
   }
 
   /** Gets the css class name that represents this node's state. */

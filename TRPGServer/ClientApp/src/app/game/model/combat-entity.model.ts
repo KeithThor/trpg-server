@@ -5,6 +5,7 @@ import { SecondaryStat } from "./secondary-stat.model";
 import { Ability } from "./ability.model";
 import { StatusEffect } from "./status-effect.model";
 import { Item } from "./item.model";
+import { ResourceStats } from "./ResourceStats";
 
 export class CombatEntity implements DisplayableEntity {
   constructor() {
@@ -14,6 +15,7 @@ export class CombatEntity implements DisplayableEntity {
     this.unmodifiedStats = new CharacterStats();
     this.growthPoints = new CharacterStats();
     this.secondaryStats = new SecondaryStat();
+    this.resources = new ResourceStats();
     this.abilities = [];
     this.statusEffects = [];
     this.equippedItems = [];
@@ -31,4 +33,6 @@ export class CombatEntity implements DisplayableEntity {
   public abilities: Ability[];
   public statusEffects: StatusEffect[];
   public equippedItems: Item[];
+  public resources: ResourceStats;
+  public isActive: boolean = false;
 }

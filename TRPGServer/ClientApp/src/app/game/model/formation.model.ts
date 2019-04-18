@@ -12,6 +12,7 @@ export class FormationTemplate {
   public positions: number[][];
   public name: string;
   public leaderId: number;
+  public makeActive: boolean;
 }
 
 export class FormationConstants {

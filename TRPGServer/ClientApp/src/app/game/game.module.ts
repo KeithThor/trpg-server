@@ -34,6 +34,7 @@ import { CategoryPanelComponent } from "./combatPanel/categoryPanel/category-pan
 import { DescriptionPanelComponent } from "./combatPanel/descriptionPanel/description-panel.component";
 import { TargetsGridComponent } from "./combatPanel/descriptionPanel/targetsGrid/targets-grid.component";
 import { ClassPickerComponent } from "./create/classPicker/class-picker.component";
+import { StateHandlerService } from "./services/state-handler.service";
 
 @NgModule({
   declarations: [
@@ -80,7 +81,8 @@ import { ClassPickerComponent } from "./create/classPicker/class-picker.componen
     MapService,
     GameStateService,
     ChatService,
-    FormationFactory
+    FormationFactory,
+    StateHandlerService
   ],
 
   exports: [

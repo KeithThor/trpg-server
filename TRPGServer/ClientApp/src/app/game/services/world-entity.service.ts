@@ -4,10 +4,12 @@ import { WorldEntity } from "../model/world-entity.model";
 import { Coordinate } from "../model/coordinate.model";
 import { LocalStorageConstants } from "../../constants";
 import { EntityLocation } from "../model/entity-location.model";
+import { StateHandlerService } from "./state-handler.service";
+import { PlayerStateConstants } from "../player-state-constants.static";
 
 @Injectable()
 export class WorldEntityService {
-  constructor() {
+  constructor(private stateHandler: StateHandlerService) {
     this.entityLocations = [];
     this.entities = [];
     this.entityIds = [];
@@ -20,6 +22,7 @@ export class WorldEntityService {
 
   private connection: HubConnection;
   public entityLocations: number[][];
+  public canStartBattleHandler: () => Promise<void>;
   public entities: WorldEntity[];
   private entityIds: number[];
   private requestIds: number[];
@@ -27,7 +30,7 @@ export class WorldEntityService {
   private isRequestingData: boolean;
   private failedReconnections: number;
   private changeMapCallbacks: { (newMapId: number): Promise<void>; }[]
-  private updateLocationsCallbacks: { (mapEntities: number[][], entities: EntityLocation[]): void; }[]
+  private updateLocationsCallbacks: { (entities: EntityLocation[]): void; }[]
 
   /** Initializes this service and starts the connection to the server. */
   public async initializeAsync(): Promise<void> {
@@ -40,13 +43,15 @@ export class WorldEntityService {
       })
       .build();
     this.connection.on("updateEntities",
-      (locations: number[][], entities: EntityLocation[]) => this.updateEntities(locations, entities));
+      (entities: EntityLocation[]) => this.updateEntities(entities));
     this.connection.on("addEntities", (entities: WorldEntity[]) => this.addEntities(entities));
     this.connection.on("removeEntities", (ids: number[]) => this.removeEntities(ids));
     this.connection.on("updateMovement", this.updateMovement);
+    this.connection.on("battleInitiated", async () => await this.onBattleInitiatedAsync());
+    this.connection.on("canStartBattle", () => this.onCanStartBattle())
+    this.connection.on("invalidState", async (state: string) => await this.invalidStateAsync(state));
     this.connection.on("receiveMissingEntities", (entities: WorldEntity[]) => this.receiveMissingEntities(entities));
     this.connection.on("changeMapsSuccess", (newMapId: number) => this.changeMapsSuccess(newMapId));
-    this.connection.onclose(this.closeConnection);
 
     await this.connection.start()
       .catch(async () => {
@@ -83,8 +88,16 @@ export class WorldEntityService {
    * Registers a callback function to be called whenever there is an update to entity locations from the server.
    * @param callback The function called whenever there is an update to entity locations from the server.
    */
-  public onUpdateLocations(callback: (mapEntities: number[][], entities: EntityLocation[]) => void): void {
+  public onUpdateLocations(callback: (entities: EntityLocation[]) => void): void {
     this.updateLocationsCallbacks.push(callback);
+  }
+
+  public async initiateBattleAsync(): Promise<void> {
+    await this.connection.send("initiateBattle");
+  }
+
+  public async joinBattleAsync(toJoinId: string, isAttacker: boolean): Promise<void> {
+    await this.connection.send("joinBattle", toJoinId, isAttacker);
   }
 
   /**
@@ -147,6 +160,18 @@ export class WorldEntityService {
     }
   }
 
+  private async onBattleInitiatedAsync(): Promise<void> {
+    await this.stateHandler.handleStateAsync(PlayerStateConstants.inCombat);
+  }
+
+  private onCanStartBattle(): void {
+    if (this.canStartBattleHandler != null) this.canStartBattleHandler();
+  }
+
+  private async invalidStateAsync(currentState: string): Promise<void> {
+    await this.stateHandler.handleStateAsync(currentState);
+  }
+
   /**
    * Closes the connection to the server.
    * @param error Represents the error object, if any.
@@ -164,13 +189,12 @@ export class WorldEntityService {
    * Called whenever there is an update for world entity locations available from the server.
    * @param mapEntities A 2d array containing the locations of entities represented by their ids.
    */
-  private updateEntities(mapEntities: number[][], entities: EntityLocation[]): void {
+  private updateEntities(entities: EntityLocation[]): void {
     //if (entities != null) {
     //  this.entityIds = entities;
     //  setTimeout(() => this.verifyEntities(), 500);
     //}
-    this.entityLocations = mapEntities;
-    this.updateLocationsCallbacks.forEach(callback => callback(mapEntities, entities));
+    this.updateLocationsCallbacks.forEach(callback => callback(entities));
   }
 
   /**

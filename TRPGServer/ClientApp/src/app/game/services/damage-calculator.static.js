@@ -28,21 +28,21 @@ var DamageCalculator = /** @class */ (function () {
     DamageCalculator.getBonusDamage = function (owner, ability) {
         var bonusDamage = owner.secondaryStats.damage;
         var result = new damage_types_model_1.DamageTypes();
-        if (ability.damage.blunt != null || ability.damage.blunt != 0)
+        if (ability.damage.blunt != null && ability.damage.blunt != 0)
             result.blunt = bonusDamage.blunt;
-        if (ability.damage.sharp != null || ability.damage.sharp != 0)
+        if (ability.damage.sharp != null && ability.damage.sharp != 0)
             result.sharp = bonusDamage.sharp;
-        if (ability.damage.fire != null || ability.damage.fire != 0)
+        if (ability.damage.fire != null && ability.damage.fire != 0)
             result.fire = bonusDamage.fire;
-        if (ability.damage.frost != null || ability.damage.frost != 0)
+        if (ability.damage.frost != null && ability.damage.frost != 0)
             result.frost = bonusDamage.frost;
-        if (ability.damage.lightning != null || ability.damage.lightning != 0)
+        if (ability.damage.lightning != null && ability.damage.lightning != 0)
             result.lightning = bonusDamage.lightning;
-        if (ability.damage.earth != null || ability.damage.earth != 0)
+        if (ability.damage.earth != null && ability.damage.earth != 0)
             result.earth = bonusDamage.earth;
-        if (ability.damage.holy != null || ability.damage.holy != 0)
+        if (ability.damage.holy != null && ability.damage.holy != 0)
             result.holy = bonusDamage.holy;
-        if (ability.damage.shadow != null || ability.damage.shadow != 0)
+        if (ability.damage.shadow != null && ability.damage.shadow != 0)
             result.shadow = bonusDamage.shadow;
         return result;
     };

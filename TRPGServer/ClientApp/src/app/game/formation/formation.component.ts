@@ -28,6 +28,7 @@ export class FormationComponent implements OnInit {
   public entities: CombatEntity[];
   public selectedEntity: CombatEntity;
   public hoveredEntity: DisplayableEntity;
+  public makeActive: boolean;
   private isEditing: boolean;
 
   ngOnInit(): void {
@@ -266,6 +267,7 @@ export class FormationComponent implements OnInit {
     let template = new FormationTemplate();
     template.id = this.activeFormation.id;
     template.name = this.activeFormation.name;
+    template.makeActive = this.makeActive;
 
     // Todo: Add in way to select leader
     let uniques = TwoDArray.getUnique(this.activeFormation.positions);
