@@ -32,7 +32,7 @@ namespace TRPGGame
         {
             Parallel.ForEach(MapManagers.Values, (maps) =>
             {
-                maps.CheckChanges();
+                Task.Run(() => maps.CheckChangesAsync());
             });
         }
     }

@@ -22,7 +22,7 @@ namespace TRPGGame.Entities
         /// <summary>
         /// The amount of times this item can be activated by a character.
         /// </summary>
-        int ConsumableCharges { get; }
+        int? ConsumableCharges { get; }
 
         /// <summary>
         /// The description of this item.

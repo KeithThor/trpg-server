@@ -16,7 +16,8 @@ namespace TRPGGame.Managers
         /// <param name="recipient">The CombatEntity who is receiving the StatusEffect.</param>
         /// <param name="applicator">The CombatEntity applying the StatusEffect on the receiver.</param>
         /// <param name="statusEffect">The StatusEffect to apply onto the receiver.</param>
-        void Apply(CombatEntity recipient, CombatEntity applicator, StatusEffect statusEffect);
+        /// <param name="isCrit">If true, will include critical damage in the calculations.</param>
+        void Apply(CombatEntity recipient, CombatEntity applicator, StatusEffect statusEffect, bool isCrit = false);
 
         /// <summary>
         /// Applies many StatusEffects onto a CombatEntity.
@@ -24,7 +25,8 @@ namespace TRPGGame.Managers
         /// <param name="recipient">The CombatEntity who is receiving the StatusEffects.</param>
         /// <param name="applicator">The CombatEntity applying the StatusEffects on the receiver.</param>
         /// <param name="statusEffects">The StatusEffects to apply onto the receiver.</param>
-        void Apply(CombatEntity recipient, CombatEntity applicator, IEnumerable<StatusEffect> statusEffects);
+        /// <param name="isCrit">If true, will include critical damage in the calculations.</param>
+        void Apply(CombatEntity recipient, CombatEntity applicator, IEnumerable<StatusEffect> statusEffects, bool isCrit = false);
 
         /// <summary>
         /// Removes an AppliedStatusEffect from a CombatEntity, removing all the beneficial and detrimental effects.

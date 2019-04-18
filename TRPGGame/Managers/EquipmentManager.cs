@@ -33,6 +33,14 @@ namespace TRPGGame.Managers
             var oldItem = entity.EquippedItems.FirstOrDefault(i => i.Type.EquipPosition == item.Type.EquipPosition);
             Unequip(entity, oldItem);
 
+            entity.PlayerInventory.Items.Remove(item);
+            var tracking = entity.PlayerInventory.TrackedItems.FirstOrDefault(i => i.BaseItemId == item.Id);
+            if (tracking != null)
+            {
+                entity.PlayerInventory.TrackedItems.Remove(tracking);
+                entity.TrackedItems.Add(tracking);
+            }
+
             entity.EquippedItems.Add(item);
             entity.Abilities.AddRange(item.EquippedAbilities);
             entity.SecondaryStats += item.SecondaryStats;
@@ -40,6 +48,37 @@ namespace TRPGGame.Managers
             _statusEffectManager.Apply(entity, entity, item.SelfAppliedStatusEffects);
             ChangeIconUri(entity, item.Type.EquipPosition, item.EquipIconUri);
             return true;
+        }
+
+        /// <summary>
+        /// Reduces the amount of charges in an item. If the item has no charges left and DestroyedWhenOutOfCharges is true,
+        /// will remove the item from existence.
+        /// </summary>
+        /// <param name="entity">The entity who used the item.</param>
+        /// <param name="item">The item to reduce charges of.</param>
+        public void ReduceCharges(CombatEntity entity, Item item)
+        {
+            bool isInPlayerInventory = true;
+            if (item.ConsumableCharges == null || item.IsConsumable) return;
+            var track = entity.PlayerInventory.TrackedItems
+                                              .FirstOrDefault(i => i.BaseItemId == item.Id && i.CurrentCharges > 0);
+            if (track == null)
+            {
+                entity.TrackedItems.FirstOrDefault(i => i.BaseItemId == item.Id);
+                isInPlayerInventory = false;
+            }
+            if (track == null) throw new Exception("The item " + item.Name + " is not being tracked.");
+
+            track.CurrentCharges--;
+            if (item.DestroyedWhenOutOfCharges && track.CurrentCharges == 0)
+            {
+                if (!isInPlayerInventory)
+                {
+                    Unequip(entity, item);
+                }
+                entity.PlayerInventory.TrackedItems.Remove(track);
+                entity.PlayerInventory.Items.Remove(item);
+            }
         }
 
         /// <summary>
@@ -54,7 +93,15 @@ namespace TRPGGame.Managers
             if (index != -1)
             {
                 var oldItem = entity.EquippedItems[index];
-                // Add unequipped item to player inventory
+
+                entity.PlayerInventory.Items.Add(oldItem);
+                var tracking = entity.TrackedItems.FirstOrDefault(i => i.BaseItemId == item.Id);
+                if (tracking != null)
+                {
+                    entity.TrackedItems.Remove(tracking);
+                    entity.PlayerInventory.TrackedItems.Add(tracking);
+                }
+
                 entity.Abilities.RemoveAll(ability => oldItem.EquippedAbilities.Contains(ability));
                 entity.SecondaryStats -= oldItem.SecondaryStats;
                 entity.Stats -= oldItem.Stats;

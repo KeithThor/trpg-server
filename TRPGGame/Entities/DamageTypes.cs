@@ -5,7 +5,7 @@ using System.Text;
 namespace TRPGGame.Entities
 {
     /// <summary>
-    /// A POCO that contains all the possible different types of damage.
+    /// An object that contains all the possible different types of damage.
     /// </summary>
     public class DamageTypes : IReadOnlyDamageTypes
     {
@@ -125,6 +125,21 @@ namespace TRPGGame.Entities
                 Earth = first.Earth / divideBy,
                 Holy = first.Holy / divideBy,
                 Shadow = first.Shadow / divideBy
+            };
+        }
+
+        public static DamageTypes operator /(DamageTypes first, DamageTypes divideBy)
+        {
+            return new DamageTypes
+            {
+                Blunt = (divideBy.Blunt == 0) ? 0: first.Blunt / divideBy.Blunt,
+                Sharp = (divideBy.Sharp == 0) ? 0 : first.Sharp / divideBy.Sharp,
+                Fire = (divideBy.Fire == 0) ? 0 : first.Fire / divideBy.Fire,
+                Frost = (divideBy.Frost == 0) ? 0 : first.Frost / divideBy.Frost,
+                Lightning = (divideBy.Lightning == 0) ? 0 : first.Lightning / divideBy.Lightning,
+                Earth = (divideBy.Earth == 0) ? 0 : first.Earth / divideBy.Earth,
+                Holy = (divideBy.Holy == 0) ? 0 : first.Holy / divideBy.Holy,
+                Shadow = (divideBy.Shadow == 0) ? 0 : first.Shadow / divideBy.Shadow
             };
         }
     }

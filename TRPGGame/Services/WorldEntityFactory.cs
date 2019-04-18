@@ -6,55 +6,80 @@ using System.Text;
 using System.Threading.Tasks;
 using TRPGGame.Data;
 using TRPGGame.Entities;
+using TRPGGame.Entities.Data;
+using TRPGGame.Managers;
+using TRPGShared;
 
 namespace TRPGGame.Services
 {
     /// <summary>
     /// Factory responsible for creating instances of WorldEntities.
     /// </summary>
-    public class WorldEntityFactory
+    public class WorldEntityFactory : IWorldEntityFactory
     {
-        public WorldEntityFactory()
+        public WorldEntityFactory(ICombatEntityFactory combatEntityFactory,
+                                  IFormationFactory formationFactory,
+                                  IFormationManager formationManager)
         {
             _id = 1;
+            _combatEntityFactory = combatEntityFactory;
+            _formationFactory = formationFactory;
+            _formationManager = formationManager;
         }
-
-        private readonly WorldEntityDbContext _dbContext;
-
-        public WorldEntityFactory(WorldEntityDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
+        private readonly ICombatEntityFactory _combatEntityFactory;
+        private readonly IFormationFactory _formationFactory;
+        private readonly IFormationManager _formationManager;
 
         private static int _id;
 
-        [Obsolete]
-        public async Task<WorldEntity> CreateAsync(Guid ownerId)
+        /// <summary>
+        /// Creates a new WorldEntity using the id of the formation that this WorldEntity represents and the id of
+        /// the player who will own this Entity.
+        /// </summary>
+        /// <param name="playerId">The id of the player who will own the new entity.</param>
+        /// <param name="formationId">The id of the formation that this entity will represent.</param>
+        /// <returns></returns>
+        public WorldEntity Create(Guid playerId, int formationId)
         {
-            var foundEntity = await _dbContext.PlayerEntities.Where(entity => entity.OwnerGuid == ownerId)
-                                                             .FirstOrDefaultAsync();
-            if (foundEntity != null)
+            var formation = _formationManager.GetFormation(playerId, formationId);
+            if (formation == null) return null;
+            var leader = formation.Positions.FirstOrDefaultTwoD(entity => entity != null && entity.Id == formation.LeaderId);
+
+            return new WorldEntity
             {
-                return foundEntity;
-            }
-            else
+                Id = _id++,
+                OwnerGuid = playerId,
+                ActiveFormation = (Formation)formation,
+                CurrentMapId = GameplayConstants.StartingMapId,
+                Position = GameplayConstants.StartingPosition,
+                IconUris = (CharacterIconSet)leader.IconUris,
+                Name = leader.OwnerName
+            };
+        }
+
+        /// <summary>
+        /// Creates a new WorldEntity using the id of the formation that this WorldEntity represents and the id of
+        /// the player who will own this Entity. Will also use the location of the old WorldEntity.
+        /// </summary>
+        /// <param name="playerId">The id of the player who will own the new entity.</param>
+        /// <param name="formationId">The id of the formation that this entity will represent.</param>
+        /// <returns></returns>
+        public WorldEntity Create(Guid playerId, int formationId, WorldEntity oldEntity)
+        {
+            var formation = _formationManager.GetFormation(playerId, formationId);
+            if (formation == null) return null;
+            var leader = formation.Positions.FirstOrDefaultTwoD(entity => entity != null && entity.Id == formation.LeaderId);
+
+            return new WorldEntity
             {
-                var entity = new WorldEntity
-                {
-                    Id = _id++,
-                    OwnerGuid = ownerId,
-                    Name = "User",
-                    CurrentMapId = 1,
-                    IconUris = new Entities.Data.CharacterIconSet
-                    {
-                        BodyIconUri = "images/player/base/human_male.png",
-                        HairIconUri = "images/player/hair/brown_1.png"
-                    },
-                    Position = new TRPGShared.Coordinate() { PositionX = 1, PositionY = 1}
-                };
-                await _dbContext.PlayerEntities.AddAsync(entity);
-                return entity;
-            }
+                Id = oldEntity.Id,
+                OwnerGuid = playerId,
+                ActiveFormation = (Formation)formation,
+                CurrentMapId = oldEntity.CurrentMapId,
+                Position = oldEntity.Position,
+                IconUris = (CharacterIconSet)leader.IconUris,
+                Name = leader.OwnerName
+            };
         }
 
         /// <summary>
@@ -64,26 +89,46 @@ namespace TRPGGame.Services
         /// <returns></returns>
         public async Task<WorldEntity> CreateAsync(CombatEntity entity)
         {
-            var foundEntity = await _dbContext.PlayerEntities.Where(e => e.OwnerGuid == entity.OwnerId)
-                                                             .FirstOrDefaultAsync();
-            if (foundEntity != null)
+            //var foundEntity = await _dbContext.PlayerEntities.Where(e => e.OwnerGuid == entity.OwnerId)
+            //                                                 .FirstOrDefaultAsync();
+            //if (foundEntity != null)
+            //{
+            //    return foundEntity;
+            //}
+            //else
+            //{
+            //    var wEntity = new WorldEntity
+            //    {
+            //        Id = _id++,
+            //        OwnerGuid = entity.OwnerId,
+            //        Name = entity.OwnerName,
+            //        CurrentMapId = 1,
+            //        IconUris = entity.IconUris,
+            //        Position = new TRPGShared.Coordinate() { PositionX = 1, PositionY = 1 }
+            //    };
+            //    await _dbContext.PlayerEntities.AddAsync(wEntity);
+            //    return wEntity;
+            //}
+            return null;
+        }
+
+        /// <summary>
+        /// Creates an ai-controlled WorldEntity from an EnemyFormationTemplate.
+        /// </summary>
+        /// <param name="template">The template to use to create the WorldEntity.</param>
+        /// <returns></returns>
+        public async Task<WorldEntity> CreateAsync(EnemyFormationTemplate template)
+        {
+            var formation = await _formationFactory.CreateAsync(template);
+
+            return new WorldEntity
             {
-                return foundEntity;
-            }
-            else
-            {
-                var wEntity = new WorldEntity
-                {
-                    Id = _id++,
-                    OwnerGuid = entity.OwnerId,
-                    Name = entity.OwnerName,
-                    CurrentMapId = 1,
-                    IconUris = entity.IconUris,
-                    Position = new TRPGShared.Coordinate() { PositionX = 1, PositionY = 1 }
-                };
-                await _dbContext.PlayerEntities.AddAsync(wEntity);
-                return wEntity;
-            }
+                Id = _id++,
+                IconUris = new CharacterIconSet(template.IconUris),
+                OwnerGuid = GameplayConstants.AiId,
+                Name = template.Name,
+                ActiveFormation = formation
+            };
         }
     }
 }

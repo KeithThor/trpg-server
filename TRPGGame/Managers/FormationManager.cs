@@ -13,12 +13,13 @@ namespace TRPGGame.Managers
     public class FormationManager : IFormationManager
     {
         // Todo: Get FormationDbContext instead of in memory store.
-        private readonly List<Formation> _formations;
-        private readonly FormationFactory _formationFactory;
+        private readonly Dictionary<Guid, List<Formation>> _formations;
+        private readonly IFormationFactory _formationFactory;
+        private object _lock = new object();
 
-        public FormationManager(FormationFactory formationFactory)
+        public FormationManager(IFormationFactory formationFactory)
         {
-            _formations = new List<Formation>();
+            _formations = new Dictionary<Guid, List<Formation>>();
             _formationFactory = formationFactory;
         }
 
@@ -31,10 +32,15 @@ namespace TRPGGame.Managers
         public IReadOnlyFormation CreateFormation(FormationTemplate template)
         {
             var formation = _formationFactory.Create(template);
+            var swap = new List<Formation> { formation };
 
             if (formation != null)
             {
-                _formations.Add(formation);
+                lock (_lock)
+                {
+                    if (_formations.ContainsKey(template.OwnerId)) _formations[template.OwnerId].Add(formation);
+                    else _formations.Add(template.OwnerId, swap);
+                }
             }
             return formation;
         }
@@ -47,22 +53,34 @@ namespace TRPGGame.Managers
         /// <returns>Returns true if the delete operation was successful.</returns>
         public bool DeleteFormation(int id, Guid ownerId)
         {
-            var index = _formations.FindIndex(f => f.Id == id);
-            if (index == -1) return false;
-            if (_formations[index].OwnerId != ownerId) return false;
-
-            _formations.RemoveAt(index);
-            return true;
+            lock (_lock)
+            {
+                if (_formations.ContainsKey(ownerId))
+                {
+                    if (_formations[ownerId].Count <= 1) _formations.Remove(ownerId);
+                    else _formations[ownerId].RemoveAll(f => f.Id == id);
+                    return true;
+                }
+            }
+            return false;
         }
 
         /// <summary>
-        /// Retrieves a formation using the given id.
+        /// Retrieves a formation using the given id and owner id.
         /// </summary>
+        /// <param name="ownerId">The id of the owner of the formation to retrieve.</param>
         /// <param name="id">The id of the formation to retrieve.</param>
         /// <returns></returns>
-        public IReadOnlyFormation GetFormation(int id)
+        public IReadOnlyFormation GetFormation(Guid ownerId, int id)
         {
-            return _formations.FirstOrDefault(f => f.Id == id);
+            lock (_lock)
+            {
+                if (_formations.ContainsKey(ownerId))
+                {
+                    return _formations[ownerId].FirstOrDefault(f => f.Id == id);
+                }
+            }
+            return null;
         }
 
         /// <summary>
@@ -72,17 +90,12 @@ namespace TRPGGame.Managers
         /// <returns>Returns a set of formations owned by the given user.</returns>
         public IEnumerable<IReadOnlyFormation> GetFormations(Guid ownerId)
         {
-            return _formations.Where(f => f.OwnerId == ownerId);
-        }
-
-        /// <summary>
-        /// Returns a set of formations that match a given predicate.
-        /// </summary>
-        /// <param name="predicate">The function to use to filter a set of formations.</param>
-        /// <returns>Returns a set of formations that match a predicate.</returns>
-        public IEnumerable<IReadOnlyFormation> GetFormations(Func<IReadOnlyFormation, bool> predicate)
-        {
-            return _formations.Where(predicate);
+            var failed = new List<IReadOnlyFormation>();
+            lock (_lock)
+            {
+                if (_formations.ContainsKey(ownerId)) return _formations[ownerId];
+                else return failed;
+            }
         }
 
         /// <summary>
@@ -93,15 +106,28 @@ namespace TRPGGame.Managers
         public IReadOnlyFormation UpdateFormation(FormationTemplate template)
         {
             if (template.Id == null) return null;
-            var index = _formations.FindIndex(f => f.Id == template.Id);
-            if (index == -1) return null;
+            Formation oldFormation = null;
+
+            lock (_lock)
+            {
+                if (!_formations.ContainsKey(template.OwnerId)) return null;
+                oldFormation = _formations[template.OwnerId].FirstOrDefault(f => f.Id == template.Id);
+            }
+
+            if (oldFormation == null || oldFormation.OwnerId != template.OwnerId) return null;
 
             var formation = _formationFactory.Create(template);
-            formation.Id = template.Id.Value;
             if (formation == null) return null;
+            formation.Id = oldFormation.Id;
+            var swap = new List<Formation> { formation };
 
-            _formations[index] = formation;
-            return _formations[index];
+            lock (_lock)
+            {
+                if (_formations.ContainsKey(template.OwnerId)) _formations[template.OwnerId].Add(formation);
+                else _formations.Add(template.OwnerId, swap);
+            }
+
+            return formation;
         }
     }
 }

@@ -8,7 +8,7 @@ namespace TRPGGame.Entities
     /// </summary>
     public class CharacterTemplate
     {
-        public int EntityId { get; set; }
+        public int? EntityId { get; set; }
         public string Name { get; set; }
         public Guid OwnerId { get; set; }
         public string OwnerName { get; set; }

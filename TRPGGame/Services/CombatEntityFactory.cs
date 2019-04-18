@@ -11,22 +11,28 @@ using TRPGGame.Repository;
 
 namespace TRPGGame.Services
 {
-    public class CombatEntityFactory
+    /// <summary>
+    /// Factory responsible for creating new CombatEntities.
+    /// </summary>
+    public class CombatEntityFactory : ICombatEntityFactory
     {
         private readonly IRepository<CharacterBase> _characterBaseRepo;
         private readonly IRepository<CharacterHair> _characterHairRepo;
         private readonly IRepository<ClassTemplate> _classTemplateRepo;
         private readonly IEquipmentManager _equipmentManager;
+        private readonly IStatusEffectManager _statusEffectManager;
 
         public CombatEntityFactory(IRepository<CharacterBase> characterBaseRepo,
                                    IRepository<CharacterHair> characterHairRepo,
                                    IRepository<ClassTemplate> classTemplateRepo,
-                                   IEquipmentManager equipmentManager)
+                                   IEquipmentManager equipmentManager,
+                                   IStatusEffectManager statusEffectManager)
         {
             _characterBaseRepo = characterBaseRepo;
             _characterHairRepo = characterHairRepo;
             _classTemplateRepo = classTemplateRepo;
             _equipmentManager = equipmentManager;
+            _statusEffectManager = statusEffectManager;
         }
 
         private static int _id = 0;
@@ -92,6 +98,50 @@ namespace TRPGGame.Services
             // Todo: Add to dbset here after creating EFCore migration
 
             return character;
+        }
+
+        /// <summary>
+        /// Creates a CombatEntity using an EnemyEntityBase. The result is an ai-controlled CombatEntity.
+        /// </summary>
+        /// <param name="entityBase">The base to use for the resultant CombatEntity.</param>
+        /// <returns></returns>
+        public CombatEntity Create(EnemyEntityBase entityBase)
+        {
+            var secondaryStats = StatsCalculator.GetSecondaryStats(entityBase.Stats);
+            secondaryStats += entityBase.SecondaryStats;
+
+            int health = entityBase.Resources.MaxHealth + StatsCalculator.GetHealth(entityBase.Stats);
+            int mana = entityBase.Resources.MaxMana + StatsCalculator.GetMana(entityBase.Stats);
+            var resources = new ResourceStats
+            {
+                CurrentHealth = health,
+                CurrentMana = mana,
+                MaxHealth = health,
+                MaxMana = mana,
+                UnmodifiedMaxHealth = health,
+                UnmodifiedMaxMana = mana
+            };
+
+            var iconUris = new CharacterIconSet(entityBase.IconUris);
+            var entity = new CombatEntity
+            {
+                Id = _id++,
+                Name = entityBase.Name,
+                OwnerId = GameplayConstants.AiId,
+                IconUris = iconUris,
+                Abilities = entityBase.Abilities,
+                ComboCounter = 0,
+                OwnerName = entityBase.FactionName,
+                Stats = entityBase.Stats.Copy(),
+                SecondaryStats = entityBase.SecondaryStats,
+                StatusEffects = new List<AppliedStatusEffect>(),
+                UnmodifiedStats = entityBase.Stats,
+                Resources = resources
+            };
+
+            _statusEffectManager.Apply(entity, entity, entityBase.StatusEffects);
+
+            return entity;
         }
 
         /// <summary>

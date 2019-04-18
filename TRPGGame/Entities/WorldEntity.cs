@@ -14,6 +14,7 @@ namespace TRPGGame.Entities
         public CharacterIconSet IconUris { get; set; }
         public Coordinate Position { get; set; }
         public int CurrentMapId { get; set; }
+        public Formation ActiveFormation { get; set; }
 
         IReadOnlyCharacterIconSet IReadOnlyWorldEntity.IconUris => IconUris;
     }

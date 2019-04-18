@@ -88,7 +88,7 @@ namespace TRPGGame.Entities
         /// <summary>
         /// The amount of times this item can be activated by a character.
         /// </summary>
-        public int ConsumableCharges { get; set; }
+        public int? ConsumableCharges { get; set; }
 
         /// <summary>
         /// If true, this item is removed from the inventory of a character when it is out of charges.

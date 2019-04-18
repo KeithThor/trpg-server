@@ -22,5 +22,13 @@ namespace TRPGGame.Managers
         /// <param name="entity">The CombatEntity to unequip the item from.</param>
         /// <param name="item">The Item to unequip.</param>
         void Unequip(CombatEntity entity, Item item);
+
+        /// <summary>
+        /// Reduces the amount of charges in an item. If the item has no charges left and DestroyedWhenOutOfCharges is true,
+        /// will remove the item from existence.
+        /// </summary>
+        /// <param name="entity">The entity who used the item.</param>
+        /// <param name="item">The item to reduce charges of.</param>
+        void ReduceCharges(CombatEntity entity, Item item);
     }
 }

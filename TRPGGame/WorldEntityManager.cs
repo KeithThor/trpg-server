@@ -13,38 +13,54 @@ namespace TRPGGame
     /// </summary>
     public class WorldEntityManager
     {
-        private readonly WorldEntityFactory _worldEntityFactory;
+        private readonly IWorldEntityFactory _worldEntityFactory;
+        private readonly PlayerEntityManagerFactory _playerEntityManagerFactory;
         private readonly IWorldState _worldState;
         private ConcurrentDictionary<Guid, WorldEntity> _worldEntities;
         private ConcurrentDictionary<Guid, PlayerEntityManager> _playerEntityManagers;
         private readonly List<CombatEntity> _combatEntities;
 
-        /// <summary>
-        /// The time in minutes until a player is logged off due to inactivity.
-        /// </summary>
-        public const int InactiveTimeoutDuration = 10;
+        
 
-        public WorldEntityManager(WorldEntityFactory worldEntityFactory,
+        public WorldEntityManager(IWorldEntityFactory worldEntityFactory,
+                                  PlayerEntityManagerFactory playerEntityManagerFactory,
                                   IWorldState worldState)
         {
             _worldEntityFactory = worldEntityFactory;
+            _playerEntityManagerFactory = playerEntityManagerFactory;
             _worldState = worldState;
             _worldEntities = new ConcurrentDictionary<Guid, WorldEntity>();
             _playerEntityManagers = new ConcurrentDictionary<Guid, PlayerEntityManager>();
             _combatEntities = new List<CombatEntity>();
         }
 
-        public async Task<IReadOnlyWorldEntity> GetOrAddEntityAsync(Guid ownerId)
+        /// <summary>
+        /// Returns a WorldEntity owned by the player with the given id.
+        /// </summary>
+        /// <param name="ownerId">The id of the owner of the WorldEntity to retrieve.</param>
+        /// <returns></returns>
+        public IReadOnlyWorldEntity GetWorldEntity(Guid ownerId)
         {
-            bool success = _worldEntities.TryGetValue(ownerId, out WorldEntity entity);
-
+            var success = _worldEntities.TryGetValue(ownerId, out WorldEntity entity);
             if (success) return entity;
-            else
-            {
-                entity = await _worldEntityFactory.CreateAsync(ownerId);
-                entity = _worldEntities.GetOrAdd(ownerId, entity);
-                return entity;
-            }
+            else return null;
+        }
+
+        /// <summary>
+        /// Creates a new WorldEntity and assigns it to the PlayerEntityManager.
+        /// </summary>
+        /// <param name="ownerId">The id of the player who will own this new entity.</param>
+        /// <param name="activeFormationId">The id of the formation this WorldEntity represents.</param>
+        /// <returns></returns>
+        public IReadOnlyWorldEntity CreateWorldEntity(Guid ownerId, int activeFormationId)
+        {
+            var newManager = _playerEntityManagerFactory.Create(ownerId);
+            var manager = _playerEntityManagers.GetOrAdd(ownerId, newManager);
+            if (manager.Entity == null) manager.Entity = _worldEntityFactory.Create(ownerId, activeFormationId);
+            else manager.Entity = _worldEntityFactory.Create(ownerId, activeFormationId, manager.Entity);
+            _worldEntities.AddOrUpdate(ownerId, manager.Entity, (id, entity) => manager.Entity);
+
+            return manager.Entity;
         }
 
         /// <summary>
@@ -55,7 +71,7 @@ namespace TRPGGame
         /// <returns></returns>
         public IReadOnlyWorldEntity GetEntity(int entityId)
         {
-            var entity = _playerEntityManagers.Values.Select(manager => manager.GetEntity())
+            var entity = _playerEntityManagers.Values.Select(manager => manager.Entity)
                                                      .FirstOrDefault(e => e.Id == entityId);
             return entity;
         }
@@ -67,7 +83,7 @@ namespace TRPGGame
         /// <returns>An enumerable of read-only World Entities filtered by the predicate.</returns>
         public IEnumerable<IReadOnlyWorldEntity> GetEntities(Func<IReadOnlyWorldEntity, bool> predicate)
         {
-            var entities = _playerEntityManagers.Values.Select(manager => manager.GetEntity())
+            var entities = _playerEntityManagers.Values.Select(manager => manager.Entity)
                                                        .Where(entity => predicate(entity));
             return entities;
         }
@@ -81,7 +97,7 @@ namespace TRPGGame
             foreach (var idManagerPair in _playerEntityManagers)
             {
                 var inactivePeriod = DateTime.Now - idManagerPair.Value.LastAccessed;
-                if ((int)inactivePeriod.TotalMinutes >= InactiveTimeoutDuration)
+                if ((int)inactivePeriod.TotalMinutes >= GameplayConstants.InactiveTimeoutDuration)
                 {
                     _playerEntityManagers.TryRemove(idManagerPair.Key, out PlayerEntityManager manager);
                     manager.EndConnection();
@@ -94,13 +110,20 @@ namespace TRPGGame
         /// </summary>
         /// <param name="ownerId">The Guid of the player to get the PlayerEntityManager for.</param>
         /// <returns></returns>
-        public async Task<PlayerEntityManager> GetPlayerEntityManagerAsync(Guid ownerId)
+        public PlayerEntityManager GetPlayerEntityManager(Guid ownerId)
         {
             var success = _playerEntityManagers.TryGetValue(ownerId, out PlayerEntityManager manager);
-            if (success) return manager;
+            if (success)
+            {
+                if (manager.Entity == null)
+                {
+                    var entitySuccess = _worldEntities.TryGetValue(ownerId, out WorldEntity entity);
+                    if (entitySuccess) manager.Entity = entity;
+                }
+                return manager;
+            }
 
-            var worldEntity = await _worldEntityFactory.CreateAsync(ownerId);
-            return _playerEntityManagers.GetOrAdd(ownerId, new PlayerEntityManager(worldEntity, _worldState));
+            return _playerEntityManagers.GetOrAdd(ownerId, _playerEntityManagerFactory.Create(ownerId));
         }
 
         /// <summary>

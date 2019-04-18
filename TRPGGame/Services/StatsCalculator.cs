@@ -34,7 +34,7 @@ namespace TRPGGame.Services
                     Shadow = stats.Constitution / 4
                 },
                 ArmorPercentage = new DamageTypes(),
-                BonusActionPoints = stats.Agility / 6,
+                BonusActionPoints = stats.Agility / 3,
                 BonusActionPointsPercentage = 0,
                 CritChance = stats.Agility / 6,
                 CritChancePercentage = 0,

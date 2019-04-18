@@ -8,17 +8,21 @@ using TRPGGame.Services;
 
 namespace TRPGGame.Managers
 {
+    /// <summary>
+    /// Manager responsible for CRUD operations concerning CombatEntities.
+    /// </summary>
     public class CombatEntityManager : ICombatEntityManager
     {
-        private readonly CombatEntityFactory _combatEntityFactory;
+        private readonly ICombatEntityFactory _combatEntityFactory;
 
         // Todo: switch in memory list for queryable from dbcontext
-        private readonly List<CombatEntity> _combatEntities;
+        private readonly SortedList<int, CombatEntity> _combatEntities;
 
-        public CombatEntityManager(CombatEntityFactory combatEntityFactory)
+        private object _lock = new object();
+        public CombatEntityManager(ICombatEntityFactory combatEntityFactory)
         {
             _combatEntityFactory = combatEntityFactory;
-            _combatEntities = new List<CombatEntity>();
+            _combatEntities = new SortedList<int, CombatEntity>();
         }
 
         /// <summary>
@@ -27,7 +31,10 @@ namespace TRPGGame.Managers
         /// <returns></returns>
         internal IEnumerable<CombatEntity> GetModifiableEntities()
         {
-            return _combatEntities;
+            lock(_lock)
+            {
+                return _combatEntities.Values;
+            }
         }
 
         /// <summary>
@@ -36,7 +43,10 @@ namespace TRPGGame.Managers
         /// <returns></returns>
         public IEnumerable<IReadOnlyCombatEntity> GetEntities()
         {
-            return _combatEntities;
+            lock(_lock)
+            {
+                return _combatEntities.Values;
+            }
         }
 
         /// <summary>
@@ -47,7 +57,11 @@ namespace TRPGGame.Managers
         public async Task<IReadOnlyCombatEntity> CreateAsync(CharacterTemplate template)
         {
             var entity = await _combatEntityFactory.CreateAsync(template);
-            _combatEntities.Add(entity);
+
+            lock(_lock)
+            {
+                _combatEntities.Add(entity.Id, entity);
+            }
 
             return entity;
         }
@@ -59,13 +73,22 @@ namespace TRPGGame.Managers
         /// <returns>Returns a read-only reference to the CombatEntity if the operation was successful. Else returns null.</returns>
         public async Task<IReadOnlyCombatEntity> UpdateAsync(CharacterTemplate template)
         {
-            int index = _combatEntities.FindIndex(e => e.Id == template.EntityId);
-            if (index == -1) return null;
+            if (!template.EntityId.HasValue) return null;
+            CombatEntity entity;
+            lock (_lock)
+            {
+                entity = _combatEntities.ContainsKey(template.EntityId.Value) ? _combatEntities[template.EntityId.Value] : null;
+            }
 
-            var modified = await _combatEntityFactory.UpdateAsync(_combatEntities[index], template);
+            if (entity == null) return null;
+
+            var modified = await _combatEntityFactory.UpdateAsync(entity, template);
             if (modified == null) return null;
 
-            _combatEntities[index] = modified;
+            lock(_lock)
+            {
+                _combatEntities[modified.Id] = modified;
+            }
             return modified;
         }
 
@@ -77,12 +100,15 @@ namespace TRPGGame.Managers
         /// <returns>Returns true if deletion was successful.</returns>
         public bool Delete(int entityId, Guid playerId)
         {
-            var index = _combatEntities.FindIndex(e => e.Id == entityId);
-            if (index == -1) return false;
-            if (_combatEntities[index].OwnerId != playerId) return false;
+            //var index = _combatEntities.FindIndex(e => e.Id == entityId);
+            //if (index == -1) return false;
+            //if (_combatEntities[index].OwnerId != playerId) return false;
 
-            _combatEntities.RemoveAt(index);
-            return true;
+            //_combatEntities.RemoveAt(index);
+            //return true;
+            
+            // Todo: implement delete after moving data to databases
+            return false;
         }
     }
 }

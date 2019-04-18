@@ -17,13 +17,6 @@ namespace TRPGGame.Managers
         IReadOnlyFormation CreateFormation(FormationTemplate template);
 
         /// <summary>
-        /// Retrieves a Formation by id.
-        /// </summary>
-        /// <param name="id">The unique identifier of the Formation to retrieve.</param>
-        /// <returns>Returns a read-only copy of the found Formation.</returns>
-        IReadOnlyFormation GetFormation(int id);
-
-        /// <summary>
         /// Updates an existing Formation using the template provided.
         /// </summary>
         /// <param name="template">The template to use to update an existing Formation.</param>
@@ -39,11 +32,12 @@ namespace TRPGGame.Managers
         bool DeleteFormation(int id, Guid ownerId);
 
         /// <summary>
-        /// Retrieves a set of Formations that satisfy a given predicate.
+        /// Retrieves a formation using the given id and owner id.
         /// </summary>
-        /// <param name="predicate">The predicate used to filter the Formations.</param>
-        /// <returns>An IEnumerable of read-only references to the Formations that match the predicate.</returns>
-        IEnumerable<IReadOnlyFormation> GetFormations(Func<IReadOnlyFormation, bool> predicate);
+        /// <param name="ownerId">The id of the owner of the formation to retrieve.</param>
+        /// <param name="id">The id of the formation to retrieve.</param>
+        /// <returns></returns>
+        IReadOnlyFormation GetFormation(Guid ownerId, int id);
 
         /// <summary>
         /// Retrieves a set of Formations belonging to the user with the provided id.

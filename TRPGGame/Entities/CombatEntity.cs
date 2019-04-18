@@ -37,6 +37,16 @@ namespace TRPGGame.Entities
         public string OwnerName { get; set; }
 
         /// <summary>
+        /// The current combo counter on this character.
+        /// </summary>
+        public int ComboCounter { get; set; }
+
+        /// <summary>
+        /// Represents the amount of health, mana, etc that this CombatEntity has.
+        /// </summary>
+        public ResourceStats Resources { get; set; }
+
+        /// <summary>
         /// The uris that point to the icons that make up the appearance of this entity. Does not include equipment uris.
         /// </summary>
         public CharacterIconSet IconUris { get; set; } = new CharacterIconSet();
@@ -72,9 +82,19 @@ namespace TRPGGame.Entities
         public List<AppliedStatusEffect> StatusEffects { get; set; } = new List<AppliedStatusEffect>();
 
         /// <summary>
+        /// Contains a reference to the inventory of the player who owns this CombatEntity.
+        /// </summary>
+        public Inventory PlayerInventory { get; set; } = new Inventory();
+
+        /// <summary>
         /// Contains all of the items that are equipped on this character.
         /// </summary>
         public List<Item> EquippedItems { get; set; } = new List<Item>();
+
+        /// <summary>
+        /// Contains all of the items that are being tracked on this character.
+        /// </summary>
+        public List<TrackableItem> TrackedItems { get; set; } = new List<TrackableItem>();
 
         IReadOnlyCharacterIconSet IReadOnlyCombatEntity.IconUris => IconUris;
         IReadOnlyCharacterStats IReadOnlyCombatEntity.Stats => Stats;

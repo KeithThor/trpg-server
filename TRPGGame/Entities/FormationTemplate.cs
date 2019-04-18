@@ -38,5 +38,10 @@ namespace TRPGGame.Entities
         /// Contains the unique identifier of the leader of the Formation.
         /// </summary>
         public int LeaderId { get; set; }
+
+        /// <summary>
+        /// If true, will make the Formation created from this template the active Formation.
+        /// </summary>
+        public bool MakeActive { get; set; }
     }
 }

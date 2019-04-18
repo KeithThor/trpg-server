@@ -19,12 +19,16 @@ namespace TRPGGame.Managers
         /// <param name="recipient">The CombatEntity who is receiving the StatusEffect.</param>
         /// <param name="applicator">The CombatEntity applying the StatusEffect on the receiver.</param>
         /// <param name="statusEffect">The StatusEffect to apply onto the receiver.</param>
-        public void Apply(CombatEntity recipient, CombatEntity applicator, StatusEffect statusEffect)
+        /// <param name="isCrit">If true, will include critical damage in the calculations.</param>
+        public void Apply(CombatEntity recipient, 
+                          CombatEntity applicator, 
+                          StatusEffect statusEffect,
+                          bool isCrit)
         {
             var status = recipient.StatusEffects.FirstOrDefault(se => se.BaseStatus.Id == statusEffect.Id);
             if (status == null)
             {
-                var appliedStatusEffect = CreateAppliedStatus(applicator, statusEffect);
+                var appliedStatusEffect = CreateAppliedStatus(applicator, recipient, statusEffect);
                 ApplyStatEffects(recipient, statusEffect);
                 recipient.StatusEffects.Add(appliedStatusEffect);
             }
@@ -33,8 +37,8 @@ namespace TRPGGame.Managers
                 // Apply another stack of StatusEffect
                 if (statusEffect.StackSize > 1 && status.CurrentStacks < statusEffect.StackSize)
                 {
-                    status.CumulativeDamage += DamageCalculator.GetDamage(applicator, statusEffect);
-                    status.CumulativeHeal += DamageCalculator.GetHeal(applicator, statusEffect);
+                    status.CumulativeDamage += DamageCalculator.GetDamage(applicator, statusEffect, isCrit);
+                    status.CumulativeHeal += DamageCalculator.GetHeal(applicator, statusEffect, isCrit);
                     status.CurrentStacks++;
                     status.Duration = statusEffect.Duration;
                 }
@@ -52,11 +56,14 @@ namespace TRPGGame.Managers
         /// <param name="recipient">The CombatEntity who is receiving the StatusEffects.</param>
         /// <param name="applicator">The CombatEntity applying the StatusEffects on the receiver.</param>
         /// <param name="statusEffects">The StatusEffects to apply onto the receiver.</param>
-        public void Apply(CombatEntity recipient, CombatEntity applicator, IEnumerable<StatusEffect> statusEffects)
+        public void Apply(CombatEntity recipient, 
+                          CombatEntity applicator, 
+                          IEnumerable<StatusEffect> statusEffects,
+                          bool isCrit)
         {
             foreach (var statusEffect in statusEffects)
             {
-                Apply(recipient, applicator, statusEffect);
+                Apply(recipient, applicator, statusEffect, isCrit);
             }
         }
 
@@ -66,11 +73,13 @@ namespace TRPGGame.Managers
         /// <param name="applicator">The CombatEntity applying this instance of the AppliedStatusEffect.</param>
         /// <param name="statusEffect">The base to use for the AppliedStatusEffect.</param>
         /// <returns>Returns an instance of an AppliedStatusEffect that keeps track of a StatusEffect on a CombatEntity.</returns>
-        private AppliedStatusEffect CreateAppliedStatus(CombatEntity applicator, StatusEffect statusEffect)
+        private AppliedStatusEffect CreateAppliedStatus(CombatEntity applicator, CombatEntity recipient, StatusEffect statusEffect)
         {
             var appliedStatus = new AppliedStatusEffect();
             appliedStatus.CumulativeDamage = DamageCalculator.GetDamage(applicator, statusEffect);
             appliedStatus.CumulativeHeal = DamageCalculator.GetHeal(applicator, statusEffect);
+            appliedStatus.CumulativeHeal += DamageCalculator.GetPercentageHeal(recipient.Resources.MaxHealth, statusEffect.PercentHealPerTurn);
+
             appliedStatus.CurrentStacks = 1;
             appliedStatus.Duration = statusEffect.Duration;
 

@@ -77,6 +77,11 @@ namespace TRPGGame.Entities
         public bool IsDebuff { get; set; }
 
         /// <summary>
+        /// Represents the amount of resources changed on a CombatEntity. Ignores 'Current' and 'Unmodified' resource modifications.
+        /// </summary>
+        public ResourceStats ModifiedResources { get; set; }
+
+        /// <summary>
         /// Initial damage dealt per turn to the target of this StatusEffect.
         /// </summary>
         public DamageTypes DamagePerTurn { get; set; } = new DamageTypes();

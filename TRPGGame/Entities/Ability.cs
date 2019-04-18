@@ -68,9 +68,20 @@ namespace TRPGGame.Entities
         public bool IsSpell { get; set; }
 
         /// <summary>
-        /// If true, plaes this ability in the Skills command slot.
+        /// If true, places this ability in the Skills command slot.
         /// </summary>
         public bool IsSkill { get; set; }
+
+        /// <summary>
+        /// If greater than 0, will delay this ability that amount of turns before activating.
+        /// </summary>
+        public int DelayedTurns { get; set; }
+
+        /// <summary>
+        /// If true and this ability has a turn delay, will active before any CombatEntities can act in battle.
+        /// Else, will occur after every entity has had their turn in battle.
+        /// </summary>
+        public bool ActivatesBeforeTurnStart { get; set; }
 
         /// <summary>
         /// The amount of action points the character loses (or gains) by using this ability.
@@ -133,7 +144,7 @@ namespace TRPGGame.Entities
         public IEnumerable<StatusEffect> AppliedStatusEffects { get; set; } = new List<StatusEffect>();
 
         /// <summary>
-        /// Status effects applied by thisa ability to the caster.
+        /// Status effects applied by this ability to the caster.
         /// </summary>
         public IEnumerable<StatusEffect> SelfAppliedStatusEffects { get; set; } = new List<StatusEffect>();
 

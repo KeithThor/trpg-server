@@ -42,9 +42,9 @@ namespace TRPGGame
                             .As<ICombatEntityManager>()
                             .SingleInstance();
             containerBuilder.RegisterType<FormationManager>().As<IFormationManager>().SingleInstance();
-            containerBuilder.RegisterType<FormationFactory>();
-            containerBuilder.RegisterType<CombatEntityFactory>();
-            containerBuilder.RegisterType<WorldEntityFactory>();
+            containerBuilder.RegisterType<FormationFactory>().As<IFormationFactory>();
+            containerBuilder.RegisterType<CombatEntityFactory>().As<ICombatEntityFactory>();
+            containerBuilder.RegisterType<WorldEntityFactory>().As<IWorldEntityFactory>();
             containerBuilder.RegisterType<CategoryRepository>().As<IRepository<Category>>();
             containerBuilder.RegisterType<StatusEffectRepository>().As<IRepository<StatusEffect>>();
             containerBuilder.RegisterType<AbilityRepository>().As<IRepository<Ability>>();
@@ -53,8 +53,15 @@ namespace TRPGGame
             containerBuilder.RegisterType<ClassTemplateRepository>()
                             .As<IRepository<ClassTemplate>>()
                             .As<IRepository<IReadOnlyClassTemplate>>();
+            containerBuilder.RegisterType<EnemyEntityBaseRepository>()
+                            .As<IRepository<EnemyEntityBase>>();
             containerBuilder.RegisterType<EquipmentManager>().As<IEquipmentManager>();
             containerBuilder.RegisterType<StatusEffectManager>().As<IStatusEffectManager>();
+            containerBuilder.RegisterType<StateManager>().As<IStateManager>().SingleInstance();
+            containerBuilder.RegisterType<AbilityManager>().As<IAbilityManager>();
+            containerBuilder.RegisterType<StateManager>().As<IStateManager>();
+            containerBuilder.RegisterType<PlayerEntityManagerFactory>();
+            containerBuilder.RegisterType<BattleManagerFactory>();
         }
 
         /// <summary>
