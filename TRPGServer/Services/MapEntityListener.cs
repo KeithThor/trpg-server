@@ -43,11 +43,12 @@ namespace TRPGServer.Services
         {
             var entityLocations = e.Entities.Select(kvp => new
             {
-                Id = kvp.Key,
+                Id = kvp.Key.Id,
                 Location = kvp.Value
             });
 
-            _hubContext.Clients.Group(MapId).SendAsync("updateEntities", entityLocations);
+            _hubContext.Clients.Clients(e.ConnectedPlayers.Select(guid => guid.ToString()).ToArray())
+                               .SendAsync("updateEntities", entityLocations);
         }
 
         private void OnWorldEntitiesAdded(object sender, WorldEntityAddedArgs e)

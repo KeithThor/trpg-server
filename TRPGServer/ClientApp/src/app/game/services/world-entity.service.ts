@@ -23,6 +23,7 @@ export class WorldEntityService {
   private connection: HubConnection;
   public entityLocations: number[][];
   public canStartBattleHandler: () => Promise<void>;
+  public addEntitiesCallback: (entities: WorldEntity[]) => void;
   public entities: WorldEntity[];
   private entityIds: number[];
   private requestIds: number[];
@@ -229,10 +230,7 @@ export class WorldEntityService {
    * @param entities The new entities added by the server.
    */
   private addEntities(entities: WorldEntity[]): void {
-    entities.forEach(entity => {
-      this.entities.push(entity);
-    });
-    console.log(this.entities);
+    if (this.addEntitiesCallback != null) this.addEntitiesCallback(entities);
   }
 
   /**

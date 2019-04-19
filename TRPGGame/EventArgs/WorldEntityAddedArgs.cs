@@ -8,5 +8,6 @@ namespace TRPGGame.EventArgs
     public class WorldEntityAddedArgs
     {
         public IEnumerable<IReadOnlyWorldEntity> AddedEntities { get; set; }
+        public IReadOnlyList<Guid> ConnectedPlayers { get; set; }
     }
 }

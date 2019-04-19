@@ -27,13 +27,18 @@ export class GameComponent implements OnInit {
   @ViewChildren(TileNodeComponent) tileNodeComponents: QueryList<TileNodeComponent>;
   private subscriptions: Subscription[];
   private entityLocations: EntityLocation[];
+  private entities: WorldEntity[];
   private updateQueue: EntityLocation[][];
   private isAnimating: boolean;
+  private iterations: number;
+  private missingEntityIds: number[];
 
   ngOnInit(): void {
     this.subscriptions = [];
     this.entityLocations = [];
+    this.entities = [];
     this.updateQueue = [];
+    this.missingEntityIds = [];
     this.isAnimating = false;
     this.initialize();
     this.subscriptions.push(this.router.events.subscribe(event => {
@@ -92,6 +97,7 @@ export class GameComponent implements OnInit {
       .catch(err => console.log(err));
     this.worldEntityService.onUpdateLocations(this.onUpdateLocation.bind(this));
     this.worldEntityService.canStartBattleHandler = this.canStartBattleAsync.bind(this);
+    this.worldEntityService.addEntitiesCallback = this.onAddEntities.bind(this);
     this.worldEntityService.onChangeMaps(this.onChangeMaps.bind(this));
     await this.gameStateService.beginPlayAsync();
   }
@@ -156,14 +162,19 @@ export class GameComponent implements OnInit {
    * @param positionY The column of the map the entity resides on.
    */
   public getEntity(positionX: number, positionY: number): WorldEntity {
+    if (positionX === 0 && positionY === 0) {
+      if (this.missingEntityIds.length > 0) this.worldEntityService.requestEntityData(this.missingEntityIds);
+      this.missingEntityIds = [];
+    }
+
     let entity: EntityLocation = this.entityLocations.find(entity =>
       entity.location.positionX === positionX && entity.location.positionY === positionY);
 
     if (entity == null) return null;
 
     //let entityId = this.gameStateService.getEntityLocations()[positionX][positionY];
-    let foundEntity = this.gameStateService.getEntities()
-      .find(e => e.id === entity.id);
+    let foundEntity = this.entities.find(e => e.id === entity.id);
+    if (this.missingEntityIds.indexOf(entity.id) === -1) this.missingEntityIds.push(entity.id);
     return foundEntity;
   }
 
@@ -196,6 +207,13 @@ export class GameComponent implements OnInit {
         this.animateEntities();
       }
     }
+  }
+
+  private onAddEntities(entities: WorldEntity[]): void {
+    entities.forEach(e => {
+      this.entities.push(e);
+    });
+    //this.entities.concat(entities);
   }
 
   /**

@@ -7,5 +7,6 @@ namespace TRPGGame.EventArgs
     public class WorldEntityRemovedArgs
     {
         public IEnumerable<int> RemovedEntityIds { get; set; }
+        public IReadOnlyList<Guid> ConnectedPlayers { get; set; }
     }
 }

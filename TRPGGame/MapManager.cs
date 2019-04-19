@@ -43,6 +43,7 @@ namespace TRPGGame
         private Dictionary<WorldEntity, Coordinate> _allEntities = new Dictionary<WorldEntity, Coordinate>();
         private Dictionary<Coordinate, List<WorldEntity>> _playerPositions = new Dictionary<Coordinate, List<WorldEntity>>();
         private Dictionary<Coordinate, List<WorldEntity>> _hostilesPositions = new Dictionary<Coordinate, List<WorldEntity>>();
+        private List<Guid> _connectedPlayers = new List<Guid>();
         private readonly object _lock = new object();
         private bool _isStateChanged = false;
         private bool _worldEntityAdded = false;
@@ -70,6 +71,7 @@ namespace TRPGGame
                 else _playerPositions[location].Add(entity);
 
                 _playerEntities[entity] = location;
+                _connectedPlayers.Add(entity.OwnerGuid);
                 _allEntities[entity] = location;
                 _newEntities.Add(entity);
 
@@ -125,6 +127,7 @@ namespace TRPGGame
                     _playerPositions[location].Remove(entity);
                 }
                 _playerEntities.Remove(entity);
+                _connectedPlayers.RemoveAll(guid => entity.OwnerGuid == guid);
                 _allEntities.Remove(entity);
 
                 _isStateChanged = true;
@@ -242,7 +245,8 @@ namespace TRPGGame
                     var newEntities = _newEntities;
                     entityAddedArgs = new WorldEntityAddedArgs
                     {
-                        AddedEntities = newEntities
+                        AddedEntities = newEntities,
+                        ConnectedPlayers = _connectedPlayers
                     };
                     _newEntities = new List<WorldEntity>();
                     _worldEntityAdded = false;
@@ -252,16 +256,19 @@ namespace TRPGGame
                     var removedEntities = _removedEntityIds;
                     entityRemovedArgs = new WorldEntityRemovedArgs
                     {
-                        RemovedEntityIds = removedEntities
+                        RemovedEntityIds = removedEntities,
+                        ConnectedPlayers = _connectedPlayers
                     };
                     _removedEntityIds = new List<int>();
                     _worldEntityRemoved = false;
                 }
-                if (_isStateChanged)
+                //if (_isStateChanged)
+                if (true)
                 {
                     mapStateChangedArgs = new MapStateChangedArgs
                     {
-                        Entities = _allEntities
+                        Entities = _allEntities,
+                        ConnectedPlayers = _connectedPlayers
                     };
                     _isStateChanged = false;
                 }
@@ -276,7 +283,8 @@ namespace TRPGGame
             {
                 tasks.Add(Task.Run(() => WorldEntityRemoved?.Invoke(this, entityRemovedArgs)));
             }
-            if (mapStateChangedArgs != null)
+            //if (mapStateChangedArgs != null)
+            if (true)
             {
                 tasks.Add(Task.Run(() => MapStateChanged?.Invoke(this, mapStateChangedArgs)));
             }
