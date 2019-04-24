@@ -39,7 +39,7 @@ namespace TRPGServer.Services
             MapId = _mapManager.Map.Id.ToString();
         }
 
-        private void OnMapStateChanged(object sender, MapStateChangedArgs e)
+        private async void OnMapStateChanged(object sender, MapStateChangedArgs e)
         {
             var entityLocations = e.Entities.Select(kvp => new
             {
@@ -47,11 +47,11 @@ namespace TRPGServer.Services
                 Location = kvp.Value
             });
 
-            _hubContext.Clients.Clients(e.ConnectedPlayers.Select(guid => guid.ToString()).ToArray())
-                               .SendAsync("updateEntities", entityLocations);
+            await _hubContext.Clients.Group(MapId)
+                                     .SendAsync("updateEntities", entityLocations);
         }
 
-        private void OnWorldEntitiesAdded(object sender, WorldEntityAddedArgs e)
+        private async void OnWorldEntitiesAdded(object sender, WorldEntityAddedArgs e)
         {
             var entities = new List<DisplayEntity>();
             foreach (var entity in e.AddedEntities)
@@ -76,12 +76,12 @@ namespace TRPGServer.Services
                 tasks.Add(_hubContext.Clients.User(entity.OwnerGuid.ToString()).SendAsync("addEntities", _displayEntities));
             }
 
-            Task.WaitAll(tasks.ToArray());
+            await Task.WhenAll(tasks.ToArray());
         }
 
-        private void OnWorldEntitiesRemoved(object sender, WorldEntityRemovedArgs e)
+        private async void OnWorldEntitiesRemoved(object sender, WorldEntityRemovedArgs e)
         {
-            _hubContext.Clients.Group(MapId).SendAsync("removeEntities", e.RemovedEntityIds);
+            await _hubContext.Clients.Group(MapId).SendAsync("removeEntities", e.RemovedEntityIds);
             _displayEntities = _displayEntities.Where(entity => !e.RemovedEntityIds.Contains(entity.Id)).ToList();
         }
 

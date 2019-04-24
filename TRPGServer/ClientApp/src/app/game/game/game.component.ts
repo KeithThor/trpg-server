@@ -6,7 +6,7 @@ import { ChatboxComponent } from "../chatbox/chatbox.component";
 import { GameStateService } from "../services/game-state.service";
 import { MapTile } from "../model/map-data.model";
 import { WorldEntity } from "../model/world-entity.model";
-import { WorldEntityAnimationConstants } from "../worldEntity/world-entity.component";
+import { WorldEntityAnimationConstants, WorldEntityComponent } from "../worldEntity/world-entity.component";
 import { QueryList } from "@angular/core";
 import { EntityLocation } from "../model/entity-location.model";
 import { WorldEntityService } from "../services/world-entity.service";
@@ -30,8 +30,8 @@ export class GameComponent implements OnInit {
   private entities: WorldEntity[];
   private updateQueue: EntityLocation[][];
   private isAnimating: boolean;
-  private iterations: number;
   private missingEntityIds: number[];
+  private requestedIds: number[];
 
   ngOnInit(): void {
     this.subscriptions = [];
@@ -39,6 +39,7 @@ export class GameComponent implements OnInit {
     this.entities = [];
     this.updateQueue = [];
     this.missingEntityIds = [];
+    this.requestedIds = [];
     this.isAnimating = false;
     this.initialize();
     this.subscriptions.push(this.router.events.subscribe(event => {
@@ -74,7 +75,6 @@ export class GameComponent implements OnInit {
       if (event.key === "`") {
         this.gameStateService.changeMapsAsync();
       }
-      console.log(this.updateQueue);
     }
   }
 
@@ -167,14 +167,14 @@ export class GameComponent implements OnInit {
       this.missingEntityIds = [];
     }
 
-    let entity: EntityLocation = this.entityLocations.find(entity =>
-      entity.location.positionX === positionX && entity.location.positionY === positionY);
+    let entity: EntityLocation = this.entityLocations.find(e =>
+      e.location.positionX === positionX && e.location.positionY === positionY);
 
     if (entity == null) return null;
 
     //let entityId = this.gameStateService.getEntityLocations()[positionX][positionY];
     let foundEntity = this.entities.find(e => e.id === entity.id);
-    if (this.missingEntityIds.indexOf(entity.id) === -1) this.missingEntityIds.push(entity.id);
+    if (foundEntity == null && this.missingEntityIds.indexOf(entity.id) === -1) this.missingEntityIds.push(entity.id);
     return foundEntity;
   }
 
@@ -209,11 +209,19 @@ export class GameComponent implements OnInit {
     }
   }
 
+  /**
+   * Whenever new entities are added, remove them from the request ids if they were being requested.
+   * @param entities The new entities to add.
+   */
   private onAddEntities(entities: WorldEntity[]): void {
     entities.forEach(e => {
       this.entities.push(e);
+      var index = this.requestedIds.indexOf(e.id);
+      if (index !== -1) this.requestedIds.splice(index, 1);
+
+      var inde = this.missingEntityIds.indexOf(e.id);
+      if (inde !== -1) this.missingEntityIds.splice(inde, 1);
     });
-    //this.entities.concat(entities);
   }
 
   /**
@@ -223,6 +231,10 @@ export class GameComponent implements OnInit {
    */
   private onChangeMaps(newMapId: number): Promise<void> {
     this.entityLocations = [];
+    this.requestedIds = [];
+    this.entities = [];
+    this.updateQueue = [];
+    this.missingEntityIds = [];
     return;
   }
 
@@ -237,6 +249,16 @@ export class GameComponent implements OnInit {
     let entityLocations = this.updateQueue.shift();
 
     entityLocations.forEach((entity, index) => {
+      if (index === entityLocations.length - 1) {
+        setTimeout((() => {
+          this.entityLocations = entityLocations;
+          this.isAnimating = false;
+          if (this.updateQueue.length > 0) {
+            setTimeout(() => this.animateEntities(), 0);
+          }
+        }).bind(this), 100);
+      }
+
       let oldEntityLocation: EntityLocation = this.entityLocations.find(e => e.id === entity.id);
       if (oldEntityLocation == null) {
         if (index === entityLocations.length - 1) {
@@ -246,45 +268,32 @@ export class GameComponent implements OnInit {
       }
 
       let component = this.tileNodeComponents
-        .find(c => c.entity != null && c.entity.id === entity.id)
-        .worldEntityComponent;
+        .find(c => c.entity != null && c.entity.id === entity.id);
+      let worldEntityComponent: WorldEntityComponent;
 
-      if (component == null) {
+      if (component != null) worldEntityComponent = component.worldEntityComponent;
+
+      if (component == null || worldEntityComponent == null) {
         if (index === entityLocations.length - 1) {
           this.entityLocations = entityLocations;
         }
         return;
       }
 
-      if (index === entityLocations.length - 1) {
-        setTimeout((() => {
-          this.entityLocations = entityLocations;
-          this.isAnimating = false;
-          if (this.updateQueue.length > 0) {
-            this.animateEntities();
-          }
-        }).bind(this), 100);
-      }
-
       if (entity.location.positionX - oldEntityLocation.location.positionX > 0) {
-        component.animationState = WorldEntityAnimationConstants.moveDown;
-        console.log(WorldEntityAnimationConstants.moveDown);
+        worldEntityComponent.animationState = WorldEntityAnimationConstants.moveDown;
       }
       else if (entity.location.positionX - oldEntityLocation.location.positionX < 0) {
-        component.animationState = WorldEntityAnimationConstants.moveUp;
-        console.log(WorldEntityAnimationConstants.moveUp);
+        worldEntityComponent.animationState = WorldEntityAnimationConstants.moveUp;
       }
       else if (entity.location.positionY - oldEntityLocation.location.positionY > 0) {
-        component.animationState = WorldEntityAnimationConstants.moveRight;
-        console.log(WorldEntityAnimationConstants.moveRight);
+        worldEntityComponent.animationState = WorldEntityAnimationConstants.moveRight;
       }
       else if (entity.location.positionY - oldEntityLocation.location.positionY < 0) {
-        component.animationState = WorldEntityAnimationConstants.moveLeft;
-        console.log(WorldEntityAnimationConstants.moveLeft);
+        worldEntityComponent.animationState = WorldEntityAnimationConstants.moveLeft;
       }
       else {
-        component.animationState = WorldEntityAnimationConstants.stationary;
-        console.log(WorldEntityAnimationConstants.stationary);
+        worldEntityComponent.animationState = WorldEntityAnimationConstants.stationary;
       }
     });
   }

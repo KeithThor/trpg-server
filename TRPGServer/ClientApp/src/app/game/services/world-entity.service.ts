@@ -30,6 +30,7 @@ export class WorldEntityService {
   private queuedRequestIds: number[];
   private isRequestingData: boolean;
   private failedReconnections: number;
+  private canRequestData: boolean;
   private changeMapCallbacks: { (newMapId: number): Promise<void>; }[]
   private updateLocationsCallbacks: { (entities: EntityLocation[]): void; }[]
 
@@ -38,6 +39,7 @@ export class WorldEntityService {
     this.entityLocations = [];
     this.changeMapCallbacks = [];
     this.updateLocationsCallbacks = [];
+    this.canRequestData = false;
     this.connection = new HubConnectionBuilder().withUrl("/hubs/worldentities",
       {
         accessTokenFactory: () => localStorage.getItem(LocalStorageConstants.authToken)
@@ -68,6 +70,7 @@ export class WorldEntityService {
       })
       .then(async () => {
         await this.connection.send("StartConnection");
+        setTimeout(() => this.canRequestData = true, 2000);
       });
   }
 
@@ -272,10 +275,12 @@ export class WorldEntityService {
    */
   private receiveMissingEntities(entities: WorldEntity[]): void {
     this.addEntities(entities);
-    if (this.queuedRequestIds.length > 0) {
+    if (this.queuedRequestIds.length > 0 && this.canRequestData) {
+      this.canRequestData = false;
       this.requestIds = this.queuedRequestIds;
       this.queuedRequestIds = [];
       this.connection.send("requestEntityData", this.requestIds);
+      setTimeout(() => this.canRequestData = true, 2000);
     }
     else {
       this.requestIds = [];

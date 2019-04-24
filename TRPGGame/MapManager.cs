@@ -262,8 +262,7 @@ namespace TRPGGame
                     _removedEntityIds = new List<int>();
                     _worldEntityRemoved = false;
                 }
-                //if (_isStateChanged)
-                if (true)
+                if (_isStateChanged)
                 {
                     mapStateChangedArgs = new MapStateChangedArgs
                     {
@@ -283,8 +282,7 @@ namespace TRPGGame
             {
                 tasks.Add(Task.Run(() => WorldEntityRemoved?.Invoke(this, entityRemovedArgs)));
             }
-            //if (mapStateChangedArgs != null)
-            if (true)
+            if (mapStateChangedArgs != null)
             {
                 tasks.Add(Task.Run(() => MapStateChanged?.Invoke(this, mapStateChangedArgs)));
             }
