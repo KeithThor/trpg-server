@@ -47,7 +47,7 @@ namespace TRPGServer.Controllers
             var success = await _userManager.CheckPasswordAsync(foundUser, user.Password);
             if (!success)
             {
-                return BadRequest("The wrong password was entered.");
+                return BadRequest("Wrong password.");
             }
 
             var claims = await _userManager.GetClaimsAsync(foundUser);
@@ -71,15 +71,15 @@ namespace TRPGServer.Controllers
 
             if (await _userManager.FindByNameAsync(user.Username) != null)
             {
-                return Conflict("A user with that username already exists.");
+                return Conflict("Username taken");
             }
 
+            var userId = Guid.NewGuid();
             var newUser = new ApplicationUser
             {
                 UserName = user.Username,
-                Id = Guid.NewGuid().ToString()
+                Id = userId.ToString()
             };
-            var userId = Guid.NewGuid();
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, user.Username),

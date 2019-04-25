@@ -14,7 +14,7 @@ export class ChatService {
     this.receiveMessageCallbacks = [];
     this.connection = new HubConnectionBuilder()
       .withUrl("/hubs/chat", {
-        accessTokenFactory: () => localStorage.getItem(LocalStorageConstants.authToken)
+        accessTokenFactory: () => sessionStorage.getItem(LocalStorageConstants.authToken)
       })
       .build();
     this.connection.on("receiveMessage", (data) => this.receiveMessage(data));

@@ -42,7 +42,7 @@ export class WorldEntityService {
     this.canRequestData = false;
     this.connection = new HubConnectionBuilder().withUrl("/hubs/worldentities",
       {
-        accessTokenFactory: () => localStorage.getItem(LocalStorageConstants.authToken)
+        accessTokenFactory: () => sessionStorage.getItem(LocalStorageConstants.authToken)
       })
       .build();
     this.connection.on("updateEntities",

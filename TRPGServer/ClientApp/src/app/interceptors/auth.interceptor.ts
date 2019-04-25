@@ -6,10 +6,10 @@ import { LocalStorageConstants } from '../constants';
 @Injectable()
 export class AuthInterceptor implements HttpInterceptor {
   intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
-    if (localStorage.getItem(LocalStorageConstants.authToken) != null) {
+    if (sessionStorage.getItem(LocalStorageConstants.authToken) != null) {
       req = req.clone({
         setHeaders: {
-          Authorization: `Bearer ${localStorage.getItem(LocalStorageConstants.authToken)}`
+          Authorization: `Bearer ${sessionStorage.getItem(LocalStorageConstants.authToken)}`
         }
       });
 

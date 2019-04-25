@@ -3,18 +3,25 @@
     <h4>Login</h4>
 
     <form class="form-group">
+      <div *ngIf="errorMessage != null"
+           class="alert alert-danger">
+        {{errorMessage}}
+      </div>
 
       <div class="form-group">
         <label for="username">Username: </label>
-        <input type="text" name="username" class="form-control" [(ngModel)]="user.username"/>
+        <input type="text" name="username" class="form-control" [(ngModel)]="user.username" required
+               #username="ngModel"/>
       </div>
 
       <div class="form-group">
         <label for="password">Password: </label>
-        <input type="password" name="password" class="form-control" [(ngModel)]="user.password"/>
+        <input type="password" name="password" class="form-control" [(ngModel)]="user.password" required
+               #password="ngModel"/>
       </div>
 
-      <button type="submit" class="btn btn-primary" (click)="onLogin()">Login</button>
+      <button type="submit" class="btn btn-primary" (click)="onLogin()"
+              [disabled]="password.invalid || username.invalid">Login</button>
     </form>
   </div>
 </div>
