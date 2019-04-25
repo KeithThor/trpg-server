@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using TRPGGame.Entities.Data;
 
 namespace TRPGGame.Entities
 {
@@ -26,5 +27,10 @@ namespace TRPGGame.Entities
         /// Contains the ids of the maps that this map's tiles can transport to.
         /// </summary>
         IEnumerable<int> MapConnections { get; }
+
+        /// <summary>
+        /// Contains the data used to populate this map with ai-controlled entities.
+        /// </summary>
+        IReadOnlyList<SpawnEntityData> SpawnData { get; }
     }
 }

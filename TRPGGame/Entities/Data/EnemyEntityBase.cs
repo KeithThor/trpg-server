@@ -27,7 +27,7 @@ namespace TRPGGame.Entities.Data
         /// <summary>
         /// The resource stats given to a CombatEntity created from this base.
         /// </summary>
-        public ResourceStats Resources { get; set; }
+        public ResourceStats Resources { get; set; } = new ResourceStats();
 
         /// <summary>
         /// The icon uris that make up the visuals for the CombatEntity created from this base.
@@ -37,21 +37,21 @@ namespace TRPGGame.Entities.Data
         /// <summary>
         /// The primary stats given to a CombatEntity created from this base.
         /// </summary>
-        public CharacterStats Stats { get; set; }
+        public CharacterStats Stats { get; set; } = new CharacterStats();
 
         /// <summary>
         /// The secondary stats given to a CombatEntity created from this base.
         /// </summary>
-        public SecondaryStat SecondaryStats { get; set; }
+        public SecondaryStat SecondaryStats { get; set; } = new SecondaryStat();
 
         /// <summary>
         /// The abilities given to a CombatEntity created from this base.
         /// </summary>
-        public List<Ability> Abilities { get; set; }
+        public List<Ability> Abilities { get; set; } = new List<Ability>();
 
         /// <summary>
         /// The status effects applied to a CombatEntity created from this base.
         /// </summary>
-        public List<StatusEffect> StatusEffects { get; set; }
+        public List<StatusEffect> StatusEffects { get; set; } = new List<StatusEffect>();
     }
 }

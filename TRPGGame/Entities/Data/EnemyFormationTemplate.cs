@@ -25,9 +25,9 @@ namespace TRPGGame.Entities.Data
         public IEnumerable<string> IconUris { get; set; }
 
         /// <summary>
-        /// Contains the ids, if any, and positions of CombatEntities who will populate the Formation created from this template.
+        /// Contains the EntityBases that belong in each position of the Formation created from this template.
         /// </summary>
-        public int?[][] EntityBaseIds { get; set; }
+        public EnemyEntityBase[][] EntityBases { get; set; }
 
         /// <summary>
         /// Contains the id of the leader of this formation.

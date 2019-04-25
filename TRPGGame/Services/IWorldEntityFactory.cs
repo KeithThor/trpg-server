@@ -11,18 +11,11 @@ namespace TRPGGame.Services
     public interface IWorldEntityFactory
     {
         /// <summary>
-        /// Creates a WorldEntity using the data given from a CombatEntity.
-        /// </summary>
-        /// <param name="entity">The CombatEntity to use to construct the WorldEntity.</param>
-        /// <returns></returns>
-        Task<WorldEntity> CreateAsync(CombatEntity entity);
-
-        /// <summary>
         /// Creates an ai-controlled WorldEntity from an EnemyFormationTemplate.
         /// </summary>
         /// <param name="template">The template to use to create the WorldEntity.</param>
         /// <returns></returns>
-        Task<WorldEntity> CreateAsync(EnemyFormationTemplate template);
+        WorldEntity Create(EnemyFormationTemplate template);
 
         /// <summary>
         /// Creates a new WorldEntity using the id of the formation that this WorldEntity represents and the id of

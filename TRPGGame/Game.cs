@@ -30,17 +30,17 @@ namespace TRPGGame
         {
             while(!CancellationToken.IsCancellationRequested)
             {
-                Thread.Sleep(10);
+                Thread.Sleep(GameplayConstants.GameTickInMilliseconds);
                 _secretData++;
                 _worldStateHandler.CheckMapStates();
-                if (_secretData % 100 == 0)
+                if (_secretData % (1000 / GameplayConstants.GameTickInMilliseconds) == 0)
                 {
                     GameStateUpdate?.Invoke(this, new GameStateUpdateEvent
                     {
                         GameState = $"Game state changed {_secretData}"
                     });
                 }
-                if (_secretData >= 6000)
+                if (_secretData >= GameplayConstants.InactiveTimeoutDuration * 60000 / GameplayConstants.GameTickInMilliseconds)
                 {
                     _entityManager.RemoveInactiveManagers();
                     _secretData = 0;

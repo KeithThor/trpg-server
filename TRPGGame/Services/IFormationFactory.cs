@@ -17,10 +17,10 @@ namespace TRPGGame.Services
         Formation Create(FormationTemplate template);
 
         /// <summary>
-        /// Creates a Formation from an EnemyFormationTemplate asynchronously.
+        /// Creates a Formation from an EnemyFormationTemplate.
         /// </summary>
         /// <param name="template">The EnemyFormationTemplate used to create the Formation.</param>
         /// <returns></returns>
-        Task<Formation> CreateAsync(EnemyFormationTemplate template);
+        Formation Create(EnemyFormationTemplate template);
     }
 }

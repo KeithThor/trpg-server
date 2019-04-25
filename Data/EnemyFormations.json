@@ -1,0 +1,24 @@
+[
+    {
+        "id": 1,
+        "name": "Kobold Band",
+        "iconUris": ["images/monster/big_kobold_new.png"],
+        "entityBaseIds": [
+            [1, null, null],
+            [1, null, 1],
+            [1, null, null]
+        ],
+        "leaderId": 1
+    },
+    {
+        "id": 2,
+        "name": "Kobold Horde",
+        "iconUris": ["images/monster/big_kobold_new.png"],
+        "entityBaseIds": [
+            [1, 1, 1],
+            [1, 1, 1],
+            [1, 1, 1]
+        ],
+        "leaderId": 1
+    }
+]

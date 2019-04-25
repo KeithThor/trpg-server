@@ -12,7 +12,7 @@ namespace TRPGGame
     /// <summary>
     /// Manager responsible for managing events and interactions between entities in a given map.
     /// </summary>
-    public class MapManager
+    public class MapManager : IMapManager
     {
         /// <summary>
         /// The map that this MapManager is responsible for managing.
@@ -33,6 +33,11 @@ namespace TRPGGame
         /// Event invoked whenever one or more WorldEntities are removed from the map.
         /// </summary>
         public event EventHandler<WorldEntityRemovedArgs> WorldEntityRemoved;
+
+        /// <summary>
+        /// Event invoked on every game tick.
+        /// </summary>
+        public event EventHandler<GameTickEventArgs> GameTick;
 
         /// <summary>
         /// A dictionary containing all the entities that exist on the managed map along with the coordinate
@@ -286,6 +291,7 @@ namespace TRPGGame
             {
                 tasks.Add(Task.Run(() => MapStateChanged?.Invoke(this, mapStateChangedArgs)));
             }
+            tasks.Add(Task.Run(() => GameTick?.Invoke(this, new GameTickEventArgs())));
 
             return Task.WhenAll(tasks);
         }
@@ -295,7 +301,7 @@ namespace TRPGGame
         /// </summary>
         /// <param name="position">The coordinate to check.</param>
         /// <returns></returns>
-        private bool IsValidLocation(Coordinate position)
+        public bool IsValidLocation(Coordinate position)
         {
             if (position.PositionX < 0 || position.PositionY < 0) return false;
             if (position.PositionX > Map.MapData.Count - 1) return false;

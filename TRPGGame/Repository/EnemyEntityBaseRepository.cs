@@ -24,9 +24,10 @@ namespace TRPGGame.Repository
             _abilityRepo = abilityRepo;
         }
 
-        public Task<IEnumerable<EnemyEntityBase>> GetDataAsync()
+        public async Task<IEnumerable<EnemyEntityBase>> GetDataAsync()
         {
-            throw new NotImplementedException();
+            if (_bases == null) await LoadDataAsync();
+            return _bases;
         }
 
         private async Task LoadDataAsync()

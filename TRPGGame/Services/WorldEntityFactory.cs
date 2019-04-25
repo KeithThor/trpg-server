@@ -17,16 +17,13 @@ namespace TRPGGame.Services
     /// </summary>
     public class WorldEntityFactory : IWorldEntityFactory
     {
-        public WorldEntityFactory(ICombatEntityFactory combatEntityFactory,
-                                  IFormationFactory formationFactory,
+        public WorldEntityFactory(IFormationFactory formationFactory,
                                   IFormationManager formationManager)
         {
             _id = 1;
-            _combatEntityFactory = combatEntityFactory;
             _formationFactory = formationFactory;
             _formationManager = formationManager;
         }
-        private readonly ICombatEntityFactory _combatEntityFactory;
         private readonly IFormationFactory _formationFactory;
         private readonly IFormationManager _formationManager;
 
@@ -83,43 +80,13 @@ namespace TRPGGame.Services
         }
 
         /// <summary>
-        /// Creates a WorldEntity using the data given from a CombatEntity.
-        /// </summary>
-        /// <param name="entity">The CombatEntity to use to construct the WorldEntity.</param>
-        /// <returns></returns>
-        public async Task<WorldEntity> CreateAsync(CombatEntity entity)
-        {
-            //var foundEntity = await _dbContext.PlayerEntities.Where(e => e.OwnerGuid == entity.OwnerId)
-            //                                                 .FirstOrDefaultAsync();
-            //if (foundEntity != null)
-            //{
-            //    return foundEntity;
-            //}
-            //else
-            //{
-            //    var wEntity = new WorldEntity
-            //    {
-            //        Id = _id++,
-            //        OwnerGuid = entity.OwnerId,
-            //        Name = entity.OwnerName,
-            //        CurrentMapId = 1,
-            //        IconUris = entity.IconUris,
-            //        Position = new TRPGShared.Coordinate() { PositionX = 1, PositionY = 1 }
-            //    };
-            //    await _dbContext.PlayerEntities.AddAsync(wEntity);
-            //    return wEntity;
-            //}
-            return null;
-        }
-
-        /// <summary>
         /// Creates an ai-controlled WorldEntity from an EnemyFormationTemplate.
         /// </summary>
         /// <param name="template">The template to use to create the WorldEntity.</param>
         /// <returns></returns>
-        public async Task<WorldEntity> CreateAsync(EnemyFormationTemplate template)
+        public WorldEntity Create(EnemyFormationTemplate template)
         {
-            var formation = await _formationFactory.CreateAsync(template);
+            var formation = _formationFactory.Create(template);
 
             return new WorldEntity
             {

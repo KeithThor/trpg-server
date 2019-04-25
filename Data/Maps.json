@@ -36,6 +36,9 @@
           "positionY": 0
         }
       }
+    ],
+    "enemies": [
+      {"formationId": 1, "amount": 4, "respawnTime": 30}
     ]
   },
   {
@@ -74,6 +77,9 @@
           "positionY": 0
         }
       }
+    ],
+    "enemies": [
+      {"formationId": 1, "amount": 3, "respawnTime": 30}
     ]
   },
   {
@@ -113,6 +119,10 @@
           "positionY": 4
         }
       }
+    ],
+    "enemies": [
+      {"formationId": 1, "amount": 2, "respawnTime": 30},
+      {"formationId": 2, "amount": 1, "respawnTime": 60}
     ]
   },
   {
@@ -152,6 +162,10 @@
           "positionY": 4
         }
       }
+    ],
+    "enemies": [
+      {"formationId": 1, "amount": 2, "respawnTime": 30},
+      {"formationId": 2, "amount": 1, "respawnTime": 60}
     ]
   }
 ]

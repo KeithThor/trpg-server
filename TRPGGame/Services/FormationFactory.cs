@@ -88,28 +88,24 @@ namespace TRPGGame.Services
         }
 
         /// <summary>
-        /// Creates a Formation from an EnemyFormationTemplate asynchronously.
+        /// Creates a Formation from an EnemyFormationTemplate.
         /// </summary>
         /// <param name="template">The EnemyFormationTemplate used to create the Formation.</param>
         /// <returns></returns>
-        public async Task<Formation> CreateAsync(EnemyFormationTemplate template)
+        public Formation Create(EnemyFormationTemplate template)
         {
-            var basesData = await _entityBaseRepo.GetDataAsync();
-            var matchingBases = basesData.Where(b => template.EntityBaseIds.AnyTwoD(id => id.HasValue && id.Value == b.Id));
-
             var positions = new CombatEntity[GameplayConstants.MaxFormationRows][];
             int leaderId = -1;
-            for (int i = 0; i < template.EntityBaseIds.Length; i++)
+            for (int i = 0; i < template.EntityBases.Length; i++)
             {
                 positions[i] = new CombatEntity[GameplayConstants.MaxFormationColumns];
-                for (int j = 0; j < template.EntityBaseIds[i].Length; j++)
+                for (int j = 0; j < template.EntityBases[i].Length; j++)
                 {
-                    if (template.EntityBaseIds[i][j].HasValue)
+                    if (template.EntityBases[i][j] != null)
                     {
-                        var matchingBase = matchingBases.First(b => b.Id == template.EntityBaseIds[i][j].Value);
-                        var entity = _combatEntityFactory.Create(matchingBase);
+                        var entity = _combatEntityFactory.Create(template.EntityBases[i][j]);
                         positions[i][j] = entity;
-                        if (matchingBase.Id == template.LeaderId && leaderId == -1) leaderId = entity.Id;
+                        if (template.EntityBases[i][j].Id == template.LeaderId && leaderId == -1) leaderId = entity.Id;
                     }
                     else positions[i][j] = null;
                 }

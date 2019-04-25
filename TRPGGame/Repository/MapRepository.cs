@@ -8,6 +8,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using TRPGGame.Entities;
+using TRPGGame.Entities.Data;
 using TRPGShared;
 
 namespace TRPGGame.Repository
@@ -40,12 +41,33 @@ namespace TRPGGame.Repository
             public Coordinate TransportFrom { get; set; }
         }
 
+        /// <summary>
+        /// A data object containing the amount of a given enemy formation that exists in the current map.
+        /// </summary>
+        private class EnemyData
+        {
+            /// <summary>
+            /// The id of the EnemyFormationTemplate that represents this data object.
+            /// </summary>
+            public int FormationId { get; set; }
+
+            /// <summary>
+            /// The amount of enemies that should exist on this map of the EnemyFormationTemplate the class is based off of.
+            /// </summary>
+            public int Amount { get; set; }
+
+            public int RespawnTime { get; set; }
+        }
+
         private readonly IRepository<MapTile> _mapTileRepo;
+        private readonly IRepository<EnemyFormationTemplate> _enemyFormationTemplate;
         private List<Map> _maps;
 
-        public MapRepository(IRepository<MapTile> mapTileRepo)
+        public MapRepository(IRepository<MapTile> mapTileRepo,
+                             IRepository<EnemyFormationTemplate> enemyFormationTemplate)
         {
             _mapTileRepo = mapTileRepo;
+            _enemyFormationTemplate = enemyFormationTemplate;
         }
 
         public async Task<IEnumerable<Map>> GetDataAsync()
@@ -64,6 +86,8 @@ namespace TRPGGame.Repository
             {
                 _maps = new List<Map>();
                 var mapTiles = await _mapTileRepo.GetDataAsync();
+                var formations = await _enemyFormationTemplate.GetDataAsync();
+
                 JContainer mapsAsList = JsonConvert.DeserializeObject<JContainer>(reader.ReadToEnd());
                 foreach (var mapObject in mapsAsList)
                 {
@@ -79,6 +103,28 @@ namespace TRPGGame.Repository
                         }
                         map.MapConnections = mapConnections;
                     }
+
+                    if (mapObject["enemies"] != null)
+                    {
+                        var spawnData = new List<SpawnEntityData>();
+                        var enemyData = mapObject["enemies"].ToObject<List<EnemyData>>();
+
+                        foreach (var enemy in enemyData)
+                        {
+                            var foundTemplate = formations.FirstOrDefault(f => f.Id == enemy.FormationId);
+                            if (foundTemplate != null)
+                            {
+                                spawnData.Add(new SpawnEntityData
+                                {
+                                    FormationTemplate = foundTemplate,
+                                    MaxEntities = enemy.Amount,
+                                    RespawnTime = enemy.RespawnTime
+                                });
+                            }
+                        }
+                        map.SpawnData = spawnData;
+                    }
+
                     if (mapObject["mapTileIds"] != null)
                     {
                         var mapTileIds = mapObject["mapTileIds"].ToObject<List<List<int>>>();
