@@ -249,21 +249,24 @@ export class GameComponent implements OnInit {
     let entityLocations = this.updateQueue.shift();
 
     entityLocations.forEach((entity, index) => {
+      // On last index, start next recursive loop after a delay equal to animation time
       if (index === entityLocations.length - 1) {
         setTimeout((() => {
           this.entityLocations = entityLocations;
           this.isAnimating = false;
           if (this.updateQueue.length > 0) {
+            // Adds recursion to call stack to avoid blocking the rest of the application
             setTimeout(() => this.animateEntities(), 0);
           }
         }).bind(this), 100);
       }
 
       let oldEntityLocation: EntityLocation = this.entityLocations.find(e => e.id === entity.id);
+      // If oldEntityLocation is null, this entity was just added
       if (oldEntityLocation == null) {
-        if (index === entityLocations.length - 1) {
-          this.entityLocations = entityLocations;
-        }
+        //if (index === entityLocations.length - 1) {
+        //  this.entityLocations = entityLocations;
+        //}
         return;
       }
 
@@ -274,9 +277,9 @@ export class GameComponent implements OnInit {
       if (component != null) worldEntityComponent = component.worldEntityComponent;
 
       if (component == null || worldEntityComponent == null) {
-        if (index === entityLocations.length - 1) {
-          this.entityLocations = entityLocations;
-        }
+        //if (index === entityLocations.length - 1) {
+        //  this.entityLocations = entityLocations;
+        //}
         return;
       }
 

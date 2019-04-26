@@ -38,6 +38,8 @@ import { CharacterIconSet } from "../model/character.model";
         top: "32px",
         bottom: "0px"
       })),
+      transition("* => stationary",
+        animate('0s')),
       transition("* <=> *",
         animate('0.2s'))
     ])
@@ -45,14 +47,21 @@ import { CharacterIconSet } from "../model/character.model";
 })
 export class WorldEntityComponent {
   constructor() {
-    this.animationState = "stationary";
+    this.animationState = WorldEntityAnimationConstants.stationary;
   }
-  @Input() entity: WorldEntity;
+  private _entity: WorldEntity;
+  @Input() set entity(value: WorldEntity): void {
+    this._entity = value;
+    this.animationState = WorldEntityAnimationConstants.stationary;
+  }
+  get entity(): WorldEntity {
+    return this._entity;
+  }
+
   public animationState: string;
   public onAnimationFinishedHandler: () => void;
 
   public onAnimationFinished(): void {
-    console.log("Animation finished");
     if (this.onAnimationFinishedHandler != null) {
       this.onAnimationFinishedHandler();
     }
