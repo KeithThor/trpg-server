@@ -110,8 +110,8 @@ namespace TRPGGame.Managers
         /// <returns></returns>
         private AiEntityManager SpawnEntity(SpawnEntityData spawnData)
         {
-            var respawnedEntity = _worldEntityFactory.Create(spawnData.FormationTemplate);
-            var manager = _aiEntityManagerFactory.Create(respawnedEntity, _mapManager, spawnData);
+            var spawnedEntity = _worldEntityFactory.Create(spawnData.FormationTemplate);
+            var manager = _aiEntityManagerFactory.Create(spawnedEntity, _mapManager, spawnData);
             manager.RemovedFromMap += OnEntityRemovedFromMap;
             _managers.Add(manager);
             return manager;

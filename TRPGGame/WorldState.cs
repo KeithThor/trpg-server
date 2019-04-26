@@ -12,6 +12,9 @@ using TRPGGame.Services;
 
 namespace TRPGGame
 {
+    /// <summary>
+    /// Class that contains all the MapManagers and MapEntityManagers that exists in the game.
+    /// </summary>
     public class WorldState : IWorldState
     {
         private readonly IRepository<Map> _mapRepo;
@@ -43,12 +46,18 @@ namespace TRPGGame
         public IReadOnlyDictionary<int, MapManager> MapManagers { get; }
         public IReadOnlyDictionary<int, MapEntityManager> MapEntityManagers { get; }
 
+        /// <summary>
+        /// Goes through each map and checks their states, invoking any necessary game events as needed.
+        /// </summary>
         public void CheckMapStates()
         {
+            var tasks = new List<Task>();
             Parallel.ForEach(MapManagers.Values, (maps) =>
             {
-                Task.Run(() => maps.CheckChangesAsync());
+                tasks.Add(Task.Run(() => maps.CheckChangesAsync()));
             });
+
+            Task.WaitAll(tasks.ToArray());
         }
     }
 }
