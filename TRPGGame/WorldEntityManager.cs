@@ -100,7 +100,6 @@ namespace TRPGGame
                 if ((int)inactivePeriod.TotalMinutes >= GameplayConstants.InactiveTimeoutDuration)
                 {
                     _playerEntityManagers.TryRemove(idManagerPair.Key, out PlayerEntityManager manager);
-                    manager.EndConnection();
                 }
             }
         }
@@ -122,8 +121,15 @@ namespace TRPGGame
                 }
                 return manager;
             }
+            else
+            {
+                manager = _playerEntityManagerFactory.Create(ownerId);
+                var entitySuccess = _worldEntities.TryGetValue(ownerId, out WorldEntity entity);
+                if (entitySuccess) manager.Entity = entity;
+                _playerEntityManagers.TryAdd(ownerId, manager);
 
-            return _playerEntityManagers.GetOrAdd(ownerId, _playerEntityManagerFactory.Create(ownerId));
+                return manager;
+            }
         }
 
         /// <summary>

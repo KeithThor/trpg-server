@@ -47,8 +47,15 @@ namespace TRPGServer.Services
                 Location = kvp.Value
             });
 
-            await _hubContext.Clients.Group(MapId)
-                                     .SendAsync("updateEntities", entityLocations);
+            try
+            {
+                await _hubContext.Clients.Group(MapId)
+                                         .SendAsync("updateEntities", entityLocations);
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex);
+            }
         }
 
         private async void OnWorldEntitiesAdded(object sender, WorldEntityAddedArgs e)

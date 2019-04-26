@@ -18,7 +18,7 @@ export class ChatService {
       })
       .build();
     this.connection.on("receiveMessage", (data) => this.receiveMessage(data));
-    this.connection.start()
+    await this.connection.start()
       .catch((err) => console.log(err))
       .then(() => {
         this.connection.send("AddToMap");
