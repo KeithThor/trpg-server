@@ -39,6 +39,12 @@ namespace TRPGServer.Services
             MapId = _mapManager.Map.Id.ToString();
         }
 
+        /// <summary>
+        /// Invoked whenever one or more WorldEntities moves, are added, or removed from the map.
+        /// Sends the changes in WorldEntity positions to all players who are on the map.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void OnMapStateChanged(object sender, MapStateChangedArgs e)
         {
             var entityLocations = e.Entities.Select(kvp => new
@@ -58,6 +64,13 @@ namespace TRPGServer.Services
             }
         }
 
+        /// <summary>
+        /// Invoked whenever WorldEntities are added to the map this listener is listening to. Converts
+        /// the new entities into DisplayEntities and sends them to all players who are on the current map.
+        /// Sends currently existing DisplayEntities to newly connected players.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void OnWorldEntitiesAdded(object sender, WorldEntityAddedArgs e)
         {
             var entities = new List<DisplayEntity>();
@@ -80,21 +93,47 @@ namespace TRPGServer.Services
 
             foreach (var entity in e.AddedEntities)
             {
+                // Skip sending messages to the owner of Ai controlled entities.
+                if (entity.OwnerGuid == GameplayConstants.AiId) continue;
                 tasks.Add(_hubContext.Clients.User(entity.OwnerGuid.ToString()).SendAsync("addEntities", _displayEntities));
+                tasks.Add(_hubContext.Clients.User(entity.OwnerGuid.ToString()).SendAsync("getMyEntity", entity.Id));
             }
 
             await Task.WhenAll(tasks.ToArray());
         }
 
+        /// <summary>
+        /// Invoked whenever WorldEntites are removed from the map this listener is listening to. Sends messages to all
+        /// users on the current map to remove the WorldEntities from memory.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private async void OnWorldEntitiesRemoved(object sender, WorldEntityRemovedArgs e)
         {
             await _hubContext.Clients.Group(MapId).SendAsync("removeEntities", e.RemovedEntityIds);
             _displayEntities = _displayEntities.Where(entity => !e.RemovedEntityIds.Contains(entity.Id)).ToList();
         }
 
+        /// <summary>
+        /// Gets all of the DisplayEntities for the map this listener is listening to.
+        /// </summary>
+        /// <returns></returns>
         public IEnumerable<DisplayEntity> GetDisplayEntities()
         {
             return _displayEntities;
+        }
+
+        /// <summary>
+        /// Sends the DisplayEntity of the player with the given id to said player.
+        /// </summary>
+        /// <param name="ownerId">The unique identifier that represents the player.</param>
+        /// <returns></returns>
+        public async Task SendOwnedEntityAsync(Guid ownerId)
+        {
+            var entity = _displayEntities.FirstOrDefault(de => de.OwnerId == ownerId);
+            if (entity == null) return;
+
+            await _hubContext.Clients.User(ownerId.ToString()).SendAsync("getMyEntity", entity.Id);
         }
     }
 }

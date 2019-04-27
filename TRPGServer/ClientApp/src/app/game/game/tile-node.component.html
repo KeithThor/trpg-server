@@ -1,4 +1,4 @@
 <div class="tileNode">
   <map-tile-component [location]="location" [mapTile]="mapTile"></map-tile-component>
-  <world-entity-component #worldEntity [entity]="entity" *ngIf="showEntity()"></world-entity-component>
+  <world-entity-component #worldEntity [entity]="entity" [hidden]="!showEntity()"></world-entity-component>
 </div>

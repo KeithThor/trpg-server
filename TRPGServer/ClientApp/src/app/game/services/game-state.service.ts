@@ -13,7 +13,7 @@ export class GameStateService {
     private worldEntityService: WorldEntityService,
     private chatService: ChatService) {
     this.initialized = false;
-    this.mapId = 1;
+    this.mapId = -1;
   }
   private mapId: number;
   public initialized: boolean;
@@ -23,7 +23,7 @@ export class GameStateService {
    */
   public async initializeAsync(): Promise<void> {
     await Promise.all([
-      this.mapService.loadMapAsync(this.mapId),
+      this.mapService.loadMapAsync(),
       this.chatService.initializeAsync(),
       this.worldEntityService.initializeAsync()
     ]);
@@ -81,18 +81,6 @@ export class GameStateService {
   public getUniqueTiles(): MapTile[] {
     if (!this.initialized) return null;
     return this.mapService.uniqueTiles;
-  }
-
-  /** Gets the entity data for each WorldEntity in the current map. */
-  public getEntities(): WorldEntity[] {
-    if (!this.initialized) return null;
-    return this.worldEntityService.entities;
-  }
-
-  /** Gets the map grid containing the locations of each WorldEntity on the current map. */
-  public getEntityLocations(): number[][] {
-    if (!this.initialized) return null;
-    return this.worldEntityService.entityLocations;
   }
 
   /**

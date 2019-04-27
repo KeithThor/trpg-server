@@ -22,7 +22,7 @@ export class MapService {
    * Loads static map data from the server asynchronously.
    * @param mapId The id of the map to return from the server.
    */
-  public loadMapAsync(mapId: number): Promise<void> {
+  public loadMapAsync(mapId?: number): Promise<void> {
     if (mapId === this.mapId) return;
 
     return this.getMapDataAsync(mapId)
@@ -32,9 +32,9 @@ export class MapService {
         this.uniqueTiles = mapData.uniqueTiles;
 
         if (!this.verifyMapTiles()) {
-          return this.loadMapAsync(mapId);
+          return this.loadMapAsync(mapData.mapId);
         }
-        this.mapId = mapId;
+        this.mapId = mapData.mapId;
       });
   }
 
@@ -42,8 +42,9 @@ export class MapService {
    * Sends a request to the server to retrieve map data asynchronously.
    * @param mapId The id of the map to retrieve from the server.
    */
-  private getMapDataAsync(mapId: number): Promise<MapData> {
-    let params = new HttpParams().set("mapId", mapId.toString());
+  private getMapDataAsync(mapId?: number): Promise<MapData> {
+    let params = new HttpParams();
+    if (mapId != null) params.set("mapId", mapId.toString());
 
     return this.http.get<MapData>("/api/mapdata/map", { params: params })
       .toPromise<MapData>()
@@ -91,4 +92,5 @@ export class MapService {
 export class MapData {
   mapData: number[][];
   uniqueTiles: MapTile[];
+  mapId: number;
 }

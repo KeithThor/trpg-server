@@ -99,6 +99,7 @@ export class GameComponent implements OnInit {
     this.worldEntityService.canStartBattleHandler = this.canStartBattleAsync.bind(this);
     this.worldEntityService.addEntitiesCallback = this.onAddEntities.bind(this);
     this.worldEntityService.onChangeMaps(this.onChangeMaps.bind(this));
+    this.worldEntityService.removeEntitiesCallback = this.onRemoveEntities.bind(this);
     await this.gameStateService.beginPlayAsync();
   }
 
@@ -225,6 +226,18 @@ export class GameComponent implements OnInit {
   }
 
   /**
+   * Whenever entities are removed from the map, remove them from memory.
+   * @param entityIds The ids of the entities to remove from memory.
+   */
+  private onRemoveEntities(entityIds: number[]): void {
+    for (var i = this.entities.length - 1; i <= 0; i++) {
+      if (entityIds.indexOf(this.entities[i].id) !== -1) {
+        this.entities.splice(i, 1);
+      }
+    }
+  }
+
+  /**
    * Resets the entity locations stored by the GameComponent whenever a change map request has been successfully
    * approved by the server.
    * @param newMapId
@@ -262,26 +275,16 @@ export class GameComponent implements OnInit {
       }
 
       let oldEntityLocation: EntityLocation = this.entityLocations.find(e => e.id === entity.id);
+
       // If oldEntityLocation is null, this entity was just added
-      if (oldEntityLocation == null) {
-        //if (index === entityLocations.length - 1) {
-        //  this.entityLocations = entityLocations;
-        //}
-        return;
-      }
+      if (oldEntityLocation == null) return;
 
       let component = this.tileNodeComponents
         .find(c => c.entity != null && c.entity.id === entity.id);
       let worldEntityComponent: WorldEntityComponent;
 
       if (component != null) worldEntityComponent = component.worldEntityComponent;
-
-      if (component == null || worldEntityComponent == null) {
-        //if (index === entityLocations.length - 1) {
-        //  this.entityLocations = entityLocations;
-        //}
-        return;
-      }
+      if (component == null || worldEntityComponent == null) return;
 
       if (entity.location.positionX - oldEntityLocation.location.positionX > 0) {
         worldEntityComponent.animationState = WorldEntityAnimationConstants.moveDown;

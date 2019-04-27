@@ -134,6 +134,7 @@ namespace TRPGGame
                 _playerEntities.Remove(entity);
                 _connectedPlayers.RemoveAll(guid => entity.OwnerGuid == guid);
                 _allEntities.Remove(entity);
+                _removedEntityIds.Add(entity.Id);
 
                 _isStateChanged = true;
                 _worldEntityRemoved = true;
@@ -160,6 +161,7 @@ namespace TRPGGame
                 }
                 _hostileEntities.Remove(entity);
                 _allEntities.Remove(entity);
+                _removedEntityIds.Add(entity.Id);
 
                 _isStateChanged = true;
                 _worldEntityRemoved = true;

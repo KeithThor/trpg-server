@@ -31,12 +31,21 @@ namespace TRPGServer.Controllers
             {
                 var userGuid = Guid.Parse(User.Claims.First(claim => claim.Type == ClaimTypes.NameIdentifier).Value);
                 var manager = _entityManager.GetPlayerEntityManager(userGuid);
-                mapId = manager.GetCurrentMap().Id;
+
+                try
+                {
+                    mapId = manager.GetCurrentMap().Id;
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest("Player has no assigned entity.");
+                }
             }
             return Json(new
             {
                 MapData = _mapDataHandler.GetMapData(mapId.Value),
-                UniqueTiles = _mapDataHandler.GetUniqueMapTiles(mapId.Value)
+                UniqueTiles = _mapDataHandler.GetUniqueMapTiles(mapId.Value),
+                MapId = mapId
             });
         }
     }

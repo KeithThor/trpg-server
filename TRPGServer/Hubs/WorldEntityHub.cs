@@ -185,5 +185,17 @@ namespace TRPGServer.Hubs
 
             await Clients.Caller.SendAsync("receiveMissingEntities", entities);
         }
+
+        /// <summary>
+        /// Called by the client to retrieve the WorldEntity that belongs to the player.
+        /// </summary>
+        /// <returns></returns>
+        public async Task RequestPlayerEntity()
+        {
+            var manager = _worldEntityManager.GetPlayerEntityManager(Guid.Parse(Context.UserIdentifier));
+            int mapId = manager.GetCurrentMap().Id;
+            await _listenerContainer.GetDisplayEntityStore(mapId)
+                                    .SendOwnedEntityAsync(Guid.Parse(Context.UserIdentifier));
+        }
     }
 }

@@ -5,14 +5,26 @@
   width: 0px;
 }
 
-.game-entity > .entity-name {
+.entity-name {
   position: absolute;
-  color: white;
+  text-shadow: 1px 1px 2px black;
   z-index: 3;
   bottom: 0px;
 }
 
-.game-entity > .entity-icon {
+.entity-enemy-name {
+  color: red;
+}
+
+.entity-neutral-name {
+  color: white;
+}
+
+.entity-player-name {
+  color: limegreen;
+}
+
+.entity-icon {
   position: absolute;
   z-index: 2;
 }

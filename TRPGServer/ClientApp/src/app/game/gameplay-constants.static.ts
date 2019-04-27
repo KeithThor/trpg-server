@@ -1,7 +1,5 @@
 export class GameplayConstants {
-  
-
-  
+  public static readonly aiId: string = "6a89b96c-f3fc-4cc9-a80a-b45354189405";
 }
 
 export class CommandTypesConstants {

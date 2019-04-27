@@ -1,4 +1,4 @@
-<div [@move]="animationState" (@move.done)="onAnimationFinished()" class="game-entity">
-  <div class="entity-name">{{entity.name}}</div>
+<div *ngIf="entity != null" [@move]="animationState" (@move.done)="onAnimationFinished()" class="game-entity">
+  <div [ngClass]="getEntityCss()" class="entity-name">{{entity.name}}</div>
   <img class="entity-icon" src="{{icon}}" *ngFor="let icon of getIconArray()" draggable="false">
 </div>

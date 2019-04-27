@@ -10,9 +10,6 @@ import { PlayerStateConstants } from "../player-state-constants.static";
 @Injectable()
 export class WorldEntityService {
   constructor(private stateHandler: StateHandlerService) {
-    this.entityLocations = [];
-    this.entities = [];
-    this.entityIds = [];
     this.isRequestingData = false;
     this.requestIds = [];
     this.queuedRequestIds = [];
@@ -21,11 +18,19 @@ export class WorldEntityService {
   }
 
   private connection: HubConnection;
-  public entityLocations: number[][];
   public canStartBattleHandler: () => Promise<void>;
   public addEntitiesCallback: (entities: WorldEntity[]) => void;
-  public entities: WorldEntity[];
-  private entityIds: number[];
+  public removeEntitiesCallback: (entityIds: number[]) => void;
+
+  private _playerEntityId: number;
+  public get playerEntityId(): number {
+    if (this._playerEntityId == null && this.canRequestData) {
+      this.requestPlayerEntity();
+      return null;
+    }
+    else return this._playerEntityId;
+  }
+
   private requestIds: number[];
   private queuedRequestIds: number[];
   private isRequestingData: boolean;
@@ -36,7 +41,6 @@ export class WorldEntityService {
 
   /** Initializes this service and starts the connection to the server. */
   public async initializeAsync(): Promise<void> {
-    this.entityLocations = [];
     this.changeMapCallbacks = [];
     this.updateLocationsCallbacks = [];
     this.canRequestData = false;
@@ -55,6 +59,7 @@ export class WorldEntityService {
     this.connection.on("invalidState", async (state: string) => await this.invalidStateAsync(state));
     this.connection.on("receiveMissingEntities", (entities: WorldEntity[]) => this.receiveMissingEntities(entities));
     this.connection.on("changeMapsSuccess", (newMapId: number) => this.changeMapsSuccess(newMapId));
+    this.connection.on("getMyEntity", (entityId: number) => this.getMyEntity(entityId));
 
     await this.connection.start()
       .catch(async () => {
@@ -70,7 +75,7 @@ export class WorldEntityService {
       })
       .then(async () => {
         await this.connection.send("StartConnection");
-        setTimeout(() => this.canRequestData = true, 2000);
+        setTimeout(() => this.canRequestData = true, 500);
       });
   }
 
@@ -132,9 +137,6 @@ export class WorldEntityService {
    */
   public async endConnectionAsync(): Promise<void> {
     if (this.connection != undefined || this.connection.state.valueOf() === 1) {
-      this.entityLocations = [];
-      this.entities = [];
-      this.entityIds = [];
       this.failedReconnections = 0;
       this.isRequestingData = false;
       this.queuedRequestIds = [];
@@ -149,10 +151,12 @@ export class WorldEntityService {
    * @param entityIds The ids of the entities to return data for.
    */
   public requestEntityData(entityIds: number[]): void {
-    if (!this.isRequestingData) {
+    if (!this.isRequestingData && this.canRequestData) {
       this.requestIds = entityIds;
+      this.canRequestData = false;
       this.isRequestingData = true;
       this.connection.send("RequestEntityData", entityIds);
+      setTimeout(() => this.canRequestData = true, 500);
       console.log("Requesting entity data");
     }
     else {
@@ -162,6 +166,13 @@ export class WorldEntityService {
         }
       });
     }
+  }
+
+  /**Sends a request to the server to get the WorldEntity that belongs to the player. */
+  public requestPlayerEntity(): Promise<void> {
+    this.canRequestData = false;
+    setTimeout(() => this.canRequestData = true, 500);
+    return this.connection.send("RequestPlayerEntity");
   }
 
   private async onBattleInitiatedAsync(): Promise<void> {
@@ -194,38 +205,7 @@ export class WorldEntityService {
    * @param mapEntities A 2d array containing the locations of entities represented by their ids.
    */
   private updateEntities(entities: EntityLocation[]): void {
-    //if (entities != null) {
-    //  this.entityIds = entities;
-    //  setTimeout(() => this.verifyEntities(), 500);
-    //}
     this.updateLocationsCallbacks.forEach(callback => callback(entities));
-  }
-
-  /**
-   * Checks to see if there are any missing entity data, if so calls requestEntityData with the ids of the missing entities.
-   */
-  private verifyEntities(): void {
-    let missingIds: number[] = [];
-    if (this.entities.length > this.entityIds.length) {
-      this.entities.forEach(entity => {
-        if (this.entityIds.indexOf(entity.id) === -1) {
-          console.log("Found missing entity id" + entity.id);
-          missingIds.push(entity.id);
-        }
-      });
-    }
-    else {
-      this.entityIds.forEach(id => {
-        if (!this.entities.some(entity => entity.id === id)) {
-          missingIds.push(id);
-        }
-      });
-    }
-
-    if (missingIds.length > 0) {
-      console.log("Missing entitys, calling requestEntityData");
-      this.requestEntityData(missingIds);
-    }
   }
 
   /**
@@ -237,15 +217,19 @@ export class WorldEntityService {
   }
 
   /**
+   * Called by the server to receive the id of the player's entity.
+   * @param entityId The id of the player's entity.
+   */
+  private getMyEntity(entityId: number): void {
+    this._playerEntityId = entityId;
+  }
+
+  /**
    * Called whenever one or more entities should be removed from the map.
    * @param entityIds The ids of the entities to be removed.
    */
   private removeEntities(entityIds: number[]): void {
-    for (var i = this.entities.length - 1; i <= 0; i++) {
-      if (entityIds.indexOf(this.entities[i].id) !== -1) {
-        this.entities.splice(i, 1);
-      }
-    }
+    if (this.removeEntitiesCallback != null) this.removeEntitiesCallback(entityIds);
   }
 
   /**
@@ -253,9 +237,6 @@ export class WorldEntityService {
    * @param newMapId The id of the map the player was switched to.
    */
   private changeMapsSuccess(newMapId: number): void {
-    this.entities = [];
-    this.entityIds = [];
-    this.entityLocations = [];
     this.requestIds = [];
     this.queuedRequestIds = [];
     this.isRequestingData = false;
@@ -280,7 +261,7 @@ export class WorldEntityService {
       this.requestIds = this.queuedRequestIds;
       this.queuedRequestIds = [];
       this.connection.send("requestEntityData", this.requestIds);
-      setTimeout(() => this.canRequestData = true, 2000);
+      setTimeout(() => this.canRequestData = true, 500);
     }
     else {
       this.requestIds = [];

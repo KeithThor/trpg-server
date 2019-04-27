@@ -1,7 +1,10 @@
 import { Component, Input, HostListener, trigger, state, style, transition, animate } from "@angular/core";
 import { WorldEntity } from "../model/world-entity.model";
 import { CharacterIconSet } from "../model/character.model";
+import { WorldEntityService } from "../services/world-entity.service";
+import { GameplayConstants } from "../gameplay-constants.static";
 
+/**Component that represents an in-game WorldEntity. */
 @Component({
   selector: 'world-entity-component',
   templateUrl: './world-entity.component.html',
@@ -46,11 +49,11 @@ import { CharacterIconSet } from "../model/character.model";
   ]
 })
 export class WorldEntityComponent {
-  constructor() {
+  constructor(private worldEntityService: WorldEntityService) {
     this.animationState = WorldEntityAnimationConstants.stationary;
   }
   private _entity: WorldEntity;
-  @Input() set entity(value: WorldEntity): void {
+  @Input() set entity(value: WorldEntity) {
     this._entity = value;
     this.animationState = WorldEntityAnimationConstants.stationary;
   }
@@ -61,14 +64,23 @@ export class WorldEntityComponent {
   public animationState: string;
   public onAnimationFinishedHandler: () => void;
 
+  /** Invokes the onAnimationFinishedHandler when an animation is finished. */
   public onAnimationFinished(): void {
     if (this.onAnimationFinishedHandler != null) {
       this.onAnimationFinishedHandler();
     }
   }
 
+  /**Gets the icon array from the WorldEntity to display. */
   public getIconArray(): string[] {
     return CharacterIconSet.asArray(this.entity.iconUris);
+  }
+
+  /**Gets the css class that is appropriate for the WorldEntity this component represents. */
+  public getEntityCss(): string {
+    if (this.entity.id === this.worldEntityService.playerEntityId) return "entity-player-name";
+    if (this.entity.ownerId === GameplayConstants.aiId) return "entity-enemy-name";
+    else return "entity-neutral-name";
   }
 
   @HostListener('contextmenu', ['$event'])
