@@ -17,6 +17,7 @@ export class GameStateService {
   }
   private mapId: number;
   public initialized: boolean;
+  public onMapLoaded: () => void;
 
   /**
    * Called to initialize all game related services asynchronously.
@@ -49,6 +50,7 @@ export class GameStateService {
     ])
     this.mapId = newMapId;
     this.initialized = true;
+    if (this.onMapLoaded != null) this.onMapLoaded();
   }
 
   /** Sends a request to the server to change maps. The server decides on which map is changed to based on the

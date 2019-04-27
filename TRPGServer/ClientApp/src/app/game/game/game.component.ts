@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild, ViewChildren } from "@angular/core";
+import { Component, HostListener, OnInit, ViewChild, ViewChildren, ChangeDetectorRef } from "@angular/core";
 import { Coordinate } from "../model/coordinate.model";
 import { Router, NavigationStart } from "@angular/router";
 import { Subscription } from "rxjs/Subscription";
@@ -20,7 +20,8 @@ import { TileNodeComponent } from "./tile-node.component";
 export class GameComponent implements OnInit {
   constructor(private gameStateService: GameStateService,
     private worldEntityService: WorldEntityService,
-    private router: Router) {
+    private router: Router,
+    private changeDetector: ChangeDetectorRef) {
 
   }
   @ViewChild("chatbox") chatbox: ChatboxComponent;
@@ -95,11 +96,13 @@ export class GameComponent implements OnInit {
   private async initialize(): Promise<void> {
     await this.gameStateService.initializeAsync()
       .catch(err => console.log(err));
+
     this.worldEntityService.onUpdateLocations(this.onUpdateLocation.bind(this));
     this.worldEntityService.canStartBattleHandler = this.canStartBattleAsync.bind(this);
     this.worldEntityService.addEntitiesCallback = this.onAddEntities.bind(this);
     this.worldEntityService.onChangeMaps(this.onChangeMaps.bind(this));
     this.worldEntityService.removeEntitiesCallback = this.onRemoveEntities.bind(this);
+
     await this.gameStateService.beginPlayAsync();
   }
 
@@ -257,13 +260,15 @@ export class GameComponent implements OnInit {
    * Will run recursively until there are no more updates in the queue. */
   private animateEntities(): void {
     if (this.isAnimating || this.updateQueue.length === 0) return;
+    if (this.getTileIds() == null) return;
     
     this.isAnimating = true;
     let entityLocations = this.updateQueue.shift();
+    let rowLength = this.getTileIds()[0].length;
 
-    entityLocations.forEach((entity, index) => {
+    this.tileNodeComponents.forEach((component, index) => {
       // On last index, start next recursive loop after a delay equal to animation time
-      if (index === entityLocations.length - 1) {
+      if (index === this.tileNodeComponents.length - 1) {
         setTimeout((() => {
           this.entityLocations = entityLocations;
           this.isAnimating = false;
@@ -274,28 +279,28 @@ export class GameComponent implements OnInit {
         }).bind(this), 100);
       }
 
-      let oldEntityLocation: EntityLocation = this.entityLocations.find(e => e.id === entity.id);
+      if (component.entity == null) return;
 
-      // If oldEntityLocation is null, this entity was just added
-      if (oldEntityLocation == null) return;
+      let eLocation: EntityLocation = entityLocations.find(eLoc => eLoc.id === component.entity.id);
+      if (eLocation == null) return;
 
-      let component = this.tileNodeComponents
-        .find(c => c.entity != null && c.entity.id === entity.id);
-      let worldEntityComponent: WorldEntityComponent;
+      let worldEntityComponent = component.worldEntityComponent;
+      if (worldEntityComponent == null) return;
 
-      if (component != null) worldEntityComponent = component.worldEntityComponent;
-      if (component == null || worldEntityComponent == null) return;
+      let coord = new Coordinate();
+      coord.positionX = Math.floor(index / rowLength);
+      coord.positionY = Math.floor(index % rowLength);
 
-      if (entity.location.positionX - oldEntityLocation.location.positionX > 0) {
+      if (eLocation.location.positionX - coord.positionX > 0) {
         worldEntityComponent.animationState = WorldEntityAnimationConstants.moveDown;
       }
-      else if (entity.location.positionX - oldEntityLocation.location.positionX < 0) {
+      else if (eLocation.location.positionX - coord.positionX < 0) {
         worldEntityComponent.animationState = WorldEntityAnimationConstants.moveUp;
       }
-      else if (entity.location.positionY - oldEntityLocation.location.positionY > 0) {
+      else if (eLocation.location.positionY - coord.positionY > 0) {
         worldEntityComponent.animationState = WorldEntityAnimationConstants.moveRight;
       }
-      else if (entity.location.positionY - oldEntityLocation.location.positionY < 0) {
+      else if (eLocation.location.positionY - coord.positionY < 0) {
         worldEntityComponent.animationState = WorldEntityAnimationConstants.moveLeft;
       }
       else {
