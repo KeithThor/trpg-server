@@ -5,9 +5,10 @@
         <game-formation-node [entity]="entity"
                              [specialIconsFunc]="specialIconsFunc"
                              [coordinate]="getCoordinate(j, i)"
-                             [clickHandler]="nodeClickHandler"
                              [getNodeStateFunc]="getNodeStateFunc"
-                             [setHoveredEntityFunc]="setHoveredEntityFunc"></game-formation-node>
+                             (onClick)="nodeClicked($event)"
+                             (onMouseEnter)="nodeMouseEnter($event)"
+                             (onMouseLeave)="nodeMouseLeave($event)"></game-formation-node>
       </td>
     </tr>
   </table>

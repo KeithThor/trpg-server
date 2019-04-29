@@ -1,4 +1,4 @@
-import { Component, OnInit } from "@angular/core";
+import { Component, OnInit, PACKAGE_ROOT_URL } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Formation, FormationConstants, FormationTemplate } from "../model/formation.model";
 import { DisplayableEntity } from "../model/display-entity.interface";
@@ -6,6 +6,7 @@ import { CombatEntity } from "../model/combat-entity.model";
 import { FormationFactory } from "../services/formation.factory";
 import { Coordinate } from "../model/coordinate.model";
 import { TwoDArray } from "../../shared/static/two-d-array.static";
+import { FormationNodeEvent } from "./formationGrid/formationNode/formation-node.component";
 
 /** A component that provides CRUD operations on in-game combat formations for the user. */
 @Component({
@@ -27,7 +28,7 @@ export class FormationComponent implements OnInit {
   public isChoosingLeader: boolean;
   public entities: CombatEntity[];
   public selectedEntity: CombatEntity;
-  public hoveredEntity: DisplayableEntity;
+  public hoveredEntity: CombatEntity;
   public makeActive: boolean;
   private isEditing: boolean;
 
@@ -106,11 +107,7 @@ export class FormationComponent implements OnInit {
 
   /** Gets the CombatEntity that should have its abilities and details displayed in the CombatPanel. */
   public getCombatPanelEntity(): CombatEntity {
-    if (this.hoveredEntity != null) {
-      let entity = this.entities.find(e => e.id === this.hoveredEntity.id);
-      if (entity == null) return this.selectedEntity;
-      else return entity;
-    }
+    if (this.hoveredEntity != null) return this.hoveredEntity;
     else return this.selectedEntity;
   }
 
@@ -124,20 +121,16 @@ export class FormationComponent implements OnInit {
   }
 
   /**
-   * Make the selected entity the active entity if its id exists in the current list of entities.
+   * Toggles selection for the clicked entity.
    * @param entity The display entity to make active.
    */
-  public selectEntity(entity: DisplayableEntity): void {
-    let match = this.entities.find(e => e.id === entity.id);
-    if (match == null) return;
-    else {
-      if (this.isChoosingLeader) {
-        this.activeFormationLeader = match;
-        this.isChoosingLeader = false;
-      }
-      else if (this.selectedEntity === match) this.selectedEntity = null;
-      else this.selectedEntity = match;
+  public selectEntity(entity: CombatEntity): void {
+    if (this.isChoosingLeader) {
+      this.activeFormationLeader = entity;
+      this.isChoosingLeader = false;
     }
+    else if (this.selectedEntity === entity) this.selectedEntity = null;
+    else this.selectedEntity = entity;
   }
 
   /**
@@ -180,10 +173,12 @@ export class FormationComponent implements OnInit {
    * Deselects the currently selected entity if the clicked node belongs to that entity.
    *
    * Selects the entity that exists in a given node if there are currently no selected entities.
-   * @param entity The entity that exists in the selected node.
-   * @param position The position the clicked node occupies on the formation grid, if any.
+   * @param args Event object containing the clicked CombatEntity and the clicked Coordinate.
    */
-  public onNodeClick(entity: DisplayableEntity, position: Coordinate): void {
+  public onNodeClick(args: FormationNodeEvent): void {
+    let entity = args.entity;
+    let position = args.coordinate;
+
     if (this.selectedEntity == null && entity == null) return;
     else if (this.selectedEntity == null && entity != null) {
       if (this.isChoosingLeader) {
@@ -209,6 +204,31 @@ export class FormationComponent implements OnInit {
         this.selectedEntity = null;
       }
     }
+  }
+
+  /**
+   * Called by a FormationNode component whenever the user's mouse enters the node. Sets the hoveredEntity to the
+   * CombatEntity that exists in the given node.
+   * @param args
+   */
+  public onNodeMouseEnter(args: FormationNodeEvent): void {
+    this.setHoveredEntity(args.entity);
+  }
+
+  /**
+   * Called by a FormationNode component whenever the user's mouse leaves the node. Sets the hoveredEntity to null.
+   * @param args
+   */
+  public onNodeMouseLeave(args: FormationNodeEvent): void {
+    this.setHoveredEntity(null);
+  }
+
+  /**
+   * Performs the act of changing the currently hovered CombatEntity.
+   * @param entity
+   */
+  public setHoveredEntity(entity: CombatEntity): void {
+    this.hoveredEntity = entity;
   }
 
   /**
@@ -243,14 +263,6 @@ export class FormationComponent implements OnInit {
     if (this.selectedEntity != null && entity.id === this.selectedEntity.id) return "node-active";
     if (this.hoveredEntity != null && entity.id === this.hoveredEntity.id) return "node-hovered";
     else return "";
-  }
-
-  /**
-   * Sets the currently hovered entity to the one provided.
-   * @param entity The new entity that is being hovered over.
-   */
-  public setHoveredEntity(entity: DisplayableEntity): void {
-    this.hoveredEntity = entity;
   }
 
   /** Gets the name of the request button which changes depending on whether the user is editing a formation or creating a new one. */

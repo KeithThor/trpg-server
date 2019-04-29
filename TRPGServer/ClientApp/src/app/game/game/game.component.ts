@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild, ViewChildren, ChangeDetectorRef } from "@angular/core";
+import { Component, HostListener, OnInit, ViewChild, ViewChildren } from "@angular/core";
 import { Coordinate } from "../model/coordinate.model";
 import { Router, NavigationStart } from "@angular/router";
 import { Subscription } from "rxjs/Subscription";
@@ -6,7 +6,7 @@ import { ChatboxComponent } from "../chatbox/chatbox.component";
 import { GameStateService } from "../services/game-state.service";
 import { MapTile } from "../model/map-data.model";
 import { WorldEntity } from "../model/world-entity.model";
-import { WorldEntityAnimationConstants, WorldEntityComponent } from "../worldEntity/world-entity.component";
+import { WorldEntityAnimationConstants } from "../worldEntity/world-entity.component";
 import { QueryList } from "@angular/core";
 import { EntityLocation } from "../model/entity-location.model";
 import { WorldEntityService } from "../services/world-entity.service";
@@ -20,8 +20,7 @@ import { TileNodeComponent } from "./tile-node.component";
 export class GameComponent implements OnInit {
   constructor(private gameStateService: GameStateService,
     private worldEntityService: WorldEntityService,
-    private router: Router,
-    private changeDetector: ChangeDetectorRef) {
+    private router: Router) {
 
   }
   @ViewChild("chatbox") chatbox: ChatboxComponent;
@@ -166,6 +165,7 @@ export class GameComponent implements OnInit {
    * @param positionY The column of the map the entity resides on.
    */
   public getEntity(positionX: number, positionY: number): WorldEntity {
+    // Request data if there are any entities that are missing from memory
     if (positionX === 0 && positionY === 0) {
       if (this.missingEntityIds.length > 0) this.worldEntityService.requestEntityData(this.missingEntityIds);
       this.missingEntityIds = [];
@@ -261,6 +261,14 @@ export class GameComponent implements OnInit {
   private animateEntities(): void {
     if (this.isAnimating || this.updateQueue.length === 0) return;
     if (this.getTileIds() == null) return;
+
+    // Too far behind on updates, just skip to newest update
+    if (this.updateQueue.length >= 5) {
+      let locations = this.updateQueue[this.updateQueue.length - 1];
+      this.entityLocations = locations;
+      this.updateQueue = [];
+      return;
+    }
     
     this.isAnimating = true;
     let entityLocations = this.updateQueue.shift();

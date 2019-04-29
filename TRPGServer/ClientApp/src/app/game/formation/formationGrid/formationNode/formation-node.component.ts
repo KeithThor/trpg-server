@@ -1,4 +1,4 @@
-import { Component, Input } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { DisplayableEntity } from "../../../model/display-entity.interface";
 import { Coordinate } from "../../../model/coordinate.model";
 import { CombatEntity } from "../../../model/combat-entity.model";
@@ -16,10 +16,10 @@ export class FormationNodeComponent {
   @Input() entity: CombatEntity;
   @Input() specialIconsFunc: (entity: CombatEntity) => string[];
   @Input() coordinate: Coordinate;
-  @Input() clickHandler: (entity: DisplayableEntity, position: Coordinate) => void;
-  @Input() onHoverHandler: (entity: DisplayableEntity, position: Coordinate) => void;
+  @Output() onClick: EventEmitter<FormationNodeEvent> = new EventEmitter();
+  @Output() onMouseEnter: EventEmitter<FormationNodeEvent> = new EventEmitter();
+  @Output() onMouseLeave: EventEmitter<FormationNodeEvent> = new EventEmitter();
   @Input() getNodeStateFunc: (entity: DisplayableEntity) => string;
-  @Input() setHoveredEntityFunc: (entity: DisplayableEntity) => void;
 
   /**
    * Returns an array of string containing the uris of special icons to stack on top of a DisplayableEntity.
@@ -30,21 +30,22 @@ export class FormationNodeComponent {
     else return null;
   }
 
-  /** Called by the template whenever a node is clicked by the user. */
-  public onClick(): void {
-    if (this.clickHandler != null) this.clickHandler(this.entity, this.coordinate);
+  /** Called by the template to emit the on click event. */
+  public emitOnClick(): void {
+    let args = this.createEventArgs();
+    this.onClick.emit(args);
   }
 
-  /**
-   * Sets the HoveredEntity in the parent component to the entity that exists in this node whenever the user hovers
-   * over this component.
-   *
-   * Sets the HoveredEntity to null if the user leaves this component.
-   * @param entity The entity to set the HoveredEntity to.
-   */
-  public setHoveredEntity(): void {
-    if (this.setHoveredEntityFunc != null) this.setHoveredEntityFunc(this.entity);
-    if (this.onHoverHandler != null) this.onHoverHandler(this.entity, this.coordinate);
+  /** Called by the template to emit the on mouse enter event. */
+  public emitOnMouseEnter(): void {
+    let args = this.createEventArgs();
+    this.onMouseEnter.emit(args);
+  }
+
+  /**Called by the template to emit the on mouse leave event. */
+  public emitOnMouseLeave(): void {
+    let args = this.createEventArgs();
+    this.onMouseLeave.emit(args);
   }
 
   /** Gets the css class name that represents this node's state. */
@@ -52,4 +53,17 @@ export class FormationNodeComponent {
     if (this.getNodeStateFunc == null) return "";
     return this.getNodeStateFunc(this.entity);
   }
+
+  /**Creates the event args for EventEmitters. */
+  private createEventArgs(): FormationNodeEvent {
+    let args = new FormationNodeEvent();
+    args.coordinate = this.coordinate;
+    args.entity = this.entity;
+    return args;
+  }
+}
+
+export class FormationNodeEvent {
+  public entity: CombatEntity;
+  public coordinate: Coordinate;
 }

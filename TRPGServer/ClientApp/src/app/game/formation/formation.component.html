@@ -5,9 +5,11 @@
       <div class="formation-container">
         <game-formation-grid *ngIf="isLoaded" [formation]="activeFormation"
                                               [specialIconsFunc]="getExtraIcons.bind(this)"
-                                              [nodeClickHandler]="onNodeClick.bind(this)"
                                               [getNodeStateFunc]="getNodeState.bind(this)"
-                                              [setHoveredEntityFunc]="setHoveredEntity.bind(this)"></game-formation-grid>
+                                              (onNodeClicked)="onNodeClick($event)"
+                                              (onNodeMouseEnter)="onNodeMouseEnter($event)"
+                                              (onNodeMouseLeave)="onNodeMouseLeave($event)">
+        </game-formation-grid>
       </div>
     </div>
 
