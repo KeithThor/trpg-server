@@ -60,6 +60,11 @@ namespace TRPGGame.Managers
         public event EventHandler<JoinBattleEventArgs> JoinBattleEvent;
 
         /// <summary>
+        /// Event handler called whenever a BattleAction is successfully performed.
+        /// </summary>
+        public event EventHandler<SuccessfulActionEventArgs> SuccessfulActionEvent;
+
+        /// <summary>
         /// Starts a Battle instance between the attackers and defenders.
         /// <para>Returns null if a Battle instance already exists for this manager.</para>
         /// </summary>
@@ -323,26 +328,25 @@ namespace TRPGGame.Managers
         }
 
         /// <summary>
-        /// Performs an action and returns an IEnumerable of all of the CombatEntities affected by the action.
-        /// <para>If the action was invalid, will return null.</para>
+        /// Performs an action and returns true if the action was a success.
         /// </summary>
         /// <param name="action">The action to perform, containing data about the actor and the abilities used.</param>
         /// <returns></returns>
-        public async Task<IEnumerable<IReadOnlyCombatEntity>> PerformActionAsync(BattleAction action)
+        public async Task<bool> PerformActionAsync(BattleAction action)
         {
             IEnumerable<CombatEntity> affectedEntities;
-            if (_battle == null) return null;
+            if (_battle == null) return false;
 
             var actorFormation = GetFormation(action.OwnerId, out bool isAttacker);
-            if (actorFormation == null) return null;
+            if (actorFormation == null) return false;
 
             var actor = actorFormation.Positions.FirstOrDefaultTwoD(entity => entity.Id == action.ActorId);
-            if (actor == null) return null;
+            if (actor == null) return false;
 
             // If actor should not be acting, return null
-            if (!_battle.ActionsLeftPerFormation.ContainsKey(actorFormation)) return null;
-            if (!_battle.ActionsLeftPerFormation[actorFormation].Contains(actor)) return null;
-            if (actor.StatusEffects.Any(se => se.BaseStatus.IsStunned)) return null;
+            if (!_battle.ActionsLeftPerFormation.ContainsKey(actorFormation)) return false;
+            if (!_battle.ActionsLeftPerFormation[actorFormation].Contains(actor)) return false;
+            if (actor.StatusEffects.Any(se => se.BaseStatus.IsStunned)) return false;
 
             Ability ability = null;
             Item item = null;
@@ -357,16 +361,16 @@ namespace TRPGGame.Managers
                                                   .Items
                                                   .FirstOrDefault(i => i != null && i.ConsumableAbility.Id == action.AbilityId);
 
-                    if (item == null) return null;
+                    if (item == null) return false;
                     
                     ability = item.ConsumableAbility;
                 }
                 else
                 {
                     ability = actor.Abilities.FirstOrDefault(abi => abi.Id == action.AbilityId);
-                    if (ability == null) return null;
-                    if (ability.IsSpell && actor.StatusEffects.Any(se => se.BaseStatus.IsSilenced)) return null;
-                    if (!ability.IsSpell && actor.StatusEffects.Any(se => se.BaseStatus.IsRestricted)) return null;
+                    if (ability == null) return false;
+                    if (ability.IsSpell && actor.StatusEffects.Any(se => se.BaseStatus.IsSilenced)) return false;
+                    if (!ability.IsSpell && actor.StatusEffects.Any(se => se.BaseStatus.IsRestricted)) return false;
                 }
 
                 var targetFormation = GetFormation(action.TargetFormationId, out bool throwAway);
@@ -375,12 +379,12 @@ namespace TRPGGame.Managers
                     var delayedAbility = _abilityManager.CreateDelayedAbility(actor, ability, action, targetFormation);
                     if (isAttacker) _battle.AttackerDelayedAbilities.Add(delayedAbility);
                     else _battle.DefenderDelayedAbilities.Add(delayedAbility);
-                    return new List<CombatEntity> { actor };
+                    affectedEntities = new List<CombatEntity> { actor };
                 }
                 else
                 {
                     affectedEntities = _abilityManager.Attack(actor, ability, action, targetFormation);
-                    if (affectedEntities == null) return null;
+                    if (affectedEntities == null) return false;
                 }
 
                 _battle.ActionsLeftPerFormation[actorFormation].Remove(actor);
@@ -394,6 +398,15 @@ namespace TRPGGame.Managers
                         else _numOfDefenders--;
                     }
                 }
+
+                await Task.Run(() => SuccessfulActionEvent.Invoke(this, new SuccessfulActionEventArgs
+                {
+                    Ability = ability,
+                    Action = action,
+                    Actor = actor,
+                    AffectedEntities = affectedEntities,
+                    ParticipantIds = _participantIds
+                }));
             }
             // Is defending or fleeing
             else
@@ -415,9 +428,18 @@ namespace TRPGGame.Managers
                     var nextActiveEntity = GetNextActiveEntity(actorFormation, _battle.ActionsLeftPerFormation[actorFormation]);
                     if (nextActiveEntity != null) _battle.ActionsLeftPerFormation[actorFormation].Add(nextActiveEntity);
                 }
+
+                await Task.Run(() => SuccessfulActionEvent.Invoke(this, new SuccessfulActionEventArgs
+                {
+                    Ability = null,
+                    Action = action,
+                    Actor = actor,
+                    AffectedEntities = affectedEntities,
+                    ParticipantIds = _participantIds
+                }));
             }
 
-            return affectedEntities;
+            return true;
         }
 
         /// <summary>

@@ -26,6 +26,7 @@ namespace TRPGServer.Services
             _battleManager.EndOfBattleEvent += OnEndOfBattle;
             _battleManager.EndOfTurnEvent += OnEndOfTurn;
             _battleManager.StartOfTurnEvent += OnStartOfTurn;
+            _battleManager.SuccessfulActionEvent += OnSuccessfulAction;
         }
 
         /// <summary>
@@ -53,6 +54,22 @@ namespace TRPGServer.Services
                 args.AffectedEntities,
                 args.IsDefendersTurn,
                 turnExpiration
+            });
+        }
+
+        /// <summary>
+        /// On a successful action, send all clients the updated data.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private async void OnSuccessfulAction(object sender, SuccessfulActionEventArgs args)
+        {
+            await _battleHubContext.Clients.Users(args.ParticipantIds).SendAsync("actionSuccess", new
+            {
+                args.Ability,
+                args.Action,
+                args.Actor,
+                args.AffectedEntities
             });
         }
 

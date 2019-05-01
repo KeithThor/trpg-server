@@ -47,13 +47,8 @@ namespace TRPGServer.Hubs
             var manager = _worldEntityManager.GetPlayerEntityManager(userId).GetBattleManager();
             if (manager != null)
             {
-                var affected = await manager.PerformActionAsync(action);
-                if (affected == null) await Clients.Caller.SendAsync("invalidAction", action);
-                else await Clients.Caller.SendAsync("actionSuccess", new
-                {
-                    Action = action,
-                    AffectedEntities = affected
-                });
+                var success = await manager.PerformActionAsync(action);
+                if (!success) await Clients.Caller.SendAsync("invalidAction", action);
             }
         }
     }

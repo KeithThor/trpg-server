@@ -33,6 +33,11 @@ namespace TRPGGame.Managers
         event EventHandler<JoinBattleEventArgs> JoinBattleEvent;
 
         /// <summary>
+        /// Event handler called whenever an action is successfully executed in battle.
+        /// </summary>
+        event EventHandler<SuccessfulActionEventArgs> SuccessfulActionEvent;
+
+        /// <summary>
         /// Adds a participant to the battle and returns the battle instance.
         /// <para>Returns null if no battles were found or the battle group is full.</para>
         /// </summary>
@@ -42,12 +47,11 @@ namespace TRPGGame.Managers
         IReadOnlyBattle JoinBattle(Formation participant, bool isAttacker);
 
         /// <summary>
-        /// Performs an action and returns an IEnumerable of all of the CombatEntities affected by the action.
-        /// <para>If the action was invalid, will return null.</para>
+        /// Tries to perform an action, returning true if the action was successfully performed.
         /// </summary>
         /// <param name="action">The action to perform, containing data about the actor and the abilities used.</param>
         /// <returns></returns>
-        Task<IEnumerable<IReadOnlyCombatEntity>> PerformActionAsync(BattleAction action);
+        Task<bool> PerformActionAsync(BattleAction action);
 
         /// <summary>
         /// Starts a Battle instance between the attackers and defenders.
