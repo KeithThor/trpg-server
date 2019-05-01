@@ -36,6 +36,8 @@ namespace TRPGGame.Managers
         private readonly IStatusEffectManager _statusEffectManager;
         private readonly IRepository<StatusEffect> _statusEffectRepo;
         private List<string> _participantIds;
+        private int _numOfAttackers = 0;
+        private int _numOfDefenders = 0;
 
         /// <summary>
         /// Event handler called after the start of turn events happen.
@@ -76,10 +78,15 @@ namespace TRPGGame.Managers
             var activeEntities = new Dictionary<int, IEnumerable<int>>();
             foreach (var attacker in attackers)
             {
-                InitializeFormation(attacker);
+                InitializeFormation(attacker, true);
                 var activeE = ChooseActiveEntities(attacker);
                 actionsPerFormation.Add(attacker, activeE);
                 activeEntities.Add(attacker.Id, activeE.Select(e => e.Id));
+            }
+
+            foreach (var defender in defenders)
+            {
+                InitializeFormation(defender, false);
             }
 
             var battle = new Battle
@@ -136,7 +143,7 @@ namespace TRPGGame.Managers
         {
             if (_battle == null) return null;
 
-            InitializeFormation(participant);
+            InitializeFormation(participant, isAttacker);
 
             if (isAttacker)
             {
@@ -292,8 +299,27 @@ namespace TRPGGame.Managers
                 ParticipantIds = _participantIds
             }));
 
-            _battle.ActionsLeftPerFormation.Clear();
-            StartTurn();
+            if (_numOfAttackers <= 0 || _numOfDefenders <= 0)
+            {
+                var attackersWin = _numOfDefenders <= 0;
+                Task.Run(() => EndOfBattleEvent(this, new EndOfBattleEventArgs
+                {
+                    ParticipantIds = _participantIds,
+                    DidAttackersWin = attackersWin
+                }));
+            }
+            else
+            {
+                _battle.ActionsLeftPerFormation.Clear();
+
+                // Call start turn after a delay
+                var dueDate = DateTime.Now.AddSeconds(GameplayConstants.EndOfTurnDelayInSeconds);
+                Timer timer = new Timer(
+                                    (arg) => { StartTurn(); },
+                                    null,
+                                    (int)(dueDate - DateTime.Now).TotalMilliseconds,
+                                    0);
+            }
         }
 
         /// <summary>
@@ -327,7 +353,10 @@ namespace TRPGGame.Managers
                 if (action.IsUsingItem)
                 {
                     item = actor.EquippedItems.FirstOrDefault(i => i.ConsumableAbility.Id == action.AbilityId);
-                    if (item == null) item = actor.PlayerInventory.Items.FirstOrDefault(i => i.ConsumableAbility.Id == action.AbilityId);
+                    if (item == null) item = actor.PlayerInventory
+                                                  .Items
+                                                  .FirstOrDefault(i => i != null && i.ConsumableAbility.Id == action.AbilityId);
+
                     if (item == null) return null;
                     
                     ability = item.ConsumableAbility;
@@ -356,6 +385,15 @@ namespace TRPGGame.Managers
 
                 _battle.ActionsLeftPerFormation[actorFormation].Remove(actor);
                 if (item != null) _equipmentManager.ReduceCharges(actor, item);
+
+                foreach (var entity in affectedEntities)
+                {
+                    if (entity.Resources.CurrentHealth <= 0)
+                    {
+                        if (actorFormation.Positions.ContainsTwoD(entity)) _numOfAttackers--;
+                        else _numOfDefenders--;
+                    }
+                }
             }
             // Is defending or fleeing
             else
@@ -426,12 +464,15 @@ namespace TRPGGame.Managers
         /// Brings a Formation to a fresh state ready for the start of battle.
         /// </summary>
         /// <param name="formation">The Formation to initialize.</param>
-        private void InitializeFormation(Formation formation)
+        /// <param name="isAttacker">Adds the formation to the attackers group if true, else adds to defenders.</param>
+        private void InitializeFormation(Formation formation, bool isAttacker)
         {
+            var characters = new List<CombatEntity>();
             foreach (var row in formation.Positions)
             {
                 foreach (var entity in row)
                 {
+                    if (entity == null) continue;
                     entity.Resources.CurrentActionPoints = 0;
 
                     // Temporary, remove later
@@ -439,6 +480,10 @@ namespace TRPGGame.Managers
                     entity.Resources.CurrentMana = entity.Resources.MaxMana;
 
                     IncreaseActionPoints(entity);
+                    characters.Add(entity);
+
+                    if (isAttacker) _numOfAttackers++;
+                    else _numOfDefenders++;
                 }
             }
         }
@@ -453,6 +498,7 @@ namespace TRPGGame.Managers
             {
                 foreach (var entity in row)
                 {
+                    if (entity == null) continue;
                     entity.Resources.CurrentActionPoints = 0;
                     _statusEffectManager.RemoveAll(entity);
                 }
@@ -470,6 +516,7 @@ namespace TRPGGame.Managers
         {
             var candidates = formation.Positions.WhereTwoD(entity =>
             {
+                if (entity == null) return false;
                 if (entity.Resources.CurrentActionPoints <= 0 || entity.Resources.CurrentHealth <= 0) return false;
                 if (entity.StatusEffects.Any(se => se.BaseStatus.IsStunned)) return false;
                 return true;
@@ -491,6 +538,7 @@ namespace TRPGGame.Managers
         {
             var candidates = formation.Positions.WhereTwoD(ent =>
             {
+                if (ent == null) return false;
                 if (activeEntities.Contains(ent)) return false;
                 if (ent.Resources.CurrentActionPoints <= 0 || ent.Resources.CurrentHealth <= 0) return false;
                 if (ent.StatusEffects.Any(se =>

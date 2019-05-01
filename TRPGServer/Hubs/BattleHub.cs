@@ -36,7 +36,7 @@ namespace TRPGServer.Hubs
             {
                 var manager = _worldEntityManager.GetPlayerEntityManager(userId);
                 var battle = new CulledBattle(manager.GetBattleManager().GetBattle());
-                await Clients.Caller.SendAsync("initialize", battle);
+                await Clients.Caller.SendAsync("initialized", battle);
             }
         }
 
@@ -48,7 +48,12 @@ namespace TRPGServer.Hubs
             if (manager != null)
             {
                 var affected = await manager.PerformActionAsync(action);
-                if (affected == null) await Clients.Caller.SendAsync("invalidAction");
+                if (affected == null) await Clients.Caller.SendAsync("invalidAction", action);
+                else await Clients.Caller.SendAsync("actionSuccess", new
+                {
+                    Action = action,
+                    AffectedEntities = affected
+                });
             }
         }
     }

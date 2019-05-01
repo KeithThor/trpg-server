@@ -75,6 +75,7 @@ namespace TRPGServer
                 routes.MapHub<GameDataHub>("/hubs/gamedata");
                 routes.MapHub<ChatHub>("/hubs/chat");
                 routes.MapHub<WorldEntityHub>("/hubs/worldentities");
+                routes.MapHub<BattleHub>("/hubs/battle");
             });
 
             app.UseSpa(spa =>

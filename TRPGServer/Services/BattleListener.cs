@@ -9,6 +9,10 @@ using TRPGServer.Hubs;
 
 namespace TRPGServer.Services
 {
+    /// <summary>
+    /// Listener responsible for sending events in battle to clients who are connected to the same instance of
+    /// Battle as this listener is.
+    /// </summary>
     public class BattleListener
     {
         private readonly IBattleManager _battleManager;
@@ -24,6 +28,11 @@ namespace TRPGServer.Services
             _battleManager.StartOfTurnEvent += OnStartOfTurn;
         }
 
+        /// <summary>
+        /// Formats data to send to the client on the start of a new turn in battle.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void OnStartOfTurn(object sender, StartOfTurnEventArgs args)
         {
             var activeEntities = new List<dynamic>();
@@ -47,15 +56,25 @@ namespace TRPGServer.Services
             });
         }
 
+        /// <summary>
+        /// At the end of the turn, send all connected clients the CombatEntities affected by end of turn effects.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void OnEndOfTurn(object sender, EndOfTurnEventArgs args)
         {
             // Todo: Send delayed abilities too
             await _battleHubContext.Clients.Users(args.ParticipantIds).SendAsync("endOfTurn", args.AffectedEntities);
         }
 
+        /// <summary>
+        /// Signal to the client that the battle has ended along with whether the attackers or defenders won.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
         private async void OnEndOfBattle(object sender, EndOfBattleEventArgs args)
         {
-            await _battleHubContext.Clients.Users(args.ParticipantIds).SendAsync("endBattle");
+            await _battleHubContext.Clients.Users(args.ParticipantIds).SendAsync("endBattle", args.DidAttackersWin);
         }
     }
 }

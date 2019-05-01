@@ -35,12 +35,12 @@
   <ItemGroup>
     <None Remove="ClientApp\src\app\game\battle\battle.component.ts" />
     <None Remove="ClientApp\src\app\game\chatbox\message.component.ts" />
-    <None Remove="ClientApp\src\app\game\combatEntity\combat-entity.component.ts" />
     <None Remove="ClientApp\src\app\game\combatPanel\abilityPanel\ability-panel.component.ts" />
     <None Remove="ClientApp\src\app\game\combatPanel\categoryPanel\category-panel.component.ts" />
     <None Remove="ClientApp\src\app\game\combatPanel\combat-panel.component.ts" />
     <None Remove="ClientApp\src\app\game\combatPanel\descriptionPanel\description-panel.component.ts" />
     <None Remove="ClientApp\src\app\game\combatPanel\descriptionPanel\targetsGrid\targets-grid.component.ts" />
+    <None Remove="ClientApp\src\app\game\combat\battle.component.ts" />
     <None Remove="ClientApp\src\app\game\create\classPicker\class-picker.component.ts" />
     <None Remove="ClientApp\src\app\game\create\create.component.ts" />
     <None Remove="ClientApp\src\app\game\create\description\description.component.ts" />
@@ -76,6 +76,7 @@
     <None Remove="ClientApp\src\app\game\model\start-of-turn-data.model.ts" />
     <None Remove="ClientApp\src\app\game\model\status-effect.model.ts" />
     <None Remove="ClientApp\src\app\game\player-state-constants.static.ts" />
+    <None Remove="ClientApp\src\app\game\services\battle.service.ts" />
     <None Remove="ClientApp\src\app\game\services\formation-targeter.static.ts" />
     <None Remove="ClientApp\src\app\game\services\formation.factory.ts" />
     <None Remove="ClientApp\src\app\game\services\state-handler.service.ts" />
@@ -106,6 +107,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\combatPanel\combat-panel.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\combatPanel\descriptionPanel\description-panel.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\combatPanel\descriptionPanel\targetsGrid\targets-grid.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\combat\battle.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\classPicker\class-picker.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\description\description.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\editEntity\edit-entity.component.ts" />
@@ -141,6 +143,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\model\start-of-turn-data.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\status-effect.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\player-state-constants.static.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\services\battle.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\services\formation-targeter.static.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\services\formation.factory.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\services\state-handler.service.ts" />
@@ -161,7 +164,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="ClientApp\src\app\game\combatEntity\" />
     <Folder Include="ClientApp\src\app\home\model\" />
     <Folder Include="wwwroot\images\" />
   </ItemGroup>

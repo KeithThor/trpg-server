@@ -6,4 +6,10 @@ var BattleAction = /** @class */ (function () {
     return BattleAction;
 }());
 exports.BattleAction = BattleAction;
+var SuccessfulAction = /** @class */ (function () {
+    function SuccessfulAction() {
+    }
+    return SuccessfulAction;
+}());
+exports.SuccessfulAction = SuccessfulAction;
 //# sourceMappingURL=battle-action.model.js.map
