@@ -16,10 +16,10 @@ export class FormationNodeComponent {
   @Input() entity: CombatEntity;
   @Input() specialIconsFunc: (entity: CombatEntity) => string[];
   @Input() coordinate: Coordinate;
-  @Output() onClick: EventEmitter<FormationNodeEvent> = new EventEmitter();
-  @Output() onMouseEnter: EventEmitter<FormationNodeEvent> = new EventEmitter();
-  @Output() onMouseLeave: EventEmitter<FormationNodeEvent> = new EventEmitter();
-  @Input() getNodeStateFunc: (entity: DisplayableEntity) => string;
+  @Output() onClick: EventEmitter<FormationNodeState> = new EventEmitter();
+  @Output() onMouseEnter: EventEmitter<FormationNodeState> = new EventEmitter();
+  @Output() onMouseLeave: EventEmitter<FormationNodeState> = new EventEmitter();
+  @Input() getNodeStateFunc: (nodeState: FormationNodeState) => string;
 
   /**
    * Returns an array of string containing the uris of special icons to stack on top of a DisplayableEntity.
@@ -51,19 +51,21 @@ export class FormationNodeComponent {
   /** Gets the css class name that represents this node's state. */
   public getNodeState(): string {
     if (this.getNodeStateFunc == null) return "";
-    return this.getNodeStateFunc(this.entity);
+
+    let nodeState = this.createEventArgs();
+    return this.getNodeStateFunc(nodeState);
   }
 
   /**Creates the event args for EventEmitters. */
-  private createEventArgs(): FormationNodeEvent {
-    let args = new FormationNodeEvent();
+  private createEventArgs(): FormationNodeState {
+    let args = new FormationNodeState();
     args.coordinate = this.coordinate;
     args.entity = this.entity;
     return args;
   }
 }
 
-export class FormationNodeEvent {
+export class FormationNodeState {
   public entity: CombatEntity;
   public coordinate: Coordinate;
 }

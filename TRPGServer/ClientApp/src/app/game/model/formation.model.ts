@@ -2,6 +2,7 @@ import { CombatEntity } from "./combat-entity.model";
 
 export class Formation {
   public id: number;
+  public ownerId: string;
   public name: string;
   public leaderId: number;
   public positions: CombatEntity[][];

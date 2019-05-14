@@ -4,10 +4,11 @@ import { AccountService } from "./services/account.service";
 import { HttpClientModule } from "@angular/common/http";
 import { RouterModule } from "@angular/router";
 import { ModuleWithProviders } from "@angular/compiler/src/core";
+import { ConfirmationPromptComponent } from "./components/confirmationPrompt/confirmation-prompt.component";
 
 @NgModule({
   declarations: [
-
+    ConfirmationPromptComponent
   ],
 
   imports: [
@@ -21,7 +22,7 @@ import { ModuleWithProviders } from "@angular/compiler/src/core";
   ],
 
   exports: [
-
+    ConfirmationPromptComponent
   ]
 })
 export class SharedModule {

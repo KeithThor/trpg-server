@@ -1,9 +1,63 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 var formation_model_1 = require("../model/formation.model");
+/**Static class used for Ability targetting purposes. */
 var FormationTargeter = /** @class */ (function () {
     function FormationTargeter() {
     }
+    /**
+     * Returns an array of CombatEntities that exist in the targetFormation that is the target of the provided
+     * ability and target position.
+     * @param ability The ability used to target entities in the formation.
+     * @param targetPosition The center position used to position the center of the ability in a formation.
+     * @param targetFormation The formation targeted by the ability.
+     */
+    FormationTargeter.getTargets = function (ability, targetPosition, targetFormation) {
+        var targets = [];
+        if (ability.isPositionStatic) {
+            targetFormation.positions.forEach(function (row, xIndex) {
+                row.forEach(function (entity, yIndex) {
+                    if (ability.targets.some(function (val) { return val === xIndex * formation_model_1.FormationConstants.maxColumns + yIndex + 1; })) {
+                        targets.push(entity);
+                    }
+                });
+            });
+        }
+        else if (this.isTargetBlocked(ability, targetPosition, targetFormation))
+            return targets;
+        var translatedTargets = this.translate(ability.centerOfTargets, ability.targets, targetPosition);
+        for (var i = 0; i < targetFormation.positions.length; i++) {
+            for (var j = 0; j < targetFormation.positions[i].length; j++) {
+                if (translatedTargets.some(function (tt) { return tt === i * formation_model_1.FormationConstants.maxRows + j + 1; })) {
+                    if (targetFormation.positions[i][j] != null)
+                        targets.push(targetFormation.positions[i][j]);
+                }
+            }
+        }
+        return targets;
+    };
+    /**
+     * Returns true if a given target position is blocked by a CombatEntity for an Ability in a given target Formation.
+     *
+     * Always returns false if the Ability cannot be blocked by a CombatEntity.
+     * @param ability The Ability to check if blocked.
+     * @param targetPosition The position to check in the Formation to see if it is blocked.
+     * @param targetFormation The formation used to see if any other CombatEntities are blocking the target position.
+     */
+    FormationTargeter.isTargetBlocked = function (ability, targetPosition, targetFormation) {
+        if (!ability.canTargetBeBlocked)
+            return false;
+        var column = this.getColumn(targetPosition);
+        if (column != 1) {
+            var row = this.getRow(targetPosition);
+            var entityRow = targetFormation.positions[row - 1];
+            for (var i = 0; i < column - 1; i++) {
+                if (entityRow[i] != null)
+                    return true;
+            }
+        }
+        return false;
+    };
     /**
      * Translates a given targets array from one point to another, removing any positions
      * that logically don't belong there.

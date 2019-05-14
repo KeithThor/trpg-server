@@ -1,4 +1,4 @@
-import { Component, OnInit, PACKAGE_ROOT_URL } from "@angular/core";
+import { Component, OnInit } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Formation, FormationConstants, FormationTemplate } from "../model/formation.model";
 import { DisplayableEntity } from "../model/display-entity.interface";
@@ -6,7 +6,7 @@ import { CombatEntity } from "../model/combat-entity.model";
 import { FormationFactory } from "../services/formation.factory";
 import { Coordinate } from "../model/coordinate.model";
 import { TwoDArray } from "../../shared/static/two-d-array.static";
-import { FormationNodeEvent } from "./formationGrid/formationNode/formation-node.component";
+import { FormationNodeState } from "./formationGrid/formationNode/formation-node.component";
 
 /** A component that provides CRUD operations on in-game combat formations for the user. */
 @Component({
@@ -175,7 +175,7 @@ export class FormationComponent implements OnInit {
    * Selects the entity that exists in a given node if there are currently no selected entities.
    * @param args Event object containing the clicked CombatEntity and the clicked Coordinate.
    */
-  public onNodeClick(args: FormationNodeEvent): void {
+  public onNodeClick(args: FormationNodeState): void {
     let entity = args.entity;
     let position = args.coordinate;
 
@@ -211,7 +211,7 @@ export class FormationComponent implements OnInit {
    * CombatEntity that exists in the given node.
    * @param args
    */
-  public onNodeMouseEnter(args: FormationNodeEvent): void {
+  public onNodeMouseEnter(args: FormationNodeState): void {
     this.setHoveredEntity(args.entity);
   }
 
@@ -219,7 +219,7 @@ export class FormationComponent implements OnInit {
    * Called by a FormationNode component whenever the user's mouse leaves the node. Sets the hoveredEntity to null.
    * @param args
    */
-  public onNodeMouseLeave(args: FormationNodeEvent): void {
+  public onNodeMouseLeave(args: FormationNodeState): void {
     this.setHoveredEntity(null);
   }
 
@@ -256,12 +256,12 @@ export class FormationComponent implements OnInit {
   /**
    * Returns a string representing the css class of the current state of a node, provided the entity that
    * exists in the node.
-   * @param entity The entity that exists in a given node.
+   * @param nodeState The state of the given node.
    */
-  public getNodeState(entity: DisplayableEntity): string {
-    if (entity == null) return "";
-    if (this.selectedEntity != null && entity.id === this.selectedEntity.id) return "node-active";
-    if (this.hoveredEntity != null && entity.id === this.hoveredEntity.id) return "node-hovered";
+  public getNodeState(nodeState: FormationNodeState): string {
+    if (nodeState.entity == null) return "";
+    if (this.selectedEntity != null && nodeState.entity === this.selectedEntity) return "node-active";
+    if (this.hoveredEntity != null && nodeState.entity === this.hoveredEntity) return "node-hovered";
     else return "";
   }
 

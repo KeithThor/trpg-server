@@ -58,6 +58,21 @@ namespace TRPGServer.Services
         }
 
         /// <summary>
+        /// Whenever a new formation joins battle, send the newly joined formation to the other connected users
+        /// in the battle.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private async void OnJoinBattle(object sender, JoinBattleEventArgs args)
+        {
+            await _battleHubContext.Clients.Users(args.ParticipantIds).SendAsync("joinedBattle", new
+            {
+                args.IsAttacker,
+                args.JoinedFormation
+            });
+        }
+
+        /// <summary>
         /// On a successful action, send all clients the updated data.
         /// </summary>
         /// <param name="sender"></param>

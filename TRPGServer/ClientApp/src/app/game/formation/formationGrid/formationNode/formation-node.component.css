@@ -7,6 +7,14 @@
 }
 
 .formation-node-active {
+  background-color: green;
+}
+
+.formation-node-hovered {
+  background-color: cadetblue;
+}
+
+.formation-node-inactive {
   background-color: teal;
 }
 
@@ -20,4 +28,12 @@
 
 .formation-node-point-blank {
   background-color: red;
+}
+
+.formation-node-target {
+  background-color: #c12e2e;
+}
+
+.formation-node-target-center {
+  background-color: #c60b0b;
 }

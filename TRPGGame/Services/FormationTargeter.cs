@@ -56,7 +56,7 @@ namespace TRPGGame.Services
             {
                 for (int j = 0; j < targetFormation.Positions[i].Length; j++)
                 {
-                    if (translatedTargets.Contains(i * 3 + j + 1))
+                    if (translatedTargets.Contains(i * GameplayConstants.MaxFormationRows + j + 1))
                     {
                         if (targetFormation.Positions[i][j] != null) targets.Add(targetFormation.Positions[i][j]);
                     }

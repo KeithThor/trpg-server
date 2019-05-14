@@ -1,4 +1,5 @@
-import { Component, Input, HostListener, trigger, state, style, transition, animate } from "@angular/core";
+import { Component, Input, HostListener } from "@angular/core";
+import { trigger, state, style, transition, animate } from "@angular/animations";
 import { WorldEntity } from "../model/world-entity.model";
 import { CharacterIconSet } from "../model/character.model";
 import { WorldEntityService } from "../services/world-entity.service";

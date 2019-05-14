@@ -1,4 +1,4 @@
-import { Component, HostListener, OnInit, ViewChild, ViewChildren } from "@angular/core";
+import { Component, HostListener, OnInit, ViewChild, ViewChildren, OnDestroy } from "@angular/core";
 import { Coordinate } from "../model/coordinate.model";
 import { Router, NavigationStart } from "@angular/router";
 import { Subscription } from "rxjs/Subscription";
@@ -17,10 +17,9 @@ import { TileNodeComponent } from "./tile-node.component";
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.css'],
 })
-export class GameComponent implements OnInit {
+export class GameComponent implements OnInit, OnDestroy {
   constructor(private gameStateService: GameStateService,
-    private worldEntityService: WorldEntityService,
-    private router: Router) {
+    private worldEntityService: WorldEntityService) {
 
   }
   @ViewChild("chatbox") chatbox: ChatboxComponent;
@@ -42,11 +41,10 @@ export class GameComponent implements OnInit {
     this.requestedIds = [];
     this.isAnimating = false;
     this.initialize();
-    this.subscriptions.push(this.router.events.subscribe(event => {
-      if (event instanceof NavigationStart) {
-        this.endConnections();
-      }
-    }));
+  }
+
+  ngOnDestroy(): void {
+    this.endConnections();
   }
 
   @HostListener('document: keydown', ['$event'])

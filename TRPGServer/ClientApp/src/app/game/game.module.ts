@@ -36,6 +36,10 @@ import { TargetsGridComponent } from "./combatPanel/descriptionPanel/targetsGrid
 import { ClassPickerComponent } from "./create/classPicker/class-picker.component";
 import { StateHandlerService } from "./services/state-handler.service";
 import { BattleService } from "./services/battle.service";
+import { BattleComponent } from "./battle/battle.component";
+import { EntityResourceComponent } from "./battle/entityResource/entity-resource.component";
+import { ResourceBarComponent } from "./battle/entityResource/resourceBar/resource-bar.component";
+import { TimerComponent } from "./battle/timer/timer.component";
 
 @NgModule({
   declarations: [
@@ -61,7 +65,11 @@ import { BattleService } from "./services/battle.service";
     CategoryPanelComponent,
     DescriptionPanelComponent,
     TargetsGridComponent,
-    ClassPickerComponent
+    ClassPickerComponent,
+    BattleComponent,
+    EntityResourceComponent,
+    ResourceBarComponent,
+    TimerComponent
   ],
 
   imports: [
@@ -73,7 +81,8 @@ import { BattleService } from "./services/battle.service";
     RouterModule.forChild([
       { path: 'game', component: GameComponent, canActivate: [AuthGuard] },
       { path: 'create', component: CreateComponent, canActivate: [AuthGuard] },
-      { path: 'formation', component: FormationComponent, canActivate: [AuthGuard] }
+      { path: 'formation', component: FormationComponent, canActivate: [AuthGuard] },
+      { path: 'battle', component: BattleComponent, canActivate: [AuthGuard] }
     ])
   ],
 

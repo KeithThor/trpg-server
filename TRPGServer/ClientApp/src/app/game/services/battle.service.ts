@@ -48,4 +48,17 @@ export class BattleService {
     await this.connection.start()
       .catch((err) => console.log(err));
   }
+
+  /**Ends the connection to the server asynchronously. */
+  public async endConnectionAsync(): Promise<void> {
+    await this.connection.stop();
+  }
+
+  /**
+   * Sends a request to the server to perform a given action.
+   * @param action The action to perform.
+   */
+  public async performAction(action: BattleAction): Promise<void> {
+    await this.connection.send("PerformAction", action);
+  }
 }

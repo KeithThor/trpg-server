@@ -1,0 +1,13 @@
+.resource-block {
+  display: inline-block;
+  position: relative;
+}
+
+.resource-component {
+  height: 15px;
+}
+
+.resource-entity {
+  width: 50%;
+  height: 50%;
+}

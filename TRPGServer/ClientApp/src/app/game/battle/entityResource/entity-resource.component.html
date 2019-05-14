@@ -1,0 +1,38 @@
+<div *ngIf="entity != null">
+  <!-- Entity viewer -->
+  <div class="resource-block">
+    <game-display-entity [entity]="entity"
+                         [displayName]="false"></game-display-entity>
+  </div>
+
+  <!-- Resource viewer -->
+  <div class="resource-block">
+    <!-- Entity name -->
+    <div>
+      {{entity.name}}
+    </div>
+
+    <div>
+      <!-- Health bar -->
+      <div class="resource-component">
+        <game-resource-bar [resourceName]="Health"
+                           [current]="{{entity.resources.currentHealth}}"
+                           [max]="{{entity.resources.maxHealth}}"
+                           [resourceCurrentStyles]="{background-color: red}"></game-resource-bar>
+      </div>
+
+      <!-- Mana bar -->
+      <div class="resource-component">
+        <game-resource-bar [resourceName]="Mana"
+                           [current]="{{entity.resources.currentMana}}"
+                           [max]="{{entity.resources.maxMana}}"
+                           [resourceCurrentStyles]="{background-color: blue}"></game-resource-bar>
+      </div>
+
+      <!-- Action points -->
+      <div>
+        Action Points: {{entity.resources.actionPoints}}
+      </div>
+    </div>
+  </div>
+</div>

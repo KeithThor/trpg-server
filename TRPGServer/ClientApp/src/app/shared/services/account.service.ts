@@ -39,6 +39,7 @@ export class AccountService {
       next(result) {
         sessionStorage.setItem(LocalStorageConstants.authToken, result.token);
         sessionStorage.setItem(LocalStorageConstants.username, result.username);
+        sessionStorage.setItem(LocalStorageConstants.userId, result.userId);
       },
       error(err: HttpErrorResponse) {
         if (errorHandler != null) errorHandler(err);
@@ -61,6 +62,7 @@ export class AccountService {
       next(result) {
         sessionStorage.setItem(LocalStorageConstants.authToken, result.token);
         sessionStorage.setItem(LocalStorageConstants.username, result.username);
+        sessionStorage.setItem(LocalStorageConstants.userId, result.userId);
       },
       error(err: HttpErrorResponse) {
         if (errorHandler != null) errorHandler(err);

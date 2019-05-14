@@ -26,6 +26,7 @@ export class CombatEntity implements DisplayableEntity {
   public iconUris: CharacterIconSet;
   public groupId: number;
   public ownerName: string;
+  public ownerId: string;
   public stats: CharacterStats;
   public unmodifiedStats: CharacterStats;
   public growthPoints: CharacterStats;

@@ -1,9 +1,49 @@
 <div class="container">
-  <div *ngFor="let index of getIndexArray()" class="row">
-    <game-formation-grid></game-formation-grid>
-    <game-formation-grid></game-formation-grid>
-  </div>
+  <!-- Top HUD elements -->
   <div class="row">
-    <game-combat-panel></game-combat-panel>
+    <!-- Entity resources -->
+    <div class="hud-component">
+      <game-entity-resource [entity]="hoveredEntity == null ? activeEntity: hoveredEntity"></game-entity-resource>
+    </div>
+
+    <!-- Timer -->
+    <div class="hud-component">
+      <game-timer-component [timeLeft]="secondsInTurn"
+                            class="game-timer"></game-timer-component>
+    </div>
+  </div>
+
+  <!-- Formations -->
+  <div class="row">
+    <!-- Attacking formations -->
+    <div class="col-md-5">
+      <game-formation-grid *ngFor="let formation of attackingFormations"
+                           [formation]="formation"
+                           [getNodeStateFunc]="getNodeState.bind(this)"
+                           (onMouseEnter)="onMouseEnterFormationGrid($event)"
+                           (onMouseLeave)="targetFormation = null"
+                           (onNodeClicked)="onNodeClicked($event)"
+                           (onNodeMouseEnter)="onNodeMouseEnter($event)"></game-formation-grid>
+    </div>
+
+    <!-- Defending formations -->
+    <div class="col-md-5">
+      <game-formation-grid *ngFor="let formation of defendingFormations"
+                           [formation]="formation"
+                           [getNodeStateFunc]="getNodeState.bind(this)"
+                           (onMouseEnter)="onMouseEnterFormationGrid($event)"
+                           (onMouseLeave)="targetFormation = null"
+                           (onNodeClicked)="onNodeClicked($event)"
+                           (onNodeMouseEnter)="onNodeMouseEnter($event)"></game-formation-grid>
+    </div>
+  </div>
+
+  <!-- Combat Panel -->
+  <div class="row">
+    <game-combat-panel [activeEntity]="activeEntity"
+                       [activeEntityPosition]="activeEntityPosition"
+                       (onSelectAbility)="changeSelectedAbility($event)"
+                       (onDefend)="performFleeOrDefend(false)"
+                       (onFlee)="performFleeOrDefend(true)"></game-combat-panel>
   </div>
 </div>

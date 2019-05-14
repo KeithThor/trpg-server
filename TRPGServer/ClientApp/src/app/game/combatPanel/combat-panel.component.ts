@@ -1,4 +1,4 @@
-import { Component, Input, PACKAGE_ROOT_URL } from "@angular/core";
+import { Component, Input, PACKAGE_ROOT_URL, Output, EventEmitter } from "@angular/core";
 import { CombatEntity } from "../model/combat-entity.model";
 import { CommandTypesConstants } from "../gameplay-constants.static";
 import { Category } from "../model/category.model";
@@ -14,18 +14,29 @@ import { Ability } from "../model/ability.model";
 export class CombatPanelComponent {
   public activeCommand: string;
   public activeCategory: Category;
-  @Input() activeEntity: CombatEntity;
+
+  private _activeEntity: CombatEntity;
+  public get activeEntity(): CombatEntity {
+    return this._activeEntity;
+  }
+  @Input() public set activeEntity(value: CombatEntity) {
+    this.resetState();
+    this._activeEntity = value;
+  }
+
   private activeEntityId: number;
   @Input() activeEntityPosition: number;
   public activeAbility: Ability;
+  @Output() onSelectAbility: EventEmitter<SelectedAbilityData> = new EventEmitter();
+  @Output() onDefend: EventEmitter<void> = new EventEmitter();
+  @Output() onFlee: EventEmitter<void> = new EventEmitter();
 
   public inActionPanel: boolean;
   public inCategoryPanel: boolean;
-
-  @Input() hoveredEntity: CombatEntity;
   public hoveredCommand: string;
   public hoveredCategory: Category;
   public hoveredAbility: Ability;
+  private isUsingItem: boolean;
 
   public getCommands(): string[] {
     return CommandTypesConstants.asArray;
@@ -135,11 +146,22 @@ export class CombatPanelComponent {
     if (ability != null) {
       if (ability === this.activeAbility) {
         this.activeAbility = null;
+        this.onSelectAbility.emit(null);
       }
       else {
         this.activeAbility = ability;
+        let sAbility = this.createSelectedAbilityData();
+        this.onSelectAbility.emit(sAbility);
       }
     }
+  }
+
+  /**Creates a new instance of a SelectedAbilityData object from class variables. */
+  private createSelectedAbilityData(): SelectedAbilityData {
+    let data = new SelectedAbilityData();
+    data.ability = this.activeAbility;
+    data.isUsingItem = this.isUsingItem;
+    return data;
   }
 
   /**
@@ -207,4 +229,10 @@ export class CombatPanelComponent {
   public onMouseLeaveCategory(category: Category): void {
     this.hoveredCategory = null;
   }
+}
+
+/**Data object containing information about the selected ability. */
+export class SelectedAbilityData {
+  public isUsingItem: boolean;
+  public ability: Ability;
 }

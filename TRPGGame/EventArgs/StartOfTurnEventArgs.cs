@@ -11,7 +11,7 @@ namespace TRPGGame.EventArgs
         public List<IReadOnlyAbility> DelayedAbilities { get; set; }
         public List<IReadOnlyCombatEntity> AffectedEntities { get; set; }
         public DateTime TurnExpiration { get; set; }
-        public Dictionary<int, IEnumerable<int>> ActiveEntities { get; set; }
+        public List<ActiveEntities> ActiveEntities { get; set; }
         public IReadOnlyList<string> ParticipantIds { get; set; }
         public bool IsDefendersTurn { get; set; }
     }

@@ -9,6 +9,6 @@ namespace TRPGGame.EventArgs
     {
         public IReadOnlyFormation JoinedFormation { get; set; }
         public bool IsAttacker { get; set; }
-        public IEnumerable<string> ParticipantIds { get; set; }
+        public IReadOnlyList<string> ParticipantIds { get; set; }
     }
 }

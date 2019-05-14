@@ -8,6 +8,7 @@ export class StartOfTurnData {
 }
 
 export class ActiveEntities {
+  public ownerId: string;
   public formationId: number;
   public entityIds: number[];
 }

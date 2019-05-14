@@ -56,7 +56,8 @@ namespace TRPGServer.Controllers
             return new JsonResult(new
             {
                 Token = token,
-                Username = user.Username
+                Username = user.Username,
+                UserId = user.Id
             });
         }
 
@@ -100,7 +101,8 @@ namespace TRPGServer.Controllers
                     return new JsonResult(new
                     {
                         Token = token,
-                        Username = user.Username
+                        Username = user.Username,
+                        UserId = user.Id
                     });
                 }
             }

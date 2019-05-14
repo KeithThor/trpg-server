@@ -1,0 +1,10 @@
+<div>
+  <div class="prompt-title"><h4>{{title}}</h4></div>
+  <div class="prompt-text">{{message}}</div>
+  <div>
+    <button class="btn btn-primary"
+            (click)="onOptionOneClicked.emit()">{{optionOne}}</button>
+    <button class="btn btn-secondary"
+            (click)="onOptionTwoClicked.emit()">{{optionTwo}}</button>
+  </div>
+</div>

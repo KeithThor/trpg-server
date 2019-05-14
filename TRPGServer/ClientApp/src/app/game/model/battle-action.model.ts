@@ -7,6 +7,7 @@ export class BattleAction {
   public isUsingItem: boolean;
   public isFleeing: boolean;
   public abilityId: number;
+  public ownerId: string;
   public targetPosition: number;
   public targetFormationId: number;
 }

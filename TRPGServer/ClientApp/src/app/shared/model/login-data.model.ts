@@ -1,4 +1,5 @@
 export class LoginData {
-  token: string;
-  username: string;
+  public token: string;
+  public username: string;
+  public userId: string;
 }

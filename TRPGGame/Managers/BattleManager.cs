@@ -80,13 +80,18 @@ namespace TRPGGame.Managers
                                        .ToList();
 
             var actionsPerFormation = new Dictionary<Formation, List<CombatEntity>>();
-            var activeEntities = new Dictionary<int, IEnumerable<int>>();
+            var activeEntities = new List<ActiveEntities>();
             foreach (var attacker in attackers)
             {
                 InitializeFormation(attacker, true);
                 var activeE = ChooseActiveEntities(attacker);
                 actionsPerFormation.Add(attacker, activeE);
-                activeEntities.Add(attacker.Id, activeE.Select(e => e.Id));
+                activeEntities.Add(new ActiveEntities
+                {
+                    EntityIds = activeE.Select(e => e.Id),
+                    FormationId = attacker.Id,
+                    OwnerId = attacker.OwnerId
+                });
             }
 
             foreach (var defender in defenders)
@@ -228,7 +233,7 @@ namespace TRPGGame.Managers
 
             var affectedEntities = new List<IReadOnlyCombatEntity>();
             var activatedAbilities = new List<IReadOnlyAbility>();
-            var activeEntityIds = new Dictionary<int, IEnumerable<int>>();
+            var activeEntities = new List<ActiveEntities>();
 
             if (startOfTurnAbilities != null && startOfTurnAbilities.Count() > 0)
             {
@@ -246,9 +251,14 @@ namespace TRPGGame.Managers
             foreach (var formation in activeGroup)
             {
                 IncreaseActionPoints(formation);
-                var activeEntities = ChooseActiveEntities(formation);
-                activeEntityIds.Add(formation.Id, activeEntities.Select(ce => ce.Id));
-                _battle.ActionsLeftPerFormation.Add(formation, activeEntities);
+                var actives = ChooseActiveEntities(formation);
+                activeEntities.Add(new ActiveEntities
+                {
+                    EntityIds = actives.Select(ae => ae.Id),
+                    FormationId = formation.Id,
+                    OwnerId = formation.OwnerId
+                });
+                _battle.ActionsLeftPerFormation.Add(formation, actives);
             }
 
             _battle.TurnExpiration = DateTime.Now.AddSeconds(GameplayConstants.SecondsPerTurn);
@@ -258,7 +268,7 @@ namespace TRPGGame.Managers
                 DelayedAbilities = activatedAbilities,
                 AffectedEntities = affectedEntities,
                 TurnExpiration = _battle.TurnExpiration,
-                ActiveEntities = activeEntityIds,
+                ActiveEntities = activeEntities,
                 IsDefendersTurn = _battle.IsDefenderTurn,
                 ParticipantIds = _participantIds
             }));
