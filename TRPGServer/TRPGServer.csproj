@@ -55,6 +55,8 @@
     <None Remove="ClientApp\src\app\game\formation\formationGrid\formation-node.component.ts" />
     <None Remove="ClientApp\src\app\game\formation\formation.component.ts" />
     <None Remove="ClientApp\src\app\game\gameplay-constants.static.ts" />
+    <None Remove="ClientApp\src\app\game\services\pathfinder.static.ts" />
+    <None Remove="ClientApp\src\app\shared\components\confirmationPrompt\confirmation-prompt.component.ts" />
     <None Remove="ClientApp\src\app\game\game\tile-node.component.ts" />
     <None Remove="ClientApp\src\app\game\iconDisplay\icon-display.component.ts" />
     <None Remove="ClientApp\src\app\game\mapTile\map-tile.component.ts" />
@@ -124,6 +126,8 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\formation\formationGrid\formation-grid.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\formation\formation.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\gameplay-constants.static.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\services\pathfinder.static.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\shared\components\confirmationPrompt\confirmation-prompt.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\game\tile-node.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\iconDisplay\icon-display.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\ability.model.ts" />
