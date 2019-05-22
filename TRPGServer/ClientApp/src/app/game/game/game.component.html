@@ -1,13 +1,26 @@
 <div class="container">
   <!-- World Map -->
   <div class="col-offset-1 col-md-6">
-    <table *ngIf="showMap()">
+    <table *ngIf="showMap()" (contextmenu)="openContextMenu($event)" (click)="showContextMenu = false">
       <tr *ngFor="let mapRow of getTileIds(); let i = index">
         <td *ngFor="let mapTileId of mapRow; let j = index">
-          <game-tile-node class="node" [location]="getLocation(i, j)" [mapTile]="getMapTile(mapTileId)" [entity]="getEntity(i, j)"></game-tile-node>
+          <game-tile-node class="node"
+                          [location]="getLocation(i, j)"
+                          [mapTile]="getMapTile(mapTileId)"
+                          [entity]="getEntity(i, j)"
+                          (onContextMenu)="openContextMenu($event)"></game-tile-node>
         </td>
       </tr>
     </table>
+
+    <game-context-menu *ngIf="showContextMenu"
+                       [xPosition]="contextX"
+                       [yPosition]="contextY"
+                       [entities]="contextEntities"
+                       (onAttackSelected)="onAttackContext($event)"
+                       (onJoinSelected)="onJoinContext($event)"
+                       (onMoveSelected)="onMoveContext()"
+                       (onCancelSelected)="showContextMenu = false"></game-context-menu>
   </div>
 
   <!-- Chat box -->
@@ -16,12 +29,12 @@
   </div>
 
   <!-- Battle prompt -->
-  <div class="prompt" *ngIf="">
-    <shared-confirmation-prompt [title]="Initiate Battle"
-                                [message]="Do you want to initiate battle with {{}}"
-                                [optionOne]="Yes"
-                                [optionTwo]="No"
-                                (onOptionOneClicked)=""
-                                (onOptionTwoClicked)=""></shared-confirmation-prompt>
+  <div class="prompt" *ngIf="false">
+    <shared-confirmation-prompt [title]="'Initiate Battle'"
+                                [message]="'Do you want to initiate battle with'"
+                                [optionOne]="'Yes'"
+                                [optionTwo]="'No'"
+                                (onOptionOneClicked)="showContextMenu = false"
+                                (onOptionTwoClicked)="showContextMenu = false"></shared-confirmation-prompt>
   </div>
 </div>

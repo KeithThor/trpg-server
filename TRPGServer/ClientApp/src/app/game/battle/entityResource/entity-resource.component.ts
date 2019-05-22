@@ -9,4 +9,16 @@ import { CombatEntity } from "../../model/combat-entity.model";
 })
 export class EntityResourceComponent {
   @Input() entity: CombatEntity;
+
+  public getHealthStyles(): object {
+    return {
+      "background-color": "red"
+    };
+  }
+
+  public getManaStyles(): object {
+    return {
+      "background-color": "blue"
+    };
+  }
 }

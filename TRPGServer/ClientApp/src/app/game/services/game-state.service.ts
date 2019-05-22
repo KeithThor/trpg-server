@@ -1,8 +1,7 @@
 import { Injectable } from "@angular/core";
 import { MapService } from "./map.service";
 import { WorldEntityService } from "./world-entity.service";
-import { MapTile } from "../model/map-data.model";
-import { WorldEntity } from "../model/world-entity.model";
+import { MapTile, MapData } from "../model/map-data.model";
 import { Coordinate } from "../model/coordinate.model";
 import { ChatService } from "./chat.service";
 
@@ -77,6 +76,11 @@ export class GameStateService {
   public getMapTileIds(): number[][] {
     if (!this.initialized) return null;
     return this.mapService.mapTileIds;
+  }
+
+  /**Gets the MapData for the currently loaded map. */
+  public getMapData(): MapData {
+    return this.mapService.mapData;
   }
 
   /** Gets all the unique tile data for the current map. */

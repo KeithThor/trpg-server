@@ -40,6 +40,7 @@ var PriorityQueue = /** @class */ (function () {
         // to the priority of the current greatest priority item
         if (this.sortFunction(item, this.heap[this.heap.length - 1]) >= 0) {
             this.heap.push(item);
+            return;
         }
         var index = Math.floor(this.heap.length / 2);
         var lowIndex = 0; // The highest checked index that has a lower priority than the item being added
@@ -110,6 +111,13 @@ var Dictionary = /** @class */ (function () {
         this.dictionary = {};
         this.keyGen = keyGen;
     }
+    Object.defineProperty(Dictionary.prototype, "length", {
+        get: function () {
+            return Object.keys(this.dictionary).length;
+        },
+        enumerable: true,
+        configurable: true
+    });
     /**
      * Gets stored data that corresponds to the given object key.
      * @param keyObject The object used as the key to retrieve a value from the dictionary.

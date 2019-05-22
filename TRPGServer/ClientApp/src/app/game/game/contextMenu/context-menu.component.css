@@ -1,0 +1,12 @@
+.context-menu {
+  position: absolute;
+}
+
+.context-menu-section {
+  overflow-y: auto;
+  max-height: 400px;
+}
+
+.context-menu-button {
+  background-color: #bfd7ff;
+}

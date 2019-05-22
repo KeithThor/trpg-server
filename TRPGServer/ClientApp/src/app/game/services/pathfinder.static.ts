@@ -1,6 +1,5 @@
 import { Coordinate } from "../model/coordinate.model";
-import { MapData } from "./map.service";
-import { MapTile } from "../model/map-data.model";
+import { MapTile, MapData } from "../model/map-data.model";
 import { PriorityQueue, Dictionary, KeyValuePair } from "../../shared/static/data-structures.static";
 
 /**Class responsible for finding a path to a target position on the map. */
@@ -13,13 +12,16 @@ export class Pathfinder {
    */
   public static findPath(start: Coordinate, target: Coordinate, map: MapData): Coordinate[] {
     let coordHasher = (coord: Coordinate) => coord.positionX + "," + coord.positionY;
+
     // Dictionary of evaluated nodes
     let closedSet: Dictionary<Coordinate, boolean> = new Dictionary(coordHasher);
 
     // Queue of unevaluated nodes neighboring previously evaluated nodes sorted from highest priority to lowest
-    let openSet: PriorityQueue<KeyValuePair<Coordinate, number>> = new PriorityQueue((item, comp) => item.value - comp.value);
+    let openSet: PriorityQueue<KeyValuePair<Coordinate, number>> = new PriorityQueue((item, comp) => comp.value - item.value);
+
     // Dictionary of unevaluated nodes neighboring previously evaluated nodes, keeps track of Coordinates in openSet
     let openSetDictionary: Dictionary<Coordinate, number> = new Dictionary(coordHasher);
+
     // Insert start node
     openSet.insert(new KeyValuePair<Coordinate, number>({ key: start, value: 0 }));
 
@@ -95,8 +97,9 @@ export class Pathfinder {
    * @param map The map data of the map to traverse.
    */
   private static isValidLocation(coordinate: Coordinate, map: MapData): boolean {
-    if (coordinate.positionX > map.mapData.length) return false;
-    if (coordinate.positionY > map.mapData[0].length) return false;
+    if (coordinate.positionX >= map.mapData.length) return false;
+    if (coordinate.positionY >= map.mapData[0].length) return false;
+    if (coordinate.positionX < 0 || coordinate.positionY < 0) return false;
 
     let tile: MapTile = map.uniqueTiles.find(unique => unique.id === map.mapData[coordinate.positionX][coordinate.positionY]);
     return !tile.isBlocking;

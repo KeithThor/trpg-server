@@ -1,0 +1,10 @@
+<div class="context-menu" [ngStyle]="{'left.px': xPosition, 'top.px': yPosition}">
+  <div (click)="onMoveSelected.emit()">Move Here</div>
+  <div class="context-menu-section" *ngIf="entities != null && entities.length > 0">
+    <game-context-menu-list *ngFor="let entity of entities"
+                            [entity]="entity"
+                            (onAttackSelected)="onAttackSelected.emit($event)"
+                            (onJoinSelected)="onJoinSelected.emit($event)"></game-context-menu-list>
+  </div>
+  <div class="context-menu-button">Cancel</div>
+</div>

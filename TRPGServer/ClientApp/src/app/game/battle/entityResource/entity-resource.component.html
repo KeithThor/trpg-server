@@ -16,17 +16,17 @@
       <!-- Health bar -->
       <div class="resource-component">
         <game-resource-bar [resourceName]="Health"
-                           [current]="{{entity.resources.currentHealth}}"
-                           [max]="{{entity.resources.maxHealth}}"
-                           [resourceCurrentStyles]="{background-color: red}"></game-resource-bar>
+                           [current]="entity.resources.currentHealth"
+                           [max]="entity.resources.maxHealth"
+                           [resourceCurrentStyles]="getHealthStyles()"></game-resource-bar>
       </div>
 
       <!-- Mana bar -->
       <div class="resource-component">
         <game-resource-bar [resourceName]="Mana"
-                           [current]="{{entity.resources.currentMana}}"
-                           [max]="{{entity.resources.maxMana}}"
-                           [resourceCurrentStyles]="{background-color: blue}"></game-resource-bar>
+                           [current]="entity.resources.currentMana"
+                           [max]="entity.resources.maxMana"
+                           [resourceCurrentStyles]="getManaStyles()"></game-resource-bar>
       </div>
 
       <!-- Action points -->

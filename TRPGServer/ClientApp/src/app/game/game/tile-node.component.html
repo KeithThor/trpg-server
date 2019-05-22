@@ -1,4 +1,4 @@
-<div class="tileNode">
+<div class="tileNode" (contextmenu)="invokeContextMenu($event)">
   <map-tile-component [location]="location" [mapTile]="mapTile"></map-tile-component>
   <world-entity-component #worldEntity [entity]="entity" [hidden]="!showEntity()"></world-entity-component>
 </div>

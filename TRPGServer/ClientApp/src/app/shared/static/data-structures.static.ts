@@ -41,6 +41,7 @@ export class PriorityQueue<T> {
     // to the priority of the current greatest priority item
     if (this.sortFunction(item, this.heap[this.heap.length - 1]) >= 0) {
       this.heap.push(item);
+      return;
     }
     
     let index = Math.floor(this.heap.length / 2);
@@ -121,6 +122,10 @@ export class Dictionary<K, V> {
   }
   private dictionary: Record<string, KeyValuePair<K, V>>;
   private keyGen: (item: K) => string;
+
+  public get length(): number {
+    return Object.keys(this.dictionary).length;
+  }
 
   /**
    * Gets stored data that corresponds to the given object key.

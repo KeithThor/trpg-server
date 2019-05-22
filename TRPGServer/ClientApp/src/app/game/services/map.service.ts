@@ -1,6 +1,6 @@
 import { Injectable } from "@angular/core";
 import { HttpClient, HttpParams } from "@angular/common/http";
-import { MapTile } from "../model/map-data.model";
+import { MapTile, MapData } from "../model/map-data.model";
 
 /**
  * Service responsible for getting and returning static map data from the server.
@@ -16,6 +16,7 @@ export class MapService {
   public mapId: number;
   public mapTileIds: number[][];
   public uniqueTiles: MapTile[];
+  public mapData: MapData;
   private failedReconnects: number;
 
   /**
@@ -28,6 +29,7 @@ export class MapService {
     return this.getMapDataAsync(mapId)
       .then(data => {
         let mapData = data as MapData;
+        this.mapData = mapData;
         this.mapTileIds = mapData.mapData;
         this.uniqueTiles = mapData.uniqueTiles;
 
@@ -84,13 +86,4 @@ export class MapService {
     console.log("Successfully verified map tiles.");
     return true;
   }
-}
-
-/**
- * An object containing static map data.
- */
-export class MapData {
-  mapData: number[][];
-  uniqueTiles: MapTile[];
-  mapId: number;
 }

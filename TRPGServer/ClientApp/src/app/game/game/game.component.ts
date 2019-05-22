@@ -10,7 +10,8 @@ import { WorldEntityAnimationConstants } from "../worldEntity/world-entity.compo
 import { QueryList } from "@angular/core";
 import { EntityLocation } from "../model/entity-location.model";
 import { WorldEntityService } from "../services/world-entity.service";
-import { TileNodeComponent } from "./tile-node.component";
+import { TileNodeComponent, ContextData } from "./tile-node.component";
+import { Pathfinder } from "../services/pathfinder.static";
 
 @Component({
   selector: 'app-game-component',
@@ -32,6 +33,12 @@ export class GameComponent implements OnInit, OnDestroy {
   private missingEntityIds: number[];
   private requestedIds: number[];
 
+  public contextX: number;
+  public contextY: number;
+  public showContextMenu: boolean;
+  public contextEntities: WorldEntity[];
+  public contextLocation: Coordinate;
+
   ngOnInit(): void {
     this.subscriptions = [];
     this.entityLocations = [];
@@ -40,6 +47,7 @@ export class GameComponent implements OnInit, OnDestroy {
     this.missingEntityIds = [];
     this.requestedIds = [];
     this.isAnimating = false;
+    this.showContextMenu = false;
     this.initialize();
   }
 
@@ -81,10 +89,98 @@ export class GameComponent implements OnInit, OnDestroy {
     this.endConnections();
   }
 
-  @HostListener('contextmenu', ['$event'])
-  public openContextMenu(event: Event): void {
+  /**
+   * Invoked whenever the user right clicks on any TileNodeComponents in the template.
+   *
+   * Moves the user's WorldEntity to the coordinate of the TileNode that was right clicked if there are no
+   * WorldEntities that exist in that given spot.
+   *
+   * Shows the context menu if there are one or more WorldEntities that exist at the coordinate of the
+   * TileNode.
+   * @param data Contains data about the TileNodeComponent that was right-clicked.
+   */
+  public openContextMenu(data: ContextData): void {
     event.preventDefault();
-    console.log("Context menu opens");
+    this.contextLocation = data.location;
+    // If there are no entities at the given coordinate, do a simple move here
+    if (data.entity == null) {
+      this.onMoveContext();
+      return;
+    }
+
+    this.contextEntities = this.getEntitiesAtCoordinate(data.location);
+    this.contextX = data.contextEvent.clientX;
+    this.contextY = data.contextEvent.clientY;
+    this.showContextMenu = true;
+  }
+
+  /**
+   * Returns all of the WorldEntities that exist at the given Coordinate on the map.
+   * @param coordinate The Coordinate to get the WorldEntities from.
+   */
+  private getEntitiesAtCoordinate(coordinate: Coordinate): WorldEntity[] {
+    let entityLocations = this.entityLocations.filter(eloc => eloc.location.positionX === coordinate.positionX &&
+                                                              eloc.location.positionY === coordinate.positionY);
+
+    return this.entities.filter(entity => entityLocations.some(eloc => entity.id === eloc.id));
+  }
+
+  /**
+   * Invoked whenever the user selects the Attack button from the context menu.
+   * @param entity The WorldEntity that the user selected to Attack.
+   */
+  public onAttackContext(entity: WorldEntity): void {
+    let eLocation: EntityLocation = this.entityLocations.find(eloc => eloc.id === entity.id);
+    if (eLocation == null) return;
+
+    let path = this.getPath(eLocation.location);
+  }
+
+  /**
+   * Invoked whenever the user selects the Join button from the context menu.
+   * @param entity The WorldEntity that the user selected to join.
+   */
+  public onJoinContext(entity: WorldEntity): void {
+    let eLocation: EntityLocation = this.entityLocations.find(eloc => eloc.id === entity.id);
+    if (eLocation == null) return;
+
+    let path = this.getPath(eLocation.location);
+  }
+
+  /**Invoked whenever the user selects the Move button from the context menu. */
+  public onMoveContext(): void {
+    if (this.contextLocation == null) return;
+
+    let path = this.getPath(this.contextLocation);
+  }
+
+  /**
+   * Returns an array of Coordinates that form a path from the player's WorldEntity to the given
+   * target coordinate.
+   * @param target The coordinate to create a path to.
+   */
+  private getPath(target: Coordinate): Coordinate[] {
+    let playerEntityId = this.worldEntityService.playerEntityId;
+    let playerELoc: EntityLocation = this.entityLocations.find(eLoc => eLoc.id === playerEntityId);
+
+    // Starting position and target are the same positions
+    if (playerELoc.location.positionX === target.positionX && playerELoc.location.positionY === target.positionY) return [];
+
+    let mapData = this.gameStateService.getMapData();
+
+    // Todo: use this path to highlight the map to show where the entity will move
+    let path = Pathfinder.findPath(playerELoc.location, target, mapData);
+    let translationPath: Coordinate[] = [];
+
+    // Convert node coordinates to translation coordinates
+    for (var i = 1; i < path.length; i++) {
+      translationPath.push(new Coordinate({
+        positionX: path[i].positionX - path[i - 1].positionX,
+        positionY: path[i].positionY - path[i - 1].positionY
+      }));
+    }
+
+    return translationPath;
   }
 
   /**

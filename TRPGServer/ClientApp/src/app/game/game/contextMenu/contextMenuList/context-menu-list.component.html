@@ -1,0 +1,9 @@
+<div *ngIf="entity != null" (mouseleave)="showCommands = false">
+  <div class="context-menu-button" (click)="showCommands = !showCommands">
+    {{entity.name}} <span class="caret"></span>
+  </div>
+  <ul *ngIf="showCommands">
+    <li (click)="attackClicked()">Attack {{entity.name}}</li>
+    <li (click)="joinClicked()">Join {{entity.name}}</li>
+  </ul>
+</div>

@@ -40,6 +40,8 @@ import { BattleComponent } from "./battle/battle.component";
 import { EntityResourceComponent } from "./battle/entityResource/entity-resource.component";
 import { ResourceBarComponent } from "./battle/entityResource/resourceBar/resource-bar.component";
 import { TimerComponent } from "./battle/timer/timer.component";
+import { ContextMenuComponent } from "./game/contextMenu/context-menu.component";
+import { ContextMenuListComponent } from "./game/contextMenu/contextMenuList/context-menu-list.component";
 
 @NgModule({
   declarations: [
@@ -69,7 +71,9 @@ import { TimerComponent } from "./battle/timer/timer.component";
     BattleComponent,
     EntityResourceComponent,
     ResourceBarComponent,
-    TimerComponent
+    TimerComponent,
+    ContextMenuComponent,
+    ContextMenuListComponent
   ],
 
   imports: [
