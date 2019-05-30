@@ -127,6 +127,8 @@ namespace TRPGGame
             lock(_lock)
             {
                 var location = _playerEntities[entity];
+                if (location == null) return;
+
                 if (_playerPositions[location].Count <= 1)
                 {
                     _playerPositions.Remove(location);
@@ -157,6 +159,8 @@ namespace TRPGGame
             lock (_lock)
             {
                 var location = _aiEntities[entity];
+                if (location == null) return;
+
                 if (_aiPositions[location].Count <= 1)
                 {
                     _aiPositions.Remove(location);
@@ -193,6 +197,8 @@ namespace TRPGGame
             lock(_lock)
             {
                 var oldLocation = _playerEntities[entity];
+                if (oldLocation == null) return false;
+
                 if (_playerPositions[oldLocation].Count <= 1) _playerPositions.Remove(oldLocation);
                 else _playerPositions[oldLocation].Remove(entity);
 
@@ -236,6 +242,8 @@ namespace TRPGGame
             lock (_lock)
             {
                 var oldLocation = _aiEntities[entity];
+                if (oldLocation == null) return false;
+
                 if (_aiPositions[oldLocation].Count <= 1) _aiPositions.Remove(oldLocation);
                 else _aiPositions[oldLocation].Remove(entity);
 
