@@ -108,6 +108,11 @@ export class PriorityQueue<T> {
     }
     return values;
   }
+
+  /**Clears all of the items stored in the PriorityQueue. */
+  public clear(): void {
+    this.heap = [];
+  }
 }
 
 /**A standard dictionary that can use objects as key values. */
@@ -182,6 +187,11 @@ export class Dictionary<K, V> {
 
     if (obj == null) return null;
     else return obj;
+  }
+
+  /**Removes all items in the Dictionary. */
+  public clear(): void {
+    this.dictionary = {};
   }
 }
 

@@ -20,30 +20,55 @@ namespace TRPGGame
         private readonly IRepository<Map> _mapRepo;
         private readonly IWorldEntityFactory _worldEntityFactory;
         private readonly AiEntityManagerFactory _aiEntityManagerFactory;
+        private readonly BattleManagerFactory _battleManagerFactory;
 
         public WorldState(IRepository<Map> mapRepo,
                           IWorldEntityFactory worldEntityFactory,
-                          AiEntityManagerFactory aiEntityManagerFactory)
+                          AiEntityManagerFactory aiEntityManagerFactory,
+                          BattleManagerFactory battleManagerFactory)
         {
             _mapRepo = mapRepo;
             _worldEntityFactory = worldEntityFactory;
             _aiEntityManagerFactory = aiEntityManagerFactory;
+            _battleManagerFactory = battleManagerFactory;
             var maps = mapRepo.GetDataAsync().Result;
 
             var temp = new Dictionary<int, MapManager>();
+            var mapBattleManagers = new Dictionary<int, IMapBattleManager>();
             var entityManagers = new Dictionary<int, MapEntityManager>();
 
             foreach (var map in maps)
             {
                 var mapManager = new MapManager(map);
                 temp.Add(map.Id, mapManager);
-                entityManagers.Add(map.Id, new MapEntityManager(mapManager, _worldEntityFactory, _aiEntityManagerFactory));
+                var mapBattleManager = new MapBattleManager(_battleManagerFactory);
+                entityManagers.Add(map.Id, new MapEntityManager(mapManager, 
+                                                                mapBattleManager, 
+                                                                _worldEntityFactory, 
+                                                                _aiEntityManagerFactory));
+
+                mapBattleManagers.Add(map.Id, mapBattleManager);
             }
             MapManagers = temp;
             MapEntityManagers = entityManagers;
         }
 
+        /// <summary>
+        /// Gets a dictionary containing all of the map managers this WorldState is handling.
+        /// <para>Key is the id of the map the MapManager is managing.</para>
+        /// </summary>
         public IReadOnlyDictionary<int, MapManager> MapManagers { get; }
+
+        /// <summary>
+        /// Gets a dictionary containing all of the MapBattleManagers this WorldState is handling.
+        /// <para>Key is the id of the map the MapBattleManagers is managing.</para>
+        /// </summary>
+        public IReadOnlyDictionary<int, IMapBattleManager> MapBattleManagers { get; }
+
+        /// <summary>
+        /// Gets a dictionary containing all of the MapEntityManagers this WorldState is handling.
+        /// <para>Key is the id of the map the MapEntityManager is managing.</para>
+        /// </summary>
         public IReadOnlyDictionary<int, MapEntityManager> MapEntityManagers { get; }
 
         /// <summary>

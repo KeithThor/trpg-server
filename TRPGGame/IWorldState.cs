@@ -25,6 +25,12 @@ namespace TRPGGame
         IReadOnlyDictionary<int, MapEntityManager> MapEntityManagers { get; }
 
         /// <summary>
+        /// Gets a dictionary containing all of the MapBattleManagers this WorldState is handling.
+        /// <para>Key is the id of the map the MapBattleManagers is managing.</para>
+        /// </summary>
+        IReadOnlyDictionary<int, IMapBattleManager> MapBattleManagers { get; }
+
+        /// <summary>
         /// Checks all maps for updates on their states.
         /// </summary>
         void CheckMapStates();

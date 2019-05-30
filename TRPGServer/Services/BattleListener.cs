@@ -29,6 +29,8 @@ namespace TRPGServer.Services
             _battleManager.SuccessfulActionEvent += OnSuccessfulAction;
         }
 
+        public event EventHandler<System.EventArgs> OnDestroy;
+
         /// <summary>
         /// Formats data to send to the client on the start of a new turn in battle.
         /// </summary>
@@ -37,12 +39,12 @@ namespace TRPGServer.Services
         private async void OnStartOfTurn(object sender, StartOfTurnEventArgs args)
         {
             var activeEntities = new List<dynamic>();
-            foreach (var kvp in args.ActiveEntities)
+            foreach (var entity in args.ActiveEntities)
             {
                 activeEntities.Add(new
                 {
-                    FormationId = kvp.Key,
-                    EntityIds = kvp.Value
+                    entity.FormationId,
+                    entity.EntityIds
                 });
             }
             int turnExpiration = (int)(args.TurnExpiration - DateTime.Now).TotalSeconds;
@@ -106,7 +108,12 @@ namespace TRPGServer.Services
         /// <param name="args"></param>
         private async void OnEndOfBattle(object sender, EndOfBattleEventArgs args)
         {
-            await _battleHubContext.Clients.Users(args.ParticipantIds).SendAsync("endBattle", args.DidAttackersWin);
+            var tasks = new List<Task>
+            {
+                _battleHubContext.Clients.Users(args.ParticipantIds).SendAsync("endBattle", args.DidAttackersWin),
+                Task.Run(() => OnDestroy?.Invoke(this, new EventArgs()))
+            };
+            await Task.WhenAll(tasks);
         }
     }
 }

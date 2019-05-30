@@ -55,6 +55,9 @@
     <None Remove="ClientApp\src\app\game\formation\formationGrid\formation-node.component.ts" />
     <None Remove="ClientApp\src\app\game\formation\formation.component.ts" />
     <None Remove="ClientApp\src\app\game\gameplay-constants.static.ts" />
+    <None Remove="ClientApp\src\app\game\game\contextMenu\context-menu.component.ts" />
+    <None Remove="ClientApp\src\app\game\game\contextMenu\contextMenuList\context-menu-list.component.ts" />
+    <None Remove="ClientApp\src\app\game\game\services\movement-manager.service.ts" />
     <None Remove="ClientApp\src\app\game\services\pathfinder.static.ts" />
     <None Remove="ClientApp\src\app\shared\components\confirmationPrompt\confirmation-prompt.component.ts" />
     <None Remove="ClientApp\src\app\game\game\tile-node.component.ts" />
@@ -95,6 +98,7 @@
     <None Remove="ClientApp\src\app\home\model\login-data.model.ts" />
     <None Remove="ClientApp\src\app\home\register\register.component.ts" />
     <None Remove="ClientApp\src\app\game\services\account.service.ts" />
+    <None Remove="ClientApp\src\app\shared\static\data-structures.static.ts" />
     <None Remove="ClientApp\src\app\shared\static\two-d-array.static.ts" />
   </ItemGroup>
 
@@ -126,6 +130,9 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\formation\formationGrid\formation-grid.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\formation\formation.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\gameplay-constants.static.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\game\contextMenu\context-menu.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\game\contextMenu\contextMenuList\context-menu-list.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\game\services\movement-manager.service.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\services\pathfinder.static.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\shared\components\confirmationPrompt\confirmation-prompt.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\game\tile-node.component.ts" />
@@ -166,6 +173,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\shared\model\user.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\home\register\register.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\shared\services\account.service.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\shared\static\data-structures.static.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\shared\static\two-d-array.static.ts" />
   </ItemGroup>
 

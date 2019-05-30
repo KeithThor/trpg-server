@@ -36,6 +36,7 @@ namespace TRPGGame.Managers
         private readonly IStatusEffectManager _statusEffectManager;
         private readonly IRepository<StatusEffect> _statusEffectRepo;
         private List<string> _participantIds;
+        private List<int> _aiParticipantIds;
         private int _numOfAttackers = 0;
         private int _numOfDefenders = 0;
 
@@ -68,20 +69,30 @@ namespace TRPGGame.Managers
         /// Starts a Battle instance between the attackers and defenders.
         /// <para>Returns null if a Battle instance already exists for this manager.</para>
         /// </summary>
-        /// <param name="attackers">The Formations who initiated combat.</param>
-        /// <param name="defenders">The Formations who are being initiated on.</param>
+        /// <param name="attackers">The WorldEntities who initiated combat.</param>
+        /// <param name="defenders">The WorldEntities who are being initiated on.</param>
         /// <returns></returns>
-        public IReadOnlyBattle StartBattle(List<Formation> attackers, List<Formation> defenders)
+        public IReadOnlyBattle StartBattle(List<WorldEntity> attackers, List<WorldEntity> defenders)
         {
             if (_battle != null) return null;
             _participantIds = attackers.Union(defenders)
-                                       .Where(formation => formation.OwnerId != GameplayConstants.AiId)
-                                       .Select(formation => formation.OwnerId.ToString())
+                                       .Where(entity => entity.OwnerGuid != GameplayConstants.AiId)
+                                       .Select(entity => entity.OwnerGuid.ToString())
                                        .ToList();
+
+            _aiParticipantIds = attackers.Union(defenders)
+                                         .Where(entity => entity.OwnerGuid == GameplayConstants.AiId)
+                                         .Select(entity => entity.Id)
+                                         .ToList();
+
+            var attackingFormations = attackers.Select(entity => entity.ActiveFormation)
+                                               .ToList();
+            var defendingFormations = defenders.Select(entity => entity.ActiveFormation)
+                                               .ToList();
 
             var actionsPerFormation = new Dictionary<Formation, List<CombatEntity>>();
             var activeEntities = new List<ActiveEntities>();
-            foreach (var attacker in attackers)
+            foreach (var attacker in attackingFormations)
             {
                 InitializeFormation(attacker, true);
                 var activeE = ChooseActiveEntities(attacker);
@@ -94,15 +105,15 @@ namespace TRPGGame.Managers
                 });
             }
 
-            foreach (var defender in defenders)
+            foreach (var defender in defendingFormations)
             {
                 InitializeFormation(defender, false);
             }
 
             var battle = new Battle
             {
-                Attackers = attackers,
-                Defenders = defenders,
+                Attackers = attackingFormations,
+                Defenders = defendingFormations,
                 TurnExpiration = DateTime.Now.AddSeconds(GameplayConstants.SecondsPerTurn + 15),
                 Round = 1,
                 ActionsLeftPerFormation = actionsPerFormation,
@@ -146,43 +157,72 @@ namespace TRPGGame.Managers
         /// Adds a participant to the battle and returns the battle instance.
         /// <para>Returns null if no battles were found or the battle group is full.</para>
         /// </summary>
-        /// <param name="participant">The Formation to add to the battle.</param>
+        /// <param name="participant">The WorldEntity to add to the battle.</param>
         /// <param name="isAttacker">If true, will join the side of the attackers. If false, will join the defenders.</param>
         /// <returns></returns>
-        public IReadOnlyBattle JoinBattle(Formation participant, bool isAttacker)
+        public IReadOnlyBattle JoinBattle(WorldEntity participant, bool isAttacker)
         {
             if (_battle == null) return null;
 
-            InitializeFormation(participant, isAttacker);
+            InitializeFormation(participant.ActiveFormation, isAttacker);
 
             if (isAttacker)
             {
                 if (_battle.Attackers.Count >= GameplayConstants.MaxFormationsPerSide) return null;
-                _battle.Attackers.Add(participant);
+                _battle.Attackers.Add(participant.ActiveFormation);
             }
             else
             {
                 if (_battle.Defenders.Count >= GameplayConstants.MaxFormationsPerSide) return null;
-                _battle.Defenders.Add(participant);
+                _battle.Defenders.Add(participant.ActiveFormation);
             }
+            var activeEntities = new List<ActiveEntities>();
 
             if (isAttacker != _battle.IsDefenderTurn && _battle.Round == 1)
             {
-                IncreaseActionPoints(participant);
-                _battle.ActionsLeftPerFormation.Add(participant, ChooseActiveEntities(participant));
+                IncreaseActionPoints(participant.ActiveFormation);
+                var aEntities = ChooseActiveEntities(participant.ActiveFormation);
+                _battle.ActionsLeftPerFormation.Add(participant.ActiveFormation, aEntities);
+
+                activeEntities.Add(new ActiveEntities
+                {
+                    EntityIds = aEntities.Select(entity => entity.Id),
+                    FormationId = participant.ActiveFormation.Id,
+                    OwnerId = participant.OwnerGuid
+                });
             }
+
+            if (participant.OwnerGuid == GameplayConstants.AiId) _aiParticipantIds.Add(participant.Id);
+            else _participantIds.Add(participant.OwnerGuid.ToString());
 
             Task.Run(() =>
             {
                 JoinBattleEvent?.Invoke(this, new JoinBattleEventArgs
                 {
                     IsAttacker = isAttacker,
-                    JoinedFormation = participant,
-                    ParticipantIds = _participantIds
+                    JoinedFormation = participant.ActiveFormation,
+                    ParticipantIds = _participantIds,
+                    ActiveEntities = activeEntities
                 });
             });
 
             return _battle;
+        }
+
+        /// <summary>
+        /// Attempts to join the side of the provided host WorldEntity. Returns the Battle instance if successful.
+        /// <para>Returns null if the join was invalid.</para>
+        /// </summary>
+        /// <param name="host">The WorldEntity to join the side of.</param>
+        /// <param name="joiner">The WorldEntity joining the battle.</param>
+        /// <returns></returns>
+        public IReadOnlyBattle JoinBattle(WorldEntity host, WorldEntity joiner)
+        {
+            if (_battle.Attackers.Any(formation => formation == host.ActiveFormation)) return JoinBattle(joiner, true);
+            else if (_battle.Defenders.Any(formation => formation == host.ActiveFormation)) return JoinBattle(joiner, false);
+
+            // No formation was found for the given host's formation
+            else return null;
         }
 
         /// <summary>

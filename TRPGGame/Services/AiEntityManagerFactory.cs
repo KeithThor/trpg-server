@@ -17,11 +17,16 @@ namespace TRPGGame.Services
         /// </summary>
         /// <param name="entity">The WorldEntity the created AiEntityManager will control.</param>
         /// <param name="mapManager">The MapManager for the map that the WorldEntity the AiEntityManager controls exists in.</param>
+        /// <param name="mapBattleManager">The MapBattleManager for the map that the WorldEntity the AiEntityManager controls
+        /// exists in.</param>
         /// <param name="spawnEntityData">An object containing spawn data for the type of WorldEntity the created manager controls.</param>
         /// <returns></returns>
-        public AiEntityManager Create(WorldEntity entity, IMapManager mapManager, SpawnEntityData spawnEntityData)
+        public AiEntityManager Create(WorldEntity entity,
+                                      IMapManager mapManager,
+                                      IMapBattleManager mapBattleManager,
+                                      SpawnEntityData spawnEntityData)
         {
-            return new AiEntityManager(entity, mapManager, spawnEntityData);
+            return new AiEntityManager(entity, mapManager, mapBattleManager, spawnEntityData);
         }
     }
 }

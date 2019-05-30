@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Text;
-using TRPGGame.Entities;
 using TRPGGame.Entities.Data;
 using TRPGGame.EventArgs;
 using TRPGGame.Services;
@@ -30,6 +28,7 @@ namespace TRPGGame.Managers
         }
 
         private readonly IMapManager _mapManager;
+        private readonly IMapBattleManager _mapBattleManager;
         private readonly IWorldEntityFactory _worldEntityFactory;
         private readonly AiEntityManagerFactory _aiEntityManagerFactory;
         private readonly IReadOnlyList<SpawnEntityData> _spawnData;
@@ -40,10 +39,12 @@ namespace TRPGGame.Managers
         private readonly List<AiEntityManager> _managers = new List<AiEntityManager>();
 
         public MapEntityManager(IMapManager mapManager,
+                                IMapBattleManager mapBattleManager,
                                 IWorldEntityFactory worldEntityFactory,
                                 AiEntityManagerFactory aiEntityManagerFactory)
         {
             _mapManager = mapManager;
+            _mapBattleManager = mapBattleManager;
             _mapManager.GameTick += OnGameTick;
             _worldEntityFactory = worldEntityFactory;
             _aiEntityManagerFactory = aiEntityManagerFactory;
@@ -111,7 +112,7 @@ namespace TRPGGame.Managers
         private AiEntityManager SpawnEntity(SpawnEntityData spawnData)
         {
             var spawnedEntity = _worldEntityFactory.Create(spawnData.FormationTemplate);
-            var manager = _aiEntityManagerFactory.Create(spawnedEntity, _mapManager, spawnData);
+            var manager = _aiEntityManagerFactory.Create(spawnedEntity, _mapManager, _mapBattleManager, spawnData);
             manager.RemovedFromMap += OnEntityRemovedFromMap;
             _managers.Add(manager);
             return manager;
@@ -125,6 +126,11 @@ namespace TRPGGame.Managers
         /// <param name="args"></param>
         private void OnEntityRemovedFromMap(object sender, RemovedFromMapEventArgs args)
         {
+            var manager = sender as AiEntityManager;
+
+            manager.RemovedFromMap -= OnEntityRemovedFromMap;
+            _managers.Remove(manager);
+
             _respawnQueue.Enqueue(new RespawnData
             {
                 SpawnData = args.SpawnData,

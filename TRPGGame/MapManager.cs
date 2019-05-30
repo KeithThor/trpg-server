@@ -44,10 +44,10 @@ namespace TRPGGame
         /// on the map they currently occupy.
         /// </summary>
         private Dictionary<WorldEntity, Coordinate> _playerEntities = new Dictionary<WorldEntity, Coordinate>();
-        private Dictionary<WorldEntity, Coordinate> _hostileEntities = new Dictionary<WorldEntity, Coordinate>();
+        private Dictionary<WorldEntity, Coordinate> _aiEntities = new Dictionary<WorldEntity, Coordinate>();
         private Dictionary<WorldEntity, Coordinate> _allEntities = new Dictionary<WorldEntity, Coordinate>();
         private Dictionary<Coordinate, List<WorldEntity>> _playerPositions = new Dictionary<Coordinate, List<WorldEntity>>();
-        private Dictionary<Coordinate, List<WorldEntity>> _hostilesPositions = new Dictionary<Coordinate, List<WorldEntity>>();
+        private Dictionary<Coordinate, List<WorldEntity>> _aiPositions = new Dictionary<Coordinate, List<WorldEntity>>();
         private List<Guid> _connectedPlayers = new List<Guid>();
         private readonly object _lock = new object();
         private bool _isStateChanged = false;
@@ -66,9 +66,11 @@ namespace TRPGGame
         /// </summary>
         /// <param name="entity">The entity to add to the map.</param>
         /// <param name="location">The location to spawn the entity at.</param>
-        public bool TryAddPlayerEntity(WorldEntity entity, Coordinate location)
+        public bool TryAddEntity(WorldEntity entity, Coordinate location)
         {
+            if (entity.OwnerGuid == GameplayConstants.AiId) return TryAddAiEntity(entity, location);
             if (!IsValidLocation(location)) return false;
+
             var swap = new List<WorldEntity> { entity };
             lock(_lock)
             {
@@ -93,16 +95,16 @@ namespace TRPGGame
         /// <param name="entity">The entity to add to the map.</param>
         /// <param name="location">The Coordinate location to spawn the entity at.</param>
         /// <returns></returns>
-        public bool TryAddEnemyEntity(WorldEntity entity, Coordinate location)
+        private bool TryAddAiEntity(WorldEntity entity, Coordinate location)
         {
             if (!IsValidLocation(location)) return false;
             var swap = new List<WorldEntity> { entity };
             lock (_lock)
             {
-                if (!_hostilesPositions.ContainsKey(location)) _hostilesPositions[location] = swap;
-                else _hostilesPositions[location].Add(entity);
+                if (!_aiPositions.ContainsKey(location)) _aiPositions[location] = swap;
+                else _aiPositions[location].Add(entity);
 
-                _hostileEntities[entity] = location;
+                _aiEntities[entity] = location;
                 _allEntities[entity] = location;
                 _newEntities.Add(entity);
 
@@ -117,9 +119,11 @@ namespace TRPGGame
         /// Removes the entity with the given id from this map.
         /// </summary>
         /// <param name="entity">The entity to remove.</param>
-        public void RemovePlayerEntity(WorldEntity entity)
+        public void RemoveEntity(WorldEntity entity)
         {
+            if (entity.OwnerGuid == GameplayConstants.AiId) RemoveAiEntity(entity);
             if (!_playerEntities.ContainsKey(entity)) return;
+
             lock(_lock)
             {
                 var location = _playerEntities[entity];
@@ -142,24 +146,26 @@ namespace TRPGGame
         }
 
         /// <summary>
-        /// Removes the enemy entity from this map.
+        /// Removes the ai entity from this map.
         /// </summary>
         /// <param name="entity">The entity to remove.</param>
-        public void RemoveEnemyEntity(WorldEntity entity)
+        private void RemoveAiEntity(WorldEntity entity)
         {
-            if (!_hostileEntities.ContainsKey(entity)) return;
+            if (entity.OwnerGuid != GameplayConstants.AiId) return;
+            if (!_aiEntities.ContainsKey(entity)) return;
+
             lock (_lock)
             {
-                var location = _hostileEntities[entity];
-                if (_hostilesPositions[location].Count <= 1)
+                var location = _aiEntities[entity];
+                if (_aiPositions[location].Count <= 1)
                 {
-                    _hostilesPositions.Remove(location);
+                    _aiPositions.Remove(location);
                 }
                 else
                 {
-                    _hostilesPositions[location].Remove(entity);
+                    _aiPositions[location].Remove(entity);
                 }
-                _hostileEntities.Remove(entity);
+                _aiEntities.Remove(entity);
                 _allEntities.Remove(entity);
                 _removedEntityIds.Add(entity.Id);
 
@@ -174,12 +180,15 @@ namespace TRPGGame
         /// </summary>
         /// <param name="entity">The entity to try to move.</param>
         /// <param name="newLocation">The new location to try to move to.</param>
-        /// <param name="hostileContacts">Will be populated with a List of IReadOnlyWorldEntities if hostile targets were met.</param>
+        /// <param name="contacts">Will be populated with a List of WorldEntities if any contact was made.</param>
         /// <returns>Returns whether the move was successful.</returns>
-        public bool TryMovePlayerEntity(WorldEntity entity, Coordinate newLocation, out IEnumerable<WorldEntity> hostileContacts)
+        public bool TryMoveEntity(WorldEntity entity, Coordinate newLocation, out IEnumerable<WorldEntity> contacts)
         {
-            hostileContacts = null;
+            contacts = null;
+
+            if (entity.OwnerGuid == GameplayConstants.AiId) return TryMoveAiEntity(entity, newLocation, out contacts);
             if (!IsValidLocation(newLocation)) return false;
+
             var swap = new List<WorldEntity> { entity };
             lock(_lock)
             {
@@ -192,10 +201,16 @@ namespace TRPGGame
                 if (!_playerPositions.ContainsKey(newLocation)) _playerPositions[newLocation] = swap;
                 else _playerPositions[newLocation].Add(entity);
 
-                if (_hostilesPositions.ContainsKey(newLocation))
+                // Get all contacts if any, ai and players
+                if (_aiPositions.ContainsKey(newLocation))
                 {
-                    hostileContacts = _hostilesPositions[newLocation].Take(GameplayConstants.MaxFormationsPerSide);
+                    if (_playerPositions.ContainsKey(newLocation))
+                    {
+                        contacts = _aiPositions[newLocation].Concat(_playerPositions[newLocation]);
+                    }
+                    else contacts = _aiPositions[newLocation];
                 }
+                else if (_playerPositions.ContainsKey(newLocation)) contacts = _playerPositions[newLocation];
 
                 _isStateChanged = true;
                 return true;
@@ -208,28 +223,37 @@ namespace TRPGGame
         /// </summary>
         /// <param name="entity">The entity to try to move.</param>
         /// <param name="newLocation">The new location to try to move to.</param>
-        /// <param name="hostileContacts">Will be populated with a List of IReadOnlyWorldEntities if hostile targets were met.</param>
+        /// <param name="contacts">Will be populated with a List of WorldEntities if any contacts were made.</param>
         /// <returns>Returns whether the move was successful.</returns>
-        public bool TryMoveEnemyEntity(WorldEntity entity, Coordinate newLocation, out IEnumerable<WorldEntity> hostileContacts)
+        private bool TryMoveAiEntity(WorldEntity entity, Coordinate newLocation, out IEnumerable<WorldEntity> contacts)
         {
-            hostileContacts = null;
+            contacts = null;
+
+            if (entity.OwnerGuid != GameplayConstants.AiId) return false;
             if (!IsValidLocation(newLocation)) return false;
+
             var swap = new List<WorldEntity> { entity };
             lock (_lock)
             {
-                var oldLocation = _hostileEntities[entity];
-                if (_hostilesPositions[oldLocation].Count <= 1) _hostilesPositions.Remove(oldLocation);
-                else _hostilesPositions[oldLocation].Remove(entity);
+                var oldLocation = _aiEntities[entity];
+                if (_aiPositions[oldLocation].Count <= 1) _aiPositions.Remove(oldLocation);
+                else _aiPositions[oldLocation].Remove(entity);
 
-                _hostileEntities[entity] = newLocation;
+                _aiEntities[entity] = newLocation;
                 _allEntities[entity] = newLocation;
-                if (!_hostilesPositions.ContainsKey(newLocation)) _hostilesPositions[newLocation] = swap;
-                else _hostilesPositions[newLocation].Add(entity);
+                if (!_aiPositions.ContainsKey(newLocation)) _aiPositions[newLocation] = swap;
+                else _aiPositions[newLocation].Add(entity);
 
-                if (_playerPositions.ContainsKey(newLocation))
+                // Get all contacts if any, ai and players
+                if (_aiPositions.ContainsKey(newLocation))
                 {
-                    hostileContacts = _playerPositions[newLocation].Take(GameplayConstants.MaxFormationsPerSide);
+                    if (_playerPositions.ContainsKey(newLocation))
+                    {
+                        contacts = _aiPositions[newLocation].Concat(_playerPositions[newLocation]);
+                    }
+                    else contacts = _aiPositions[newLocation];
                 }
+                else if (_playerPositions.ContainsKey(newLocation)) contacts = _playerPositions[newLocation];
 
                 _isStateChanged = true;
             }

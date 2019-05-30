@@ -6,7 +6,9 @@ import { LocalStorageConstants } from "../../constants";
 import { EntityLocation } from "../model/entity-location.model";
 import { StateHandlerService } from "./state-handler.service";
 import { PlayerStateConstants } from "../player-state-constants.static";
+import { ReplaySubject } from "rxjs";
 
+/**Service responsible for sending and receiving WorldEntity data to and from the server. */
 @Injectable()
 export class WorldEntityService {
   constructor(private stateHandler: StateHandlerService) {
@@ -14,13 +16,9 @@ export class WorldEntityService {
     this.requestIds = [];
     this.queuedRequestIds = [];
     this.failedReconnections = 0;
-    this.changeMapCallbacks = [];
   }
 
   private connection: HubConnection;
-  public canStartBattleHandler: () => Promise<void>;
-  public addEntitiesCallback: (entities: WorldEntity[]) => void;
-  public removeEntitiesCallback: (entityIds: number[]) => void;
 
   private _playerEntityId: number;
   public get playerEntityId(): number {
@@ -36,13 +34,17 @@ export class WorldEntityService {
   private isRequestingData: boolean;
   private failedReconnections: number;
   private canRequestData: boolean;
-  private changeMapCallbacks: { (newMapId: number): Promise<void>; }[]
-  private updateLocationsCallbacks: { (entities: EntityLocation[]): void; }[]
+
+  public onChangeMap: ReplaySubject<number> = new ReplaySubject(1);
+  public onUpdateLocations: ReplaySubject<EntityLocation[]> = new ReplaySubject(1);
+  public onAddEntities: ReplaySubject<WorldEntity[]> = new ReplaySubject(5);
+  public onReceiveMissingEntities: ReplaySubject<WorldEntity[]> = new ReplaySubject(5);
+  public onRemoveEntities: ReplaySubject<number[]> = new ReplaySubject(5);
+  public onCanStartBattle: ReplaySubject<boolean> = new ReplaySubject(1);
+  public onMovementStopped: ReplaySubject<boolean> = new ReplaySubject(1);
 
   /** Initializes this service and starts the connection to the server. */
   public async initializeAsync(): Promise<void> {
-    this.changeMapCallbacks = [];
-    this.updateLocationsCallbacks = [];
     this.canRequestData = false;
     this.connection = new HubConnectionBuilder().withUrl("/hubs/worldentities",
       {
@@ -50,16 +52,16 @@ export class WorldEntityService {
       })
       .build();
     this.connection.on("updateEntities",
-      (entities: EntityLocation[]) => this.updateEntities(entities));
-    this.connection.on("addEntities", (entities: WorldEntity[]) => this.addEntities(entities));
-    this.connection.on("removeEntities", (ids: number[]) => this.removeEntities(ids));
-    this.connection.on("updateMovement", this.updateMovement);
+      (entities: EntityLocation[]) => this.onUpdateLocations.next(entities));
+    this.connection.on("addEntities", (entities: WorldEntity[]) => this.onAddEntities.next(entities));
+    this.connection.on("removeEntities", (ids: number[]) => this.onRemoveEntities.next(ids));
     this.connection.on("battleInitiated", async () => await this.onBattleInitiatedAsync());
-    this.connection.on("canStartBattle", () => this.onCanStartBattle())
+    this.connection.on("canStartBattle", () => this.onCanStartBattle.next(true))
     this.connection.on("invalidState", async (state: string) => await this.invalidStateAsync(state));
     this.connection.on("receiveMissingEntities", (entities: WorldEntity[]) => this.receiveMissingEntities(entities));
-    this.connection.on("changeMapsSuccess", (newMapId: number) => this.changeMapsSuccess(newMapId));
+    this.connection.on("changeMapsSuccess", (newMapId: number) => this.onChangeMap.next(newMapId));
     this.connection.on("getMyEntity", (entityId: number) => this.getMyEntity(entityId));
+    this.connection.on("movementStopped", () => this.onMovementStopped.next(true));
 
     await this.connection.start()
       .catch(async () => {
@@ -88,19 +90,6 @@ export class WorldEntityService {
     return this.connection.send("BeginPlay").catch(err => console.log(err));
   }
 
-  /** Registers a callback function to be called whenever a request to change maps is successfully performed. */
-  public onChangeMaps(callback: (newMapId: number) => Promise<void>): void {
-    this.changeMapCallbacks.unshift(callback);
-  }
-
-  /**
-   * Registers a callback function to be called whenever there is an update to entity locations from the server.
-   * @param callback The function called whenever there is an update to entity locations from the server.
-   */
-  public onUpdateLocations(callback: (entities: EntityLocation[]) => void): void {
-    this.updateLocationsCallbacks.push(callback);
-  }
-
   public async initiateBattleAsync(): Promise<void> {
     await this.connection.send("initiateBattle");
   }
@@ -109,14 +98,24 @@ export class WorldEntityService {
     await this.connection.send("joinBattle", toJoinId, isAttacker);
   }
 
-  /**
-   * Moves the player entity an amount from it's current position.
-   * @param deltaPosition The change in X and Y coordinates to move the player entity.
-   */
-  public moveEntity(deltaPosition: Coordinate) {
-    if (this.connection == undefined) throw new Error("The connection hasn't been started yet.");
+  ///**
+  // * Moves the player entity an amount from it's current position.
+  // * @param deltaPosition The change in X and Y coordinates to move the player entity.
+  // */
+  //public moveEntity(deltaPosition: Coordinate) {
+  //  if (this.connection == undefined) throw new Error("The connection hasn't been started yet.");
 
-    this.connection.send("MoveEntity", deltaPosition);
+  //  this.connection.send("MoveEntity", deltaPosition);
+  //}
+
+  /**
+   * Moves the player's WorldEntity along the given path.
+   * @param path The path to move the player's WorldEntity.
+   */
+  public moveEntity(path: Coordinate[]): Promise<void> {
+    if (this.connection == null) throw new Error("The connection hasn't been started yet.");
+
+    return this.connection.send("MoveEntity", path);
   }
 
   /**
@@ -175,14 +174,15 @@ export class WorldEntityService {
     return this.connection.send("RequestPlayerEntity");
   }
 
+  /** Called by the server whenever the player has successfully initiated combat. */
   private async onBattleInitiatedAsync(): Promise<void> {
     await this.stateHandler.handleStateAsync(PlayerStateConstants.inCombat);
   }
 
-  private onCanStartBattle(): void {
-    if (this.canStartBattleHandler != null) this.canStartBattleHandler();
-  }
-
+  /**
+   * Called by the server if the player should not be in the Game map.
+   * @param currentState The actual state the player is in.
+   */
   private async invalidStateAsync(currentState: string): Promise<void> {
     await this.stateHandler.handleStateAsync(currentState);
   }
@@ -201,22 +201,6 @@ export class WorldEntityService {
   }
 
   /**
-   * Called whenever there is an update for world entity locations available from the server.
-   * @param mapEntities A 2d array containing the locations of entities represented by their ids.
-   */
-  private updateEntities(entities: EntityLocation[]): void {
-    this.updateLocationsCallbacks.forEach(callback => callback(entities));
-  }
-
-  /**
-   * Called whenever there are one or more entities spawned on the map.
-   * @param entities The new entities added by the server.
-   */
-  private addEntities(entities: WorldEntity[]): void {
-    if (this.addEntitiesCallback != null) this.addEntitiesCallback(entities);
-  }
-
-  /**
    * Called by the server to receive the id of the player's entity.
    * @param entityId The id of the player's entity.
    */
@@ -225,37 +209,11 @@ export class WorldEntityService {
   }
 
   /**
-   * Called whenever one or more entities should be removed from the map.
-   * @param entityIds The ids of the entities to be removed.
-   */
-  private removeEntities(entityIds: number[]): void {
-    if (this.removeEntitiesCallback != null) this.removeEntitiesCallback(entityIds);
-  }
-
-  /**
-   * Called whenever a request to change maps has been completed successfully by the server.
-   * @param newMapId The id of the map the player was switched to.
-   */
-  private changeMapsSuccess(newMapId: number): void {
-    this.requestIds = [];
-    this.queuedRequestIds = [];
-    this.isRequestingData = false;
-    this.changeMapCallbacks.forEach(callback => callback(newMapId));
-  }
-
-  /**
-   * Called after a successful request for movement by the client.
-   * @param location The new location occupied by the client's entity.
-   */
-  private updateMovement(location: Coordinate): void {
-  }
-
-  /**
    * Called whenever missing data is successfully retrieved by the server.
    * @param entities An array containing the missing WorldEntity data.
    */
   private receiveMissingEntities(entities: WorldEntity[]): void {
-    this.addEntities(entities);
+    this.onReceiveMissingEntities.next(entities);
     if (this.queuedRequestIds.length > 0 && this.canRequestData) {
       this.canRequestData = false;
       this.requestIds = this.queuedRequestIds;

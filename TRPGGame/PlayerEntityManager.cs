@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using TRPGGame.Entities;
 using TRPGGame.Entities.Combat;
 using TRPGGame.EventArgs;
@@ -25,24 +26,111 @@ namespace TRPGGame
 
         public Guid PlayerId { get; set; }
         private IBattleManager _battleManager = null;
-        private IEnumerable<WorldEntity> _hostilesQueuedForBattle;
+        private IEnumerable<WorldEntity> _contactsQueuedForBattle;
+        private IEnumerable<WorldEntity> _alliedEntities;
         private readonly IWorldState _worldState;
         private readonly IStateManager _stateManager;
-        private readonly BattleManagerFactory _battleManagerFactory;
         private readonly object _lock = new object();
         private MapManager _currentMapManager;
+        private IMapBattleManager _mapBattleManager;
         private WorldEntity _entity;
+        private Queue<Coordinate> _movementQueue;
+
+        private int _targetEntityId;
+        private string _targetOwnerId;
+        private string _actionName;
 
         public bool IsActive { get; private set; } = false;
 
         public PlayerEntityManager(IWorldState worldState,
-                                   IStateManager stateManager,
-                                   BattleManagerFactory battleManagerFactory)
+                                   IStateManager stateManager)
         {
             _worldState = worldState;
             _stateManager = stateManager;
-            _battleManagerFactory = battleManagerFactory;
             LastAccessed = DateTime.Now;
+            _movementQueue = new Queue<Coordinate>();
+        }
+
+        /// <summary>
+        /// Event invoked when this PlayerEntityManager should be destroyed.
+        /// </summary>
+        public event EventHandler<System.EventArgs> OnDestroy;
+
+        /// <summary>
+        /// Event invoked when the WorldEntity being managed has stopped moving.
+        /// </summary>
+        public event EventHandler<System.EventArgs> OnMovementStopped;
+
+        /// <summary>
+        /// Event invoked whenever the PlayerEntityManager initiates battle or has battle initiated on the
+        /// WorldEntity being managed.
+        /// </summary>
+        public event EventHandler<CreatedBattleEventArgs> OnBattleInitiated;
+
+        /// <summary>
+        /// Event invoked whenever the PlayerEntityManager successfully joins a battle.
+        /// </summary>
+        public event EventHandler<JoinBattleSuccessEventArgs> OnJoinBattleSuccess;
+
+        private void OnGameTick(object sender, GameTickEventArgs args)
+        {
+            bool success = false;
+            bool isMovementStopped = false;
+
+            // Don't move if wrong state
+            if (_stateManager.GetPlayerState(PlayerId) != PlayerStateConstants.Free) return;
+
+            lock (_lock)
+            {
+                while (!success && _movementQueue.Count > 0)
+                {
+                    success = TryMoveEntity(_movementQueue.Dequeue());
+                }
+
+                isMovementStopped = _movementQueue.Count <= 0;
+                if (isMovementStopped) PerformAction();
+            }
+
+            if (isMovementStopped) Task.Run(() => OnMovementStopped?.Invoke(this, new System.EventArgs()));
+        }
+
+        /// <summary>
+        /// Handler invoked whenever any battle is created on the map the managed WorldEntity is on.
+        /// <para>If the WorldEntity is in the newly created battle, initiates battle for this player.</para>
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        private void OnCreatedBattle(object sender, CreatedBattleEventArgs args)
+        {
+            // Call initiated battle
+            if (args.PlayersInBattle.TryGetValue(PlayerId, out Guid actual))
+            {
+                lock(_lock)
+                {
+                    if (_battleManager != null)
+                        throw new Exception($"A new battle was created for {PlayerId} while player was in another battle!");
+
+                    _battleManager = args.BattleManager;
+                    _battleManager.EndOfBattleEvent += OnEndOfBattle;
+                }
+
+                Task.Run(() => OnBattleInitiated?.Invoke(this, args));
+            }
+        }
+
+        /// <summary>
+        /// Handler invoked at the end of a battle; Will remove state restrictions.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="args"></param>
+        public void OnEndOfBattle(object sender, EndOfBattleEventArgs args)
+        {
+            lock (_lock)
+            {
+                _battleManager.EndOfBattleEvent -= OnEndOfBattle;
+                _battleManager = null;
+                _stateManager.SetPlayerFree(PlayerId);
+            }
         }
 
         /// <summary>
@@ -60,7 +148,8 @@ namespace TRPGGame
                 if (!IsActive && _entity != null)
                 {
                     _currentMapManager = _worldState.MapManagers[Entity.CurrentMapId];
-                    _currentMapManager.TryAddPlayerEntity(Entity, Entity.Position);
+                    _mapBattleManager = _worldState.MapBattleManagers[Entity.CurrentMapId];
+                    _currentMapManager.TryAddEntity(Entity, Entity.Position);
                     IsActive = true;
                     LastAccessed = DateTime.Now;
                 }
@@ -68,42 +157,109 @@ namespace TRPGGame
         }
 
         /// <summary>
-        /// Moves the player's entity a specified amount from the entity's current position.
+        /// Tries to move the player's WorldEntity to the given location on the current map.
         /// </summary>
-        /// <param name="deltaX">The amount of horizontal displacement from the entity's current position.</param>
-        /// <param name="deltaY">The amount of vertical displacement from the entity's current position.</param>
-        /// <param name="canStartBattle">Returns true if the player's entity walked into hostile entities.</param>
-        /// <returns>Returns true if the move succeeded.</returns>
-        public bool MoveEntity(int deltaX, int deltaY, out bool canStartBattle)
+        /// <param name="newLocation">The location to move the player's WorldEntity to.</param>
+        /// <returns>Returns true if the move was successful.</returns>
+        private bool TryMoveEntity(Coordinate newLocation)
         {
             if (!IsActive || Entity == null) throw new Exception("PlayerEntityManager must be initialized before calling MoveEntity.");
-            canStartBattle = false;
-            IEnumerable<WorldEntity> hostiles = null;
+            int deltaX = 0;
+            int deltaY = 0;
+
+            lock (_lock)
+            {
+                deltaX = Entity.Position.PositionX - newLocation.PositionX;
+                deltaY = Entity.Position.PositionY - newLocation.PositionY;
+
+                if (deltaX > GameplayConstants.MaxTileMoveDistance
+                || deltaX < GameplayConstants.MaxTileMoveDistance) return false;
+
+                if (deltaY > GameplayConstants.MaxTileMoveDistance
+                    || deltaY < GameplayConstants.MaxTileMoveDistance) return false;
+
+                // Disallow diagonal movement
+                if (deltaX != 0 && deltaY != 0) return false;
+            }
+
+            if (deltaX == 0 && deltaY == 0) return false;
+
+            return MoveEntity(newLocation);
+        }
+
+        /// <summary>
+        /// Moves the player's entity to a new coordinate position.
+        /// </summary>
+        /// <param name="newPosition">The new position to move the WorldEntity to.</param>
+        /// <returns>Returns true if the move succeeded.</returns>
+        private bool MoveEntity(Coordinate newPosition)
+        {
+            if (!IsActive || Entity == null) throw new Exception("PlayerEntityManager must be initialized before calling MoveEntity.");
             bool success = false;
 
             lock (_lock)
             {
                 LastAccessed = DateTime.Now;
-                var oldPosition = Entity.Position;
-                var newPosition = new Coordinate()
-                {
-                    PositionX = oldPosition.PositionX + deltaX,
-                    PositionY = oldPosition.PositionY + deltaY
-                };
 
-                if (newPosition.PositionX >= _currentMapManager.Map.MapData.Count) return false;
-                if (newPosition.PositionY >= _currentMapManager.Map.MapData[0].Count) return false;
-                if (_currentMapManager.Map.MapData[newPosition.PositionX][newPosition.PositionY].IsBlocking) return false;
+                if (!_currentMapManager.IsValidLocation(newPosition)) return false;
 
-                if (_currentMapManager.TryMovePlayerEntity(Entity, newPosition, out hostiles))
+                if (_currentMapManager.TryMoveEntity(Entity, newPosition, out _contactsQueuedForBattle))
                 {
                     Entity.Position = newPosition;
-                    _hostilesQueuedForBattle = hostiles;
                     success = true;
                 }
             }
-            if (hostiles != null) canStartBattle = true;
             return success;
+        }
+        
+        /// <summary>
+        /// Sets the current movement queue to the provided movement path.
+        /// </summary>
+        /// <param name="movePath">An IEnumerable of Coordinates that represent the movement path for the player's entity.</param>
+        public void SetMovePath(IEnumerable<Coordinate> movePath)
+        {
+            _movementQueue = new Queue<Coordinate>(movePath);
+        }
+
+        /// <summary>
+        /// Queues an action targeted at a WorldEntity by moving along the given move path.
+        /// <para>Will attempt to perform the action at the end of the move path.</para>
+        /// </summary>
+        /// <param name="entityId">The id of the WorldEntity to perform the action on.</param>
+        /// <param name="ownerId">The id of the owner of the WorldEntity to perform the action on.</param>
+        /// <param name="action">The name of the action to perform. Import PlayerActionConstants for the complete
+        /// list of actions.</param>
+        /// <param name="movePath">The path of Coordinates to follow to the target destination.</param>
+        public void QueueAction(int entityId, string ownerId, string action, IEnumerable<Coordinate> movePath)
+        {
+            SetMovePath(movePath);
+
+            _targetEntityId = entityId;
+            _targetOwnerId = ownerId;
+            _actionName = action;
+        }
+
+        /// <summary>
+        /// Performs the currently queued action, if any.
+        /// </summary>
+        private void PerformAction()
+        {
+            if (_actionName == null || _targetOwnerId == null) return;
+
+            switch (_actionName)
+            {
+                case PlayerActionConstants.Attack:
+                    StartBattle();
+                    break;
+                case PlayerActionConstants.Join:
+                    JoinBattle();
+                    break;
+                default:
+                    break;
+            }
+
+            _actionName = null;
+            _targetOwnerId = null;
         }
 
         /// <summary>
@@ -111,49 +267,53 @@ namespace TRPGGame
         /// <para>If a battle already exists, returns the BattleManager for the current battle.</para>
         /// </summary>
         /// <returns></returns>
-        public IBattleManager StartBattle()
+        private void StartBattle()
         {
+            if (_stateManager.GetPlayerState(PlayerId) != PlayerStateConstants.Free) return;
+
             lock (_lock)
             {
-                if (_battleManager != null) return _battleManager;
-                if (_stateManager.GetPlayerState(PlayerId) != PlayerStateConstants.Free) return null;
-                if (_hostilesQueuedForBattle == null || _hostilesQueuedForBattle.Count() <= 0) return null;
+                if (_contactsQueuedForBattle == null || _contactsQueuedForBattle.Count() <= 0) return;
+                
+                var defenders = _contactsQueuedForBattle.Where(entity => _mapBattleManager.TryGetBattle(entity, out IBattleManager manager))
+                                                        .Take(GameplayConstants.MaxFormationsPerSide)
+                                                        .ToList();
 
-                _battleManager = _battleManagerFactory.Create();
-                var defenders = _hostilesQueuedForBattle.Select(h => h.ActiveFormation).ToList();
-                _battleManager.EndOfBattleEvent += OnEndOfBattle;
+                var attackers = _alliedEntities.Append(Entity).ToList();
 
-                _battleManager.StartBattle(new List<Formation> { Entity.ActiveFormation }, defenders);
-                return _battleManager;
+                _mapBattleManager.CreateBattle(attackers, defenders);
             }
         }
 
         /// <summary>
-        /// Called to add a new player to this PlayerEntityManager's current battle. Returns the BattleManager
-        /// for this PlayerEntityManager's battle.
+        /// Attempts to join the battle of the stored target WorldEntity.
         /// </summary>
-        /// <param name="joinerManager">The PlayerManager for the player joining this battle.</param>
-        /// <param name="isAttacker">If true, will join battle as an attacker. Else as a defender.</param>
-        /// <returns></returns>
-        public IBattleManager JoinMyBattle(PlayerEntityManager joinerManager, bool isAttacker)
+        private void JoinBattle()
         {
-            var joiningFormation = joinerManager.Entity.ActiveFormation;
-            lock (_lock)
-            {
-                if (_battleManager == null) return null;
-                _battleManager.JoinBattle(joiningFormation, isAttacker);
-                _battleManager.EndOfBattleEvent += joinerManager.OnEndOfBattle;
-                _stateManager.SetPlayerInCombat(joinerManager.PlayerId);
-                return _battleManager;
-            }
-        }
+            if (_stateManager.GetPlayerState(PlayerId) != PlayerStateConstants.Free) return;
 
-        public void OnEndOfBattle(object sender, EndOfBattleEventArgs args)
-        {
             lock (_lock)
             {
-                _battleManager = null;
-                _stateManager.SetPlayerFree(PlayerId);
+                if (_contactsQueuedForBattle == null || _contactsQueuedForBattle.Count() <= 0) return;
+                if (_battleManager != null) throw new Exception($"Player {PlayerId} tried to join a battle while another is in progress!");
+
+                var hostEntity = _contactsQueuedForBattle.FirstOrDefault(entity =>
+                {
+                    return entity.Id == _targetEntityId && entity.OwnerGuid.ToString() == _targetOwnerId;
+                });
+
+                if (_mapBattleManager.TryGetBattle(hostEntity, out IBattleManager battleManager))
+                {
+                    if (battleManager.JoinBattle(hostEntity, Entity) != null) _battleManager = battleManager;
+                }
+            }
+
+            if (_battleManager != null)
+            {
+                Task.Run(() => OnJoinBattleSuccess?.Invoke(this, new JoinBattleSuccessEventArgs
+                {
+                    BattleManager = _battleManager
+                }));
             }
         }
 
@@ -201,8 +361,15 @@ namespace TRPGGame
                 LastAccessed = DateTime.Now;
                 var tile = _currentMapManager.Map.MapData[Entity.Position.PositionX][Entity.Position.PositionY];
                 newMapId = tile.TransportMapId;
-                _currentMapManager.RemovePlayerEntity(Entity);
+
+                _currentMapManager.RemoveEntity(Entity);
+                _currentMapManager.GameTick -= OnGameTick;
+                _mapBattleManager.OnCreatedBattle -= OnCreatedBattle;
+
                 _currentMapManager = _worldState.MapManagers[newMapId];
+                _currentMapManager.GameTick += OnGameTick;
+                _mapBattleManager.OnCreatedBattle += OnCreatedBattle;
+
                 Entity.CurrentMapId = newMapId;
                 Entity.Position = tile.TransportLocation;
                 IsActive = false;
@@ -224,10 +391,18 @@ namespace TRPGGame
                 LastAccessed = DateTime.Now;
                 if (!_currentMapManager.Map.MapConnections.Contains(newMapId)) return false;
                 var tile = _currentMapManager.Map.MapData[Entity.Position.PositionX][Entity.Position.PositionY];
+
                 if (!tile.CanTransport) return false;
                 if (tile.TransportMapId != newMapId) return false;
-                _currentMapManager.RemovePlayerEntity(Entity);
+
+                _currentMapManager.RemoveEntity(Entity);
+                _currentMapManager.GameTick -= OnGameTick;
+                _mapBattleManager.OnCreatedBattle -= OnCreatedBattle;
+
                 _currentMapManager = _worldState.MapManagers[newMapId];
+                _currentMapManager.GameTick += OnGameTick;
+                _mapBattleManager.OnCreatedBattle += OnCreatedBattle;
+
                 Entity.Position = tile.TransportLocation;
                 IsActive = false;
 
@@ -263,10 +438,21 @@ namespace TRPGGame
                 if (IsActive)
                 {
                     LastAccessed = DateTime.Now;
-                    _currentMapManager.RemovePlayerEntity(Entity);
+                    _currentMapManager.RemoveEntity(Entity);
+                    _currentMapManager.GameTick -= OnGameTick;
+                    _mapBattleManager.OnCreatedBattle -= OnCreatedBattle;
                     IsActive = false;
                 }
             }
+
+            OnDestroy?.Invoke(this, new System.EventArgs());
         }
+    }
+
+    public static class PlayerActionConstants
+    {
+        public const string Attack = "attack";
+        public const string Join = "join";
+        public const string Move = "move";
     }
 }

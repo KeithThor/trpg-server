@@ -41,10 +41,19 @@ namespace TRPGGame.Managers
         /// Adds a participant to the battle and returns the battle instance.
         /// <para>Returns null if no battles were found or the battle group is full.</para>
         /// </summary>
-        /// <param name="participant">The Formation to add to the battle.</param>
+        /// <param name="participant">The WorldEntity to add to the battle.</param>
         /// <param name="isAttacker">If true, will join the side of the attackers. If false, will join the defenders.</param>
         /// <returns></returns>
-        IReadOnlyBattle JoinBattle(Formation participant, bool isAttacker);
+        IReadOnlyBattle JoinBattle(WorldEntity participant, bool isAttacker);
+
+        /// <summary>
+        /// Attempts to join the side of the provided host WorldEntity. Returns the Battle instance if successful.
+        /// <para>Returns null if the join was invalid.</para>
+        /// </summary>
+        /// <param name="host">The WorldEntity to join the side of.</param>
+        /// <param name="joiner">The WorldEntity joining the battle.</param>
+        /// <returns></returns>
+        IReadOnlyBattle JoinBattle(WorldEntity host, WorldEntity joiner);
 
         /// <summary>
         /// Tries to perform an action, returning true if the action was successfully performed.
@@ -57,10 +66,10 @@ namespace TRPGGame.Managers
         /// Starts a Battle instance between the attackers and defenders.
         /// <para>Returns null if a Battle instance already exists for this manager.</para>
         /// </summary>
-        /// <param name="attackers">The Formations who initiated combat.</param>
-        /// <param name="defenders">The Formations who are being initiated on.</param>
+        /// <param name="attackers">The WorldEntities who initiated combat.</param>
+        /// <param name="defenders">The WorldEntities who are being initiated on.</param>
         /// <returns></returns>
-        IReadOnlyBattle StartBattle(List<Formation> attackers, List<Formation> defenders);
+        IReadOnlyBattle StartBattle(List<WorldEntity> attackers, List<WorldEntity> defenders);
 
         /// <summary>
         /// Gets the current Battle instance.

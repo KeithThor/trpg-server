@@ -1,6 +1,5 @@
 import { Component, HostListener, OnInit, ViewChild, ViewChildren, OnDestroy } from "@angular/core";
 import { Coordinate } from "../model/coordinate.model";
-import { Router, NavigationStart } from "@angular/router";
 import { Subscription } from "rxjs/Subscription";
 import { ChatboxComponent } from "../chatbox/chatbox.component";
 import { GameStateService } from "../services/game-state.service";
@@ -11,16 +10,20 @@ import { QueryList } from "@angular/core";
 import { EntityLocation } from "../model/entity-location.model";
 import { WorldEntityService } from "../services/world-entity.service";
 import { TileNodeComponent, ContextData } from "./tile-node.component";
-import { Pathfinder } from "../services/pathfinder.static";
+import { MovementManager, MovementConstants } from "./services/movement-manager.service";
 
 @Component({
   selector: 'app-game-component',
   templateUrl: './game.component.html',
   styleUrls: ['./game.component.css'],
+  providers: [
+    MovementManager
+  ]
 })
 export class GameComponent implements OnInit, OnDestroy {
   constructor(private gameStateService: GameStateService,
-    private worldEntityService: WorldEntityService) {
+    private worldEntityService: WorldEntityService,
+    private movementManager: MovementManager) {
 
   }
   @ViewChild("chatbox") chatbox: ChatboxComponent;
@@ -53,6 +56,54 @@ export class GameComponent implements OnInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.endConnections();
+  }
+
+  /**
+   * Initializes the services and connections for the game component.
+   */
+  private async initialize(): Promise<void> {
+    await this.gameStateService.initializeAsync()
+      .catch(err => console.log(err));
+
+    this.subscriptions.push(this.worldEntityService.onUpdateLocations.subscribe({
+      next: (locations: EntityLocation[]) => {
+        this.onUpdateLocation(locations);
+      }
+    }));
+
+    this.subscriptions.push(this.worldEntityService.onCanStartBattle.subscribe({
+      next: (canStartBattle: boolean) => {
+        this.canStartBattleAsync();
+      }
+    }));
+
+    this.subscriptions.push(this.worldEntityService.onAddEntities.subscribe({
+      next: (entities: WorldEntity[]) => {
+        this.onAddEntities(entities);
+      }
+    }));
+
+    this.subscriptions.push(this.worldEntityService.onChangeMap.subscribe({
+      next: (mapId: number) => {
+        this.onChangeMaps(mapId);
+      }
+    }));
+
+    this.subscriptions.push(this.worldEntityService.onRemoveEntities.subscribe({
+      next: (entityIds: number[]) => {
+        this.onRemoveEntities(entityIds);
+      }
+    }));
+
+    this.subscriptions.push(this.worldEntityService.onReceiveMissingEntities.subscribe({
+      next: (entities: WorldEntity[]) => {
+        this.onAddEntities(entities);
+        // Remove added entities from requested ids array
+        this.requestedIds = this.requestedIds.filter(id => entities.some(entity => entity.id === id));
+      }
+    }));
+
+    await this.gameStateService.beginPlayAsync();
   }
 
   @HostListener('document: keydown', ['$event'])
@@ -130,10 +181,7 @@ export class GameComponent implements OnInit, OnDestroy {
    * @param entity The WorldEntity that the user selected to Attack.
    */
   public onAttackContext(entity: WorldEntity): void {
-    let eLocation: EntityLocation = this.entityLocations.find(eloc => eloc.id === entity.id);
-    if (eLocation == null) return;
-
-    let path = this.getPath(eLocation.location);
+    this.movementManager.actOnEntity(entity, MovementConstants.attack);
   }
 
   /**
@@ -141,62 +189,12 @@ export class GameComponent implements OnInit, OnDestroy {
    * @param entity The WorldEntity that the user selected to join.
    */
   public onJoinContext(entity: WorldEntity): void {
-    let eLocation: EntityLocation = this.entityLocations.find(eloc => eloc.id === entity.id);
-    if (eLocation == null) return;
-
-    let path = this.getPath(eLocation.location);
+    this.movementManager.actOnEntity(entity, MovementConstants.join);
   }
 
   /**Invoked whenever the user selects the Move button from the context menu. */
   public onMoveContext(): void {
-    if (this.contextLocation == null) return;
-
-    let path = this.getPath(this.contextLocation);
-  }
-
-  /**
-   * Returns an array of Coordinates that form a path from the player's WorldEntity to the given
-   * target coordinate.
-   * @param target The coordinate to create a path to.
-   */
-  private getPath(target: Coordinate): Coordinate[] {
-    let playerEntityId = this.worldEntityService.playerEntityId;
-    let playerELoc: EntityLocation = this.entityLocations.find(eLoc => eLoc.id === playerEntityId);
-
-    // Starting position and target are the same positions
-    if (playerELoc.location.positionX === target.positionX && playerELoc.location.positionY === target.positionY) return [];
-
-    let mapData = this.gameStateService.getMapData();
-
-    // Todo: use this path to highlight the map to show where the entity will move
-    let path = Pathfinder.findPath(playerELoc.location, target, mapData);
-    let translationPath: Coordinate[] = [];
-
-    // Convert node coordinates to translation coordinates
-    for (var i = 1; i < path.length; i++) {
-      translationPath.push(new Coordinate({
-        positionX: path[i].positionX - path[i - 1].positionX,
-        positionY: path[i].positionY - path[i - 1].positionY
-      }));
-    }
-
-    return translationPath;
-  }
-
-  /**
-   * Initializes the services and connections for the game component.
-   */
-  private async initialize(): Promise<void> {
-    await this.gameStateService.initializeAsync()
-      .catch(err => console.log(err));
-
-    this.worldEntityService.onUpdateLocations(this.onUpdateLocation.bind(this));
-    this.worldEntityService.canStartBattleHandler = this.canStartBattleAsync.bind(this);
-    this.worldEntityService.addEntitiesCallback = this.onAddEntities.bind(this);
-    this.worldEntityService.onChangeMaps(this.onChangeMaps.bind(this));
-    this.worldEntityService.removeEntitiesCallback = this.onRemoveEntities.bind(this);
-
-    await this.gameStateService.beginPlayAsync();
+    this.movementManager.moveEntity(this.contextLocation);
   }
 
   private async canStartBattleAsync(): Promise<void> {

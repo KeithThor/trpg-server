@@ -98,6 +98,10 @@ var PriorityQueue = /** @class */ (function () {
         }
         return values;
     };
+    /**Clears all of the items stored in the PriorityQueue. */
+    PriorityQueue.prototype.clear = function () {
+        this.heap = [];
+    };
     return PriorityQueue;
 }());
 exports.PriorityQueue = PriorityQueue;
@@ -170,6 +174,10 @@ var Dictionary = /** @class */ (function () {
             return null;
         else
             return obj;
+    };
+    /**Removes all items in the Dictionary. */
+    Dictionary.prototype.clear = function () {
+        this.dictionary = {};
     };
     return Dictionary;
 }());
