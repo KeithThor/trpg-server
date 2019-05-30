@@ -36,14 +36,14 @@ namespace TRPGGame.Managers
         /// </summary>
         /// <param name="attackers">An IEnumerable containing the attacking WorldEntities.</param>
         /// <param name="defenders">An IEnumerable containing the defending WorldEntities.</param>
-        public void CreateBattle(IEnumerable<WorldEntity> attackers, IEnumerable<WorldEntity> defenders)
+        public bool CreateBattle(IEnumerable<WorldEntity> attackers, IEnumerable<WorldEntity> defenders)
         {
             if (attackers == null || defenders == null || attackers.Count() <= 0 || defenders.Count() <= 0)
             {
                 throw new Exception("Attempted to create battle with no attackers or defenders!");
             }
 
-            if (AreEntitiesValid(attackers, defenders)) return;
+            if (AreEntitiesValid(attackers, defenders)) return false;
 
             var manager = _battleManagerFactory.Create();
 
@@ -68,6 +68,8 @@ namespace TRPGGame.Managers
             manager.StartBattle(attackers.ToList(), defenders.ToList());
 
             OnCreatedBattle?.Invoke(this, new CreatedBattleEventArgs(manager, aiEntitiesInBattle, playersInBattle));
+
+            return true;
         }
 
         /// <summary>

@@ -22,7 +22,7 @@ namespace TRPGGame.Managers
         /// </summary>
         /// <param name="attackers">An IEnumerable containing the attacking WorldEntities.</param>
         /// <param name="defenders">An IEnumerable containing the defending WorldEntities.</param>
-        void CreateBattle(IEnumerable<WorldEntity> attackers, IEnumerable<WorldEntity> defenders);
+        bool CreateBattle(IEnumerable<WorldEntity> attackers, IEnumerable<WorldEntity> defenders);
 
         /// <summary>
         /// Tries to get the IBattleManager instance for the given WorldEntity.

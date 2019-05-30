@@ -74,7 +74,7 @@ namespace TRPGGame.Managers
 
             if (areAllEntitiesDead)
             {
-                _mapManager.RemoveEnemyEntity(_entity);
+                _mapManager.RemoveEntity(_entity);
                 _mapBattleManager.OnCreatedBattle -= OnCreatedBattle;
                 RemovedFromMap?.Invoke(this, new RemovedFromMapEventArgs
                 {
@@ -82,6 +82,7 @@ namespace TRPGGame.Managers
                 });
             }
 
+            _isMovementDisabled = areAllEntitiesDead;
             _battleManager.EndOfBattleEvent -= OnEndOfBattle;
         }
 
@@ -110,7 +111,7 @@ namespace TRPGGame.Managers
                     spawnCoordinate.PositionX = _rand.Next(0, _mapManager.Map.MapData.Count);
                     spawnCoordinate.PositionY = _rand.Next(0, _mapManager.Map.MapData[0].Count);
                 } while (!_mapManager.IsValidLocation(spawnCoordinate));
-            } while (!_mapManager.TryAddEnemyEntity(_entity, spawnCoordinate));
+            } while (!_mapManager.TryAddEntity(_entity, spawnCoordinate));
 
             _entity.Position = spawnCoordinate;
         }
@@ -143,15 +144,78 @@ namespace TRPGGame.Managers
 
             if (_mapManager.IsValidLocation(moveCoordinate))
             {
-                bool success = _mapManager.TryMoveEnemyEntity(_entity, moveCoordinate, out IEnumerable<WorldEntity> contacts);
+                bool success = _mapManager.TryMoveEntity(_entity, moveCoordinate, out IEnumerable<WorldEntity> contacts);
                 if (success) _entity.Position = moveCoordinate;
 
                 if (contacts != null && contacts.Count() > 0)
                 {
-                    var hostiles = contacts.Where(entity => entity.OwnerGuid != GameplayConstants.AiId);
-                    _mapBattleManager.CreateBattle(hostiles.Take(1), new List<WorldEntity> { _entity });
+                    TryBattle(contacts);
                 }
             }
+        }
+
+        /// <summary>
+        /// Tries to join or initiate a new battle against the provided WorldEntity contacts.
+        /// </summary>
+        /// <param name="contacts">An IEnumerable of WorldEntities who the AiEntityManager's WorldEntity came into 
+        /// contact with.</param>
+        private void TryBattle(IEnumerable<WorldEntity> contacts)
+        {
+            var allies = contacts.Where(entity => entity.OwnerGuid == GameplayConstants.AiId).ToList();
+            if (TryJoinBattle(allies)) return;
+
+            var hostiles = contacts.Where(entity => entity.OwnerGuid != GameplayConstants.AiId).ToList();
+            TryInitiateBattle(hostiles);
+        }
+
+        /// <summary>
+        /// Attempts to join the battle of the provided allied WorldEntities.
+        /// </summary>
+        /// <param name="allies">A list of WorldEntities this AiEntityManager will try to join the battle of.</param>
+        /// <returns>Returns true if joining a battle was successful.</returns>
+        private bool TryJoinBattle(List<WorldEntity> allies)
+        {
+            int i = 0;
+            bool battleSuccess = false;
+
+            while (i < allies.Count && !battleSuccess)
+            {
+                if (_mapBattleManager.TryGetBattle(allies[i], out IBattleManager battleManager))
+                {
+                    if (battleManager.JoinBattle(allies[i], _entity) != null)
+                    {
+                        battleSuccess = true;
+                        _battleManager = battleManager;
+                        _battleManager.EndOfBattleEvent += OnEndOfBattle;
+                    }
+                }
+                i++;
+            }
+
+            return battleSuccess;
+        }
+
+        /// <summary>
+        /// Tries to initiate battle against one of the WorldEntities provided.
+        /// </summary>
+        /// <param name="enemies">A list of WorldEntities that this AiEntityManager should try to initiate battle against.</param>
+        /// <returns>Returns true if a battle was successfully initiated.</returns>
+        private bool TryInitiateBattle(List<WorldEntity> enemies)
+        {
+            int i = 0;
+            bool battleSuccess = false;
+
+            while (i < enemies.Count && !battleSuccess)
+            {
+                if (!_mapBattleManager.TryGetBattle(enemies[i], out IBattleManager battleManager))
+                {
+                    battleSuccess = _mapBattleManager.CreateBattle(new List<WorldEntity> { _entity },
+                                                                   new List<WorldEntity> { enemies[i] });
+                }
+                i++;
+            }
+
+            return battleSuccess;
         }
     }
 }

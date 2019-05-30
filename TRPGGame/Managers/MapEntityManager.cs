@@ -34,7 +34,7 @@ namespace TRPGGame.Managers
         private readonly IReadOnlyList<SpawnEntityData> _spawnData;
 
         private int Ticks = 0;
-        private readonly int _ticksPerSecond = 1000 / GameplayConstants.GameTickInMilliseconds;
+        private readonly int _ticksPerSecond = 1000 / GameplayConstants.GameTicksPerSecond;
         private readonly Queue<RespawnData> _respawnQueue = new Queue<RespawnData>();
         private readonly List<AiEntityManager> _managers = new List<AiEntityManager>();
 

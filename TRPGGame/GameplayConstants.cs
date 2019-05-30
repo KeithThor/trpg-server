@@ -7,7 +7,7 @@ namespace TRPGGame
 {
     public static class GameplayConstants
     {
-        public const int GameTickInMilliseconds = 10;
+        public const int GameTicksPerSecond = 10;
         public const int MaxFormationRows = 3;
         public const int MaxFormationColumns = 3;
         public const int MaxFormationSize = 9;
