@@ -78,6 +78,12 @@ namespace TRPGGame.Entities
         public int DelayedTurns { get; set; }
 
         /// <summary>
+        /// The number of rounds until a CombatEntity can use this ability again.
+        /// <para>This only applies to abilities a CombatEntity has learned.</para>
+        /// </summary>
+        public int Cooldown { get; set; }
+
+        /// <summary>
         /// If true and this ability has a turn delay, will active before any CombatEntities can act in battle.
         /// Else, will occur after every entity has had their turn in battle.
         /// </summary>
@@ -137,6 +143,22 @@ namespace TRPGGame.Entities
         /// The amount of health in percentage of max health healed by this ability.
         /// </summary>
         public int PercentHeal { get; set; }
+
+        /// <summary>
+        /// The amount of threat caused by using this ability. Used mainly for abilities that do no damage or healing.
+        /// </summary>
+        public int ThreatCaused { get; set; }
+
+        /// <summary>
+        /// Increases or decreases the likelihood that an Ai will use this ability in combat.
+        /// </summary>
+        public int AiWeightModifier { get; set; }
+
+        /// <summary>
+        /// If true, the Ai will value this ability more against enemy targets.
+        /// <para>Can be null, in which case the Ai decides whether this is an offensive or defensive ability.</para>
+        /// </summary>
+        public bool? IsOffensive { get; set; }
 
         /// <summary>
         /// Status effects applied by this ability to its targets.

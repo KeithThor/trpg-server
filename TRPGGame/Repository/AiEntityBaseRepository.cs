@@ -1,30 +1,28 @@
 ﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using TRPGGame.Entities;
 using TRPGGame.Entities.Data;
 
 namespace TRPGGame.Repository
 {
-    public class EnemyEntityBaseRepository : IRepository<EnemyEntityBase>
+    public class AiEntityBaseRepository : IRepository<AiEntityBase>
     {
         private readonly IRepository<StatusEffect> _statusEffectRepo;
         private readonly IRepository<Ability> _abilityRepo;
-        private List<EnemyEntityBase> _bases;
+        private List<AiEntityBase> _bases;
 
-        public EnemyEntityBaseRepository(IRepository<StatusEffect> statusEffectRepo,
+        public AiEntityBaseRepository(IRepository<StatusEffect> statusEffectRepo,
                                          IRepository<Ability> abilityRepo)
         {
             _statusEffectRepo = statusEffectRepo;
             _abilityRepo = abilityRepo;
         }
 
-        public async Task<IEnumerable<EnemyEntityBase>> GetDataAsync()
+        public async Task<IEnumerable<AiEntityBase>> GetDataAsync()
         {
             if (_bases == null) await LoadDataAsync();
             return _bases;
@@ -34,13 +32,13 @@ namespace TRPGGame.Repository
         {
             using (var reader = new StreamReader(DataConstants.AssemblyLocation + "/Data/EnemyEntityBases.json"))
             {
-                _bases = new List<EnemyEntityBase>();
+                _bases = new List<AiEntityBase>();
                 var statusEffects = await _statusEffectRepo.GetDataAsync();
                 var abilityData = await _abilityRepo.GetDataAsync();
                 JContainer basesAsList = JsonConvert.DeserializeObject<JContainer>(reader.ReadToEnd());
                 foreach (var baseObject in basesAsList)
                 {
-                    var entityBase = baseObject.ToObject<EnemyEntityBase>();
+                    var entityBase = baseObject.ToObject<AiEntityBase>();
 
                     var statuses = new List<StatusEffect>();
                     List<int> statusIds = null;

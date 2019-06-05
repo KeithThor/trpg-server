@@ -84,7 +84,7 @@ namespace TRPGGame.Services
         /// </summary>
         /// <param name="template">The template to use to create the WorldEntity.</param>
         /// <returns></returns>
-        public WorldEntity Create(EnemyFormationTemplate template)
+        public WorldEntity Create(AiFormationTemplate template)
         {
             var formation = _formationFactory.Create(template);
 

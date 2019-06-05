@@ -27,7 +27,7 @@ namespace TRPGGame
         public Guid PlayerId { get; set; }
         private IBattleManager _battleManager = null;
         private IEnumerable<WorldEntity> _contactsQueuedForBattle;
-        private IEnumerable<WorldEntity> _alliedEntities;
+        private List<WorldEntity> _alliedEntities;
         private readonly IWorldState _worldState;
         private readonly IStateManager _stateManager;
         private readonly object _lock = new object();

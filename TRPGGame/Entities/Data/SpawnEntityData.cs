@@ -13,7 +13,7 @@ namespace TRPGGame.Entities.Data
         /// <summary>
         /// The template that represents this SpawnEntityData.
         /// </summary>
-        public EnemyFormationTemplate FormationTemplate { get; set; }
+        public AiFormationTemplate FormationTemplate { get; set; }
 
         /// <summary>
         /// The maximum number of entities in a given map that can have this EnemyFormationTemplate.

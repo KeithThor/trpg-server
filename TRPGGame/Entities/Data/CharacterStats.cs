@@ -42,6 +42,10 @@ namespace TRPGGame.Entities.Data
         public int Intelligence { get; set; }
         public int Constitution { get; set; }
 
+        /// <summary>
+        /// Gets the total of all of the character stats.
+        /// </summary>
+        /// <returns></returns>
         public int GetTotalStats()
         {
             return Strength + Dexterity + Agility + Intelligence + Constitution;

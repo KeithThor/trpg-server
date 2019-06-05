@@ -15,7 +15,7 @@ namespace TRPGGame.Services
         /// </summary>
         /// <param name="template">The template to use to create the WorldEntity.</param>
         /// <returns></returns>
-        WorldEntity Create(EnemyFormationTemplate template);
+        WorldEntity Create(AiFormationTemplate template);
 
         /// <summary>
         /// Creates a new WorldEntity using the id of the formation that this WorldEntity represents and the id of

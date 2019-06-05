@@ -45,6 +45,12 @@ namespace TRPGGame.Entities
         int CenterOfTargets { get; }
 
         /// <summary>
+        /// The number of rounds until a CombatEntity can use this ability again.
+        /// <para>This only applies to abilities a CombatEntity has learned.</para>
+        /// </summary>
+        int Cooldown { get; }
+
+        /// <summary>
         /// Whether or not the ability uses the caster's position as the target position.
         /// <para>Will ignore IsPositionStatic and CanTargetBeBlocked if true.</para>
         /// </summary>
@@ -124,6 +130,22 @@ namespace TRPGGame.Entities
         /// The amount of health in percentage of max health healed by this ability.
         /// </summary>
         int PercentHeal { get; }
+
+        /// <summary>
+        /// The amount of threat caused by using this ability. Used mainly for abilities that do no damage or healing.
+        /// </summary>
+        int ThreatCaused { get; }
+
+        /// <summary>
+        /// Increases or decreases the likelihood that an Ai will use this ability in combat.
+        /// </summary>
+        int AiWeightModifier { get; }
+
+        /// <summary>
+        /// If true, the Ai will value this ability more against enemy targets.
+        /// <para>Can be null, in which case the Ai decides whether this is an offensive or defensive ability.</para>
+        /// </summary>
+        bool? IsOffensive { get; }
 
         /// <summary>
         /// Status effects applied by this ability to its targets.

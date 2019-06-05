@@ -22,7 +22,7 @@ namespace TRPGGame.Services
 
         public PlayerEntityManager Create(Guid playerId)
         {
-            var manager = new PlayerEntityManager(_worldState, _stateManager, _battleManagerFactory)
+            var manager = new PlayerEntityManager(_worldState, _stateManager)
             {
                 PlayerId = playerId
             };

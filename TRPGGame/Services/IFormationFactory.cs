@@ -21,6 +21,6 @@ namespace TRPGGame.Services
         /// </summary>
         /// <param name="template">The EnemyFormationTemplate used to create the Formation.</param>
         /// <returns></returns>
-        Formation Create(EnemyFormationTemplate template);
+        Formation Create(AiFormationTemplate template);
     }
 }

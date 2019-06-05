@@ -57,6 +57,11 @@ namespace TRPGGame.Entities
         public CharacterStats Stats { get; set; } = new CharacterStats();
 
         /// <summary>
+        /// Represents the amount of threat this CombatEntity poses to ai enemies.
+        /// </summary>
+        public int Threat { get; set; } = 0;
+
+        /// <summary>
         /// Represents the character's in-game stats unmodified by any other effects.
         /// </summary>
         public CharacterStats UnmodifiedStats { get; set; } = new CharacterStats();
@@ -75,6 +80,12 @@ namespace TRPGGame.Entities
         /// Contains all of the attacks, spells, and skills this character can use.
         /// </summary>
         public List<Ability> Abilities { get; set; } = new List<Ability>();
+
+        /// <summary>
+        /// Contains all of the attacks, spells, and skills this character knows that are on cooldown.
+        /// <para>The keys are the abilities on cooldown, the values are the turns left until the cooldown is over.</para>
+        /// </summary>
+        public List<KeyValuePair<Ability, int>> AbilitiesOnCooldown { get; set; } = new List<KeyValuePair<Ability, int>>();
 
         /// <summary>
         /// Contains all of the status effects that are affecting this character.
@@ -104,5 +115,10 @@ namespace TRPGGame.Entities
         IEnumerable<IReadOnlyItem> IReadOnlyCombatEntity.EquippedItems => EquippedItems;
         IReadOnlyCharacterStats IReadOnlyCombatEntity.UnmodifiedStats => UnmodifiedStats;
         IReadOnlyCharacterStats IReadOnlyCombatEntity.GrowthPoints => GrowthPoints;
+
+        IReadOnlyList<KeyValuePair<IReadOnlyAbility, int>> IReadOnlyCombatEntity.AbilitiesOnCooldown
+        {
+            get => (IReadOnlyList<KeyValuePair<IReadOnlyAbility, int>>)AbilitiesOnCooldown;
+        }
     }
 }

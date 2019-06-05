@@ -105,7 +105,7 @@ namespace TRPGGame.Services
         /// </summary>
         /// <param name="entityBase">The base to use for the resultant CombatEntity.</param>
         /// <returns></returns>
-        public CombatEntity Create(EnemyEntityBase entityBase)
+        public CombatEntity Create(AiEntityBase entityBase)
         {
             var secondaryStats = StatsCalculator.GetSecondaryStats(entityBase.Stats);
             secondaryStats += entityBase.SecondaryStats;

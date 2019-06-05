@@ -4,13 +4,15 @@ using TRPGGame.Data;
 using TRPGGame.Entities;
 using TRPGGame.Entities.Data;
 using TRPGGame.Managers;
+using TRPGGame.Managers.Combat;
+using TRPGGame.Managers.Combat.Interfaces;
 using TRPGGame.Repository;
 using TRPGGame.Services;
 
 namespace TRPGGame
 {
     /// <summary>
-    /// Class responsible for resolving type instances for the solution.
+    /// Class responsible for resolving type instances for the project.
     /// </summary>
     public class Bootstrapper
     {
@@ -50,12 +52,12 @@ namespace TRPGGame
             containerBuilder.RegisterType<AbilityRepository>().As<IRepository<Ability>>();
             containerBuilder.RegisterType<ItemTypeRepository>().As<IRepository<ItemType>>();
             containerBuilder.RegisterType<ItemRepository>().As<IRepository<Item>>();
-            containerBuilder.RegisterType<EnemyFormationRepository>().As<IRepository<EnemyFormationTemplate>>();
+            containerBuilder.RegisterType<AiFormationRepository>().As<IRepository<AiFormationTemplate>>();
             containerBuilder.RegisterType<ClassTemplateRepository>()
                             .As<IRepository<ClassTemplate>>()
                             .As<IRepository<IReadOnlyClassTemplate>>();
-            containerBuilder.RegisterType<EnemyEntityBaseRepository>()
-                            .As<IRepository<EnemyEntityBase>>();
+            containerBuilder.RegisterType<AiEntityBaseRepository>()
+                            .As<IRepository<AiEntityBase>>();
             containerBuilder.RegisterType<EquipmentManager>().As<IEquipmentManager>();
             containerBuilder.RegisterType<StatusEffectManager>().As<IStatusEffectManager>();
             containerBuilder.RegisterType<StateManager>().As<IStateManager>().SingleInstance();
@@ -64,6 +66,7 @@ namespace TRPGGame
             containerBuilder.RegisterType<PlayerEntityManagerFactory>();
             containerBuilder.RegisterType<BattleManagerFactory>();
             containerBuilder.RegisterType<AiEntityManagerFactory>();
+            containerBuilder.RegisterType<CombatAi>().As<ICombatAi>();
         }
 
         /// <summary>

@@ -17,11 +17,11 @@ namespace TRPGGame.Services
     {
         private readonly CombatEntityManager _combatEntityManager;
         private readonly ICombatEntityFactory _combatEntityFactory;
-        private readonly IRepository<EnemyEntityBase> _entityBaseRepo;
+        private readonly IRepository<AiEntityBase> _entityBaseRepo;
 
         public FormationFactory(CombatEntityManager combatEntityManager,
                                 ICombatEntityFactory combatEntityFactory,
-                                IRepository<EnemyEntityBase> entityBaseRepo)
+                                IRepository<AiEntityBase> entityBaseRepo)
         {
             _combatEntityManager = combatEntityManager;
             _combatEntityFactory = combatEntityFactory;
@@ -92,7 +92,7 @@ namespace TRPGGame.Services
         /// </summary>
         /// <param name="template">The EnemyFormationTemplate used to create the Formation.</param>
         /// <returns></returns>
-        public Formation Create(EnemyFormationTemplate template)
+        public Formation Create(AiFormationTemplate template)
         {
             var positions = new CombatEntity[GameplayConstants.MaxFormationRows][];
             int leaderId = -1;
@@ -117,7 +117,8 @@ namespace TRPGGame.Services
                 LeaderId = leaderId,
                 Name = template.Name,
                 OwnerId = GameplayConstants.AiId,
-                Positions = positions
+                Positions = positions,
+                AiRandomness = template.AiRandomness
             };
         }
     }

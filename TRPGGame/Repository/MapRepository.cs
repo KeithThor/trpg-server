@@ -60,11 +60,11 @@ namespace TRPGGame.Repository
         }
 
         private readonly IRepository<MapTile> _mapTileRepo;
-        private readonly IRepository<EnemyFormationTemplate> _enemyFormationTemplate;
+        private readonly IRepository<AiFormationTemplate> _enemyFormationTemplate;
         private List<Map> _maps;
 
         public MapRepository(IRepository<MapTile> mapTileRepo,
-                             IRepository<EnemyFormationTemplate> enemyFormationTemplate)
+                             IRepository<AiFormationTemplate> enemyFormationTemplate)
         {
             _mapTileRepo = mapTileRepo;
             _enemyFormationTemplate = enemyFormationTemplate;

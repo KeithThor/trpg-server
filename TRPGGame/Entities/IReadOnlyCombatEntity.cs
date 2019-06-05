@@ -41,6 +41,17 @@ namespace TRPGGame.Entities
         string OwnerName { get; }
 
         /// <summary>
+        /// Represents the amount of threat this CombatEntity poses to ai enemies.
+        /// </summary>
+        int Threat { get; }
+
+        /// <summary>
+        /// Contains all of the attacks, spells, and skills this character knows that are on cooldown.
+        /// <para>The keys are the abilities on cooldown, the values are the turns left until the cooldown is over.</para>
+        /// </summary>
+        IReadOnlyList<KeyValuePair<IReadOnlyAbility, int>> AbilitiesOnCooldown { get; }
+
+        /// <summary>
         /// Represents the character's in-game stats that determine combat efficiency.
         /// </summary>
         IReadOnlyCharacterStats Stats { get; }

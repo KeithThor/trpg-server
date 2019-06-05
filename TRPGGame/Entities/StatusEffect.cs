@@ -77,6 +77,16 @@ namespace TRPGGame.Entities
         public bool IsDebuff { get; set; }
 
         /// <summary>
+        /// The amount of threat caused by every turn. Used mainly for status effects that do no damage or healing.
+        /// </summary>
+        public int ThreatCaused { get; set; }
+
+        /// <summary>
+        /// Increases or decreases the likelihood that an Ai will use an ability that has this status effect in combat.
+        /// </summary>
+        public int AiWeightModifier { get; set; }
+
+        /// <summary>
         /// Represents the amount of resources changed on a CombatEntity. Ignores 'Current' and 'Unmodified' resource modifications.
         /// </summary>
         public ResourceStats ModifiedResources { get; set; }

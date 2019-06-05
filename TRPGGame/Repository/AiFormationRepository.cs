@@ -10,17 +10,17 @@ using TRPGGame.Entities.Data;
 
 namespace TRPGGame.Repository
 {
-    public class EnemyFormationRepository : IRepository<EnemyFormationTemplate>
+    public class AiFormationRepository : IRepository<AiFormationTemplate>
     {
-        private readonly IRepository<EnemyEntityBase> _enemyEntityBaseRepo;
-        private List<EnemyFormationTemplate> _formationTemplates;
+        private readonly IRepository<AiEntityBase> _aiEntityBaseRepo;
+        private List<AiFormationTemplate> _formationTemplates;
 
-        public EnemyFormationRepository(IRepository<EnemyEntityBase> enemyEntityBaseRepo)
+        public AiFormationRepository(IRepository<AiEntityBase> aiEntityBaseRepo)
         {
-            _enemyEntityBaseRepo = enemyEntityBaseRepo;
+            _aiEntityBaseRepo = aiEntityBaseRepo;
         }
 
-        public async Task<IEnumerable<EnemyFormationTemplate>> GetDataAsync()
+        public async Task<IEnumerable<AiFormationTemplate>> GetDataAsync()
         {
             if (_formationTemplates == null)
             {
@@ -31,22 +31,22 @@ namespace TRPGGame.Repository
 
         private async Task LoadDataAsync()
         {
-            using (var reader = new StreamReader(DataConstants.AssemblyLocation + "/Data/EnemyFormations.json"))
+            using (var reader = new StreamReader(DataConstants.AssemblyLocation + "/Data/AiFormations.json"))
             {
-                _formationTemplates = new List<EnemyFormationTemplate>();
-                var entityData = await _enemyEntityBaseRepo.GetDataAsync();
+                _formationTemplates = new List<AiFormationTemplate>();
+                var entityData = await _aiEntityBaseRepo.GetDataAsync();
                 JContainer templateList = JsonConvert.DeserializeObject<JContainer>(reader.ReadToEnd());
                 foreach (var tObject in templateList)
                 {
-                    var template = tObject.ToObject<EnemyFormationTemplate>();
+                    var template = tObject.ToObject<AiFormationTemplate>();
 
-                    var entityBases = new List<EnemyEntityBase[]>();
+                    var entityBases = new List<AiEntityBase[]>();
                     if (tObject["entityBaseIds"] != null)
                     {
                         var entityBaseIds = tObject["entityBaseIds"].ToObject<int?[][]>();
                         foreach (var row in entityBaseIds)
                         {
-                            var fRow = new EnemyEntityBase[row.Length];
+                            var fRow = new AiEntityBase[row.Length];
                             for (int i = 0; i < row.Length; i++)
                             {
                                 if (row[i].HasValue)

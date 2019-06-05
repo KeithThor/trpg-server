@@ -76,6 +76,18 @@ namespace TRPGGame.Services
         }
 
         /// <summary>
+        /// Gets the amount of damage for each damage type for an ability that does percentage of max
+        /// health damage as an integer.
+        /// </summary>
+        /// <param name="defender">The target who will receive damage from the ability.</param>
+        /// <param name="ability">The ability doing damage.</param>
+        /// <returns></returns>
+        public static int GetPercentageDamageAsInt(CombatEntity defender, Ability ability)
+        {
+            return GetDamageTypesAsInt(GetPercentageDamage(defender, ability));
+        }
+
+        /// <summary>
         /// Gets the total amount of damage an ability will do to a target.
         /// </summary>
         /// <param name="attacker">The CombatEntity performing the ability.</param>
@@ -89,6 +101,19 @@ namespace TRPGGame.Services
             damage += GetPercentageDamage(defender, ability);
 
             return GetTotalDamage(damage, defender);
+        }
+
+        /// <summary>
+        /// Gets the total amount of damage an ability will do to a target as an integer.
+        /// </summary>
+        /// <param name="attacker">The CombatEntity performing the ability.</param>
+        /// <param name="defender">The CombatEntity who will be damaged by the ability.</param>
+        /// <param name="ability">The ability to calculate damage from.</param>
+        /// <param name="isCrit">If true, will include critical damage in the calculations.</param>
+        /// <returns></returns>
+        public static int GetTotalDamageAsInt(CombatEntity attacker, CombatEntity defender, Ability ability, bool isCrit = false)
+        {
+            return GetDamageTypesAsInt(GetTotalDamage(attacker, defender, ability, isCrit));
         }
 
         /// <summary>
@@ -122,6 +147,20 @@ namespace TRPGGame.Services
                    damage.Earth +
                    damage.Holy +
                    damage.Shadow;
+        }
+
+        /// <summary>
+        /// Gets the total amount of damage per stats in a DamagePerStats object.
+        /// </summary>
+        /// <param name="damagePerStat">The object to get the total damage from.</param>
+        /// <returns></returns>
+        public static int GetDamagePerStatAsInt(DamagePerStat damagePerStat)
+        {
+            return GetDamageTypesAsInt(damagePerStat.Strength)
+                   + GetDamageTypesAsInt(damagePerStat.Dexterity)
+                   + GetDamageTypesAsInt(damagePerStat.Agility)
+                   + GetDamageTypesAsInt(damagePerStat.Intelligence)
+                   + GetDamageTypesAsInt(damagePerStat.Constitution);
         }
 
         /// <summary>

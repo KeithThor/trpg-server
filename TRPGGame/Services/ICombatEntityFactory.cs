@@ -14,7 +14,7 @@ namespace TRPGGame.Services
         /// </summary>
         /// <param name="entityBase">The base to use for the resultant CombatEntity.</param>
         /// <returns></returns>
-        CombatEntity Create(EnemyEntityBase entityBase);
+        CombatEntity Create(AiEntityBase entityBase);
 
         /// <summary>
         /// Creates a player combat entity from a given character template asynchronously.

@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using System.Collections.Generic;
 
 namespace TRPGGame.Entities.Data
 {
     /// <summary>
     /// Represents a base CombatEntity to create clones of for AI controlled Formations.
     /// </summary>
-    public class EnemyEntityBase
+    public class AiEntityBase
     {
         /// <summary>
         /// The unique identifier for this EnemyEntityBase.

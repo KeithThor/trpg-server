@@ -75,6 +75,16 @@ namespace TRPGGame.Entities
         bool IsDebuff { get; }
 
         /// <summary>
+        /// The amount of threat caused by every turn. Used mainly for status effects that do no damage or healing.
+        /// </summary>
+        int ThreatCaused { get; }
+
+        /// <summary>
+        /// Increases or decreases the likelihood that an Ai will use an ability that has this status effect in combat.
+        /// </summary>
+        int AiWeightModifier { get; }
+
+        /// <summary>
         /// Initial damage dealt per turn to the target of this StatusEffect.
         /// </summary>
         IReadOnlyDamageTypes DamagePerTurn { get; }
