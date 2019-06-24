@@ -1,4 +1,4 @@
-import { Injectable, OnDestroy, OnInit } from "@angular/core";
+import { Injectable, OnDestroy } from "@angular/core";
 import { WorldEntityService } from "../../services/world-entity.service";
 import { Subscription } from "rxjs";
 import { EntityLocation } from "../../model/entity-location.model";
@@ -10,13 +10,15 @@ import { WorldEntity } from "../../model/world-entity.model";
 
 /**Manager responsible for moving the player's WorldEntity around the map. */
 @Injectable()
-export class MovementManager implements OnInit, OnDestroy {
+export class MovementManager implements OnDestroy {
   public constructor(private worldEntityService: WorldEntityService,
                      private mapService: MapService) {
     this.subscriptions = [];
+
+    this.initialize();
   }
 
-  ngOnInit(): void {
+  private initialize(): void {
     this.entityLocations = new Dictionary((item) => item.toString());
     this.currentPath = new Dictionary((coord) => coord.positionX + "," + coord.positionY);
 
@@ -76,7 +78,7 @@ export class MovementManager implements OnInit, OnDestroy {
         this.playerEntityLocation = location.location;
         this.currentPath.remove(location.location);
       }
-      if (location.id === this.trackedEntity.id) {
+      if (this.trackedEntity != null && location.id === this.trackedEntity.id) {
         // If tracked entity moved
         if (location.location.positionX !== this.trackedEntityLocation.positionX
           || location.location.positionY !== this.trackedEntityLocation.positionY) {
@@ -157,6 +159,7 @@ export class MovementManager implements OnInit, OnDestroy {
     this.storePath(path);
 
     // Perform action
+    this.worldEntityService.queueAction(entity.id, entity.ownerId, action, path);
   }
 
   /**

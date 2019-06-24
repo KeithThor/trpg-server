@@ -119,6 +119,19 @@ export class WorldEntityService {
   }
 
   /**
+   * Queues an action on a target WorldEntity.
+   * @param entityId The id of the WorldEntity of the target action.
+   * @param ownerId The owner of the WorldEntity being targeted.
+   * @param action The action to perform on the target WorldEntity.
+   * @param path The Coordinate path used to reach the target WorldEntity.
+   */
+  public queueAction(entityId: number, ownerId: string, action: string, path: Coordinate[]) {
+    if (this.connection == null) throw new Error("The connection hasn't been started yet.");
+
+    return this.connection.send("QueueAction", entityId, ownerId, action, path);
+  }
+
+  /**
    * Changes the current map to the map with the provided id asynchronously.
    * @param mapId The id of the map to switch to.
    */

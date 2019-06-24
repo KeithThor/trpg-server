@@ -62,7 +62,6 @@ namespace TRPGGame
             containerBuilder.RegisterType<StatusEffectManager>().As<IStatusEffectManager>();
             containerBuilder.RegisterType<StateManager>().As<IStateManager>().SingleInstance();
             containerBuilder.RegisterType<AbilityManager>().As<IAbilityManager>();
-            containerBuilder.RegisterType<StateManager>().As<IStateManager>();
             containerBuilder.RegisterType<PlayerEntityManagerFactory>();
             containerBuilder.RegisterType<BattleManagerFactory>();
             containerBuilder.RegisterType<AiEntityManagerFactory>();

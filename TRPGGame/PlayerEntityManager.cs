@@ -39,6 +39,8 @@ namespace TRPGGame
         private int _targetEntityId;
         private string _targetOwnerId;
         private string _actionName;
+        private const int _MovementsPerSecond = 5;
+        private int _ticks = 0;
 
         public bool IsActive { get; private set; } = false;
 
@@ -49,6 +51,7 @@ namespace TRPGGame
             _stateManager = stateManager;
             LastAccessed = DateTime.Now;
             _movementQueue = new Queue<Coordinate>();
+            _alliedEntities = new List<WorldEntity>();
         }
 
         /// <summary>
@@ -74,6 +77,10 @@ namespace TRPGGame
 
         private void OnGameTick(object sender, GameTickEventArgs args)
         {
+            _ticks++;
+            if (_ticks < 1000 / _MovementsPerSecond / GameplayConstants.GameTicksPerSecond) return;
+
+            _ticks = 0;
             bool success = false;
             bool isMovementStopped = false;
 
@@ -148,6 +155,7 @@ namespace TRPGGame
                 if (!IsActive && _entity != null)
                 {
                     _currentMapManager = _worldState.MapManagers[Entity.CurrentMapId];
+                    _currentMapManager.GameTick += OnGameTick;
                     _mapBattleManager = _worldState.MapBattleManagers[Entity.CurrentMapId];
                     _currentMapManager.TryAddEntity(Entity, Entity.Position);
                     IsActive = true;
@@ -173,10 +181,10 @@ namespace TRPGGame
                 deltaY = Entity.Position.PositionY - newLocation.PositionY;
 
                 if (deltaX > GameplayConstants.MaxTileMoveDistance
-                || deltaX < GameplayConstants.MaxTileMoveDistance) return false;
+                || deltaX < -GameplayConstants.MaxTileMoveDistance) return false;
 
                 if (deltaY > GameplayConstants.MaxTileMoveDistance
-                    || deltaY < GameplayConstants.MaxTileMoveDistance) return false;
+                    || deltaY < -GameplayConstants.MaxTileMoveDistance) return false;
 
                 // Disallow diagonal movement
                 if (deltaX != 0 && deltaY != 0) return false;
