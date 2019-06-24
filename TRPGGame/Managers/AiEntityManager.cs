@@ -125,7 +125,12 @@ namespace TRPGGame.Managers
             if (_isMovementDisabled) return;
 
             int option = _rand.Next(1, 5);
-            var moveCoordinate = _entity.Position.Copy();
+            var moveCoordinate = new Coordinate
+            {
+                PositionX = _entity.Position.PositionX,
+                PositionY = _entity.Position.PositionY
+            };
+
             switch (option)
             {
                 case 1:
@@ -142,15 +147,12 @@ namespace TRPGGame.Managers
                     break;
             }
 
-            if (_mapManager.IsValidLocation(moveCoordinate))
-            {
-                bool success = _mapManager.TryMoveEntity(_entity, moveCoordinate, out IEnumerable<WorldEntity> contacts);
-                if (success) _entity.Position = moveCoordinate;
+            bool success = _mapManager.TryMoveEntity(_entity, moveCoordinate, out IEnumerable<WorldEntity> contacts);
+            if (success) _entity.Position = moveCoordinate;
 
-                if (contacts != null && contacts.Count() > 0)
-                {
-                    TryBattle(contacts);
-                }
+            if (contacts != null && contacts.Count() > 0)
+            {
+                TryBattle(contacts);
             }
         }
 

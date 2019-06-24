@@ -50,6 +50,7 @@ namespace TRPGGame
                 mapBattleManagers.Add(map.Id, mapBattleManager);
             }
             MapManagers = temp;
+            MapBattleManagers = mapBattleManagers;
             MapEntityManagers = entityManagers;
         }
 

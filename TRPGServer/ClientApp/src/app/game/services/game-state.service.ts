@@ -27,7 +27,10 @@ export class GameStateService {
       this.chatService.initializeAsync(),
       this.worldEntityService.initializeAsync()
     ]);
-    this.worldEntityService.onChangeMaps(this.changeMapsHandlerAsync.bind(this));
+
+    this.worldEntityService.onChangeMap.subscribe({
+      next: this.changeMapsHandlerAsync
+    });
   }
 
   /** Called to begin playing the game after all services are initialized. */
@@ -87,14 +90,5 @@ export class GameStateService {
   public getUniqueTiles(): MapTile[] {
     if (!this.initialized) return null;
     return this.mapService.uniqueTiles;
-  }
-
-  /**
-   * Requests to move the player's entity a specified distance from its current position.
-   * @param delta The change in position to move the player's entity.
-   */
-  public moveEntity(delta: Coordinate): void {
-    if (!this.initialized) return;
-    this.worldEntityService.moveEntity(delta);
   }
 }

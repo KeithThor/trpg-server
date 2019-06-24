@@ -31,7 +31,11 @@ namespace TRPGShared
 
         public static bool operator ==(Coordinate c1, Coordinate c2)
         {
-            return c1.PositionX == c2.PositionX && c1.PositionY == c2.PositionY;
+            if (c1 is null)
+            {
+                return c2 is null;
+            }
+            return c1.Equals(c2);
         }
 
         public static bool operator !=(Coordinate c1, Coordinate c2)

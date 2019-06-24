@@ -337,11 +337,19 @@ namespace TRPGGame
         /// <returns></returns>
         public bool IsValidLocation(Coordinate position)
         {
-            if (position.PositionX < 0 || position.PositionY < 0) return false;
-            if (position.PositionX > Map.MapData.Count - 1) return false;
-            if (position.PositionY > Map.MapData[0].Count - 1) return false;
-            if (Map.MapData[position.PositionX][position.PositionY].IsBlocking) return false;
-            else return true;
+            try
+            {
+                if (position.PositionX < 0 || position.PositionY < 0) return false;
+                if (position.PositionX > Map.MapData.Count - 1) return false;
+                if (position.PositionY > Map.MapData[0].Count - 1) return false;
+                if (Map.MapData[position.PositionX][position.PositionY].IsBlocking) return false;
+                else return true;
+            }
+            catch(Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return false;
+            }
         }
     }
 }

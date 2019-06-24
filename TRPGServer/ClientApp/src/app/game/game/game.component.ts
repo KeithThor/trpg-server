@@ -109,26 +109,6 @@ export class GameComponent implements OnInit, OnDestroy {
   @HostListener('document: keydown', ['$event'])
   public onKey(event: KeyboardEvent): void {
     if (this.gameStateService.initialized) {
-      if (event.key === "ArrowLeft") {
-        let movement = new Coordinate();
-        movement.positionY = -1;
-        this.gameStateService.moveEntity(movement);
-      }
-      if (event.key === "ArrowRight") {
-        let movement = new Coordinate();
-        movement.positionY = 1;
-        this.gameStateService.moveEntity(movement);
-      }
-      if (event.key === "ArrowUp") {
-        let movement = new Coordinate();
-        movement.positionX = -1;
-        this.gameStateService.moveEntity(movement);
-      }
-      if (event.key === "ArrowDown") {
-        let movement = new Coordinate();
-        movement.positionX = 1;
-        this.gameStateService.moveEntity(movement);
-      }
       if (event.key === "`") {
         this.gameStateService.changeMapsAsync();
       }

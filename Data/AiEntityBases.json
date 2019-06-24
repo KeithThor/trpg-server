@@ -1,0 +1,15 @@
+[
+    {
+        "id": 1,
+        "name": "Kobold",
+        "stats": {
+            "strength": 8,
+            "dexterity": 5,
+            "agility": 7,
+            "intelligence": 3,
+            "constitution": 7
+        },
+        "iconUris": ["images/monster/big_kobold_new.png"],
+        "abilityIds": [11]
+    }
+]
