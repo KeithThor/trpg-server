@@ -27,9 +27,10 @@ namespace TRPGGame
         public Guid PlayerId { get; set; }
         private IBattleManager _battleManager = null;
         private IEnumerable<WorldEntity> _contactsQueuedForBattle;
-        private List<WorldEntity> _alliedEntities;
+        internal List<WorldEntity> AlliedEntities { get; set; }
         private readonly IWorldState _worldState;
         private readonly IStateManager _stateManager;
+        private readonly IPlayerEntityManagerStore _playerEntityManagerStore;
         private readonly object _lock = new object();
         private MapManager _currentMapManager;
         private IMapBattleManager _mapBattleManager;
@@ -45,13 +46,15 @@ namespace TRPGGame
         public bool IsActive { get; private set; } = false;
 
         public PlayerEntityManager(IWorldState worldState,
-                                   IStateManager stateManager)
+                                   IStateManager stateManager,
+                                   IPlayerEntityManagerStore playerEntityManagerStore)
         {
             _worldState = worldState;
             _stateManager = stateManager;
+            _playerEntityManagerStore = playerEntityManagerStore;
             LastAccessed = DateTime.Now;
             _movementQueue = new Queue<Coordinate>();
-            _alliedEntities = new List<WorldEntity>();
+            AlliedEntities = new List<WorldEntity>();
         }
 
         /// <summary>
@@ -277,19 +280,50 @@ namespace TRPGGame
         /// <returns></returns>
         private void StartBattle()
         {
-            if (_stateManager.GetPlayerState(PlayerId) != PlayerStateConstants.Free) return;
-
             lock (_lock)
             {
+                // Player hasn't created a formation or is in combat, prevent from starting a battle
+                if (_stateManager.GetPlayerState(PlayerId) != PlayerStateConstants.Free) return;
+
                 if (_contactsQueuedForBattle == null || _contactsQueuedForBattle.Count() <= 0) return;
-                
-                var defenders = _contactsQueuedForBattle.Where(entity => _mapBattleManager.TryGetBattle(entity, out IBattleManager manager))
-                                                        .Take(GameplayConstants.MaxFormationsPerSide)
-                                                        .ToList();
 
-                var attackers = _alliedEntities.Append(Entity).ToList();
+                // Find original target
+                var target = _contactsQueuedForBattle.FirstOrDefault(contact =>
+                {
+                    return contact.Id == _targetEntityId && contact.OwnerGuid.ToString() == _targetOwnerId;
+                });
 
-                _mapBattleManager.CreateBattle(attackers, defenders);
+                // If target is not in the list of contacts or is already in a battle, cancels trying to start a battle
+                if (target == null || _mapBattleManager.TryGetBattle(target, out IBattleManager throwaway)) return;
+
+                IEnumerable<WorldEntity> defenders = null;
+
+                // Get all ai WorldEntity contacts and set them as the target defenders
+                if (target.OwnerGuid == GameplayConstants.AiId)
+                {
+                    defenders = _contactsQueuedForBattle.Where(entity =>
+                    {
+                        return entity.OwnerGuid == GameplayConstants.AiId &&
+                                                   !_mapBattleManager.TryGetBattle(entity, out IBattleManager manager);
+                    }).Take(GameplayConstants.MaxFormationsPerSide - 1)
+                      .Append(target)
+                      .ToList();
+                }
+                // Target is a player, get all of the target player's allies and set them as the defenders
+                else
+                {
+                    var enemyPlayerManager = _playerEntityManagerStore.GetPlayerEntityManager(target.OwnerGuid);
+                    if (enemyPlayerManager == null) return;
+
+                    defenders = enemyPlayerManager.AlliedEntities.Append(target).ToList();
+                    if (defenders.Count() > GameplayConstants.MaxFormationsPerSide)
+                        throw new Exception($"Too many people in the party of player with id {target.OwnerGuid}!");
+                }
+
+                var attackers = AlliedEntities.Append(Entity).ToList();
+
+                var success = _mapBattleManager.CreateBattle(attackers, defenders);
+                if (success) _stateManager.SetPlayerInCombat(PlayerId);
             }
         }
 
@@ -298,10 +332,11 @@ namespace TRPGGame
         /// </summary>
         private void JoinBattle()
         {
-            if (_stateManager.GetPlayerState(PlayerId) != PlayerStateConstants.Free) return;
-
             lock (_lock)
             {
+                // Player hasn't created a formation or is in combat, prevent from joining a battle
+                if (_stateManager.GetPlayerState(PlayerId) != PlayerStateConstants.Free) return;
+
                 if (_contactsQueuedForBattle == null || _contactsQueuedForBattle.Count() <= 0) return;
                 if (_battleManager != null) throw new Exception($"Player {PlayerId} tried to join a battle while another is in progress!");
 
@@ -318,6 +353,7 @@ namespace TRPGGame
 
             if (_battleManager != null)
             {
+                _stateManager.SetPlayerInCombat(PlayerId);
                 Task.Run(() => OnJoinBattleSuccess?.Invoke(this, new JoinBattleSuccessEventArgs
                 {
                     BattleManager = _battleManager

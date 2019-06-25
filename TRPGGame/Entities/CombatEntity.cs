@@ -44,7 +44,7 @@ namespace TRPGGame.Entities
         /// <summary>
         /// Represents the amount of health, mana, etc that this CombatEntity has.
         /// </summary>
-        public ResourceStats Resources { get; set; }
+        public ResourceStats Resources { get; set; } = new ResourceStats();
 
         /// <summary>
         /// The uris that point to the icons that make up the appearance of this entity. Does not include equipment uris.

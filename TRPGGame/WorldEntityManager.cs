@@ -11,7 +11,7 @@ namespace TRPGGame
     /// <summary>
     /// Responsible for managing all the entities across all maps.
     /// </summary>
-    public class WorldEntityManager
+    public class WorldEntityManager : IPlayerEntityManagerStore
     {
         private readonly IWorldEntityFactory _worldEntityFactory;
         private readonly PlayerEntityManagerFactory _playerEntityManagerFactory;
@@ -54,7 +54,7 @@ namespace TRPGGame
         /// <returns></returns>
         public IReadOnlyWorldEntity CreateWorldEntity(Guid ownerId, int activeFormationId)
         {
-            var newManager = _playerEntityManagerFactory.Create(ownerId);
+            var newManager = _playerEntityManagerFactory.Create(ownerId, this);
             var manager = _playerEntityManagers.GetOrAdd(ownerId, newManager);
             if (manager.Entity == null) manager.Entity = _worldEntityFactory.Create(ownerId, activeFormationId);
             else manager.Entity = _worldEntityFactory.Create(ownerId, activeFormationId, manager.Entity);
@@ -123,7 +123,7 @@ namespace TRPGGame
             }
             else
             {
-                manager = _playerEntityManagerFactory.Create(ownerId);
+                manager = _playerEntityManagerFactory.Create(ownerId, this);
                 var entitySuccess = _worldEntities.TryGetValue(ownerId, out WorldEntity entity);
                 if (entitySuccess) manager.Entity = entity;
                 _playerEntityManagers.TryAdd(ownerId, manager);
@@ -141,18 +141,6 @@ namespace TRPGGame
         {
             _playerEntityManagers.TryRemove(ownerId, out PlayerEntityManager manager);
             return manager;
-        }
-
-        [Obsolete]
-        public void SaveCombatEntity(CombatEntity entity)
-        {
-            _combatEntities.Add(entity);
-        }
-
-        [Obsolete]
-        public IEnumerable<CombatEntity> GetCombatEntities()
-        {
-            return _combatEntities;
         }
     }
 }

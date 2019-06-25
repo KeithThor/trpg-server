@@ -123,6 +123,8 @@ namespace TRPGGame.Managers
             var nextDateStartDateTime = DateTime.Now.AddDays(1).Subtract(DateTime.Now.TimeOfDay);
             double millisecondsToWait = (nextDateStartDateTime - DateTime.Now).TotalMilliseconds;
 
+            _battle = battle;
+
             // Set timer to end the turn if time runs out.
             Timer timer = new Timer(
                                     (arg) => { EndTurn(); },
@@ -130,7 +132,6 @@ namespace TRPGGame.Managers
                                     (int)(_battle.TurnExpiration - DateTime.Now).TotalMilliseconds,
                                     0);
 
-            _battle = battle;
             Task.Run(() => StartOfTurnEvent?.Invoke(this, new StartOfTurnEventArgs
             {
                 TurnExpiration = battle.TurnExpiration,

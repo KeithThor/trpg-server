@@ -43,11 +43,15 @@ namespace TRPGGame.Managers
                 throw new Exception("Attempted to create battle with no attackers or defenders!");
             }
 
-            if (AreEntitiesValid(attackers, defenders)) return false;
+            // Remove any duplicates
+            attackers = attackers.Distinct().ToList();
+            defenders = defenders.Distinct().ToList();
+
+            if (!AreEntitiesValid(attackers, defenders)) return false;
 
             var manager = _battleManagerFactory.Create();
 
-            var entitiesInBattle = attackers.Union(defenders);
+            var entitiesInBattle = attackers.Union(defenders).ToList();
 
             var playersInBattle = entitiesInBattle.Where(entity => entity.OwnerGuid != GameplayConstants.AiId)
                                                   .Select(entity => entity.OwnerGuid)
@@ -80,7 +84,10 @@ namespace TRPGGame.Managers
         /// <returns>Returns true if the given attacking and defending WorldEntities are allowed to start a battle together</returns>
         private bool AreEntitiesValid(IEnumerable<WorldEntity> attackers, IEnumerable<WorldEntity> defenders)
         {
-            var combined = attackers.Concat(defenders);
+            // Checks if a WorldEntity is in both lists
+            if (attackers.Any(attacker => defenders.Contains(attacker))) return false;
+
+            var combined = attackers.Concat(defenders).ToList();
 
             return !combined.Any(entity => TryGetBattle(entity, out IBattleManager manager));
         }

@@ -5,6 +5,9 @@ using TRPGGame.Managers;
 
 namespace TRPGGame.Services
 {
+    /// <summary>
+    /// Factory responsible for creating instances of PlayerEntityManagers.
+    /// </summary>
     public class PlayerEntityManagerFactory
     {
         private readonly IWorldState _worldState;
@@ -20,9 +23,15 @@ namespace TRPGGame.Services
             _battleManagerFactory = battleManagerFactory;
         }
 
-        public PlayerEntityManager Create(Guid playerId)
+        /// <summary>
+        /// Creates a new PlayerEntityManager for the user of the given id.
+        /// </summary>
+        /// <param name="playerId">The id of the player to create a manager for.</param>
+        /// <param name="playerEntityManagerStore">The </param>
+        /// <returns></returns>
+        public PlayerEntityManager Create(Guid playerId, IPlayerEntityManagerStore playerEntityManagerStore)
         {
-            var manager = new PlayerEntityManager(_worldState, _stateManager)
+            var manager = new PlayerEntityManager(_worldState, _stateManager, playerEntityManagerStore)
             {
                 PlayerId = playerId
             };

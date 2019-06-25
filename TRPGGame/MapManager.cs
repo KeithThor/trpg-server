@@ -212,12 +212,15 @@ namespace TRPGGame
                 {
                     if (_playerPositions.ContainsKey(newLocation))
                     {
-                        contacts = _aiPositions[newLocation].Concat(_playerPositions[newLocation]);
+                        contacts = _aiPositions[newLocation].Concat(_playerPositions[newLocation])
+                                                            .Where(e => e != entity)
+                                                            .ToList();
                     }
-                    else contacts = _aiPositions[newLocation];
+                    else contacts = _aiPositions[newLocation].Where(e => e != entity).ToList();
                 }
-                else if (_playerPositions.ContainsKey(newLocation)) contacts = _playerPositions[newLocation];
-
+                else if (_playerPositions.ContainsKey(newLocation))
+                    contacts = _playerPositions[newLocation].Where(e => e != entity).ToList();
+                
                 _isStateChanged = true;
                 return true;
             }
@@ -257,11 +260,14 @@ namespace TRPGGame
                 {
                     if (_playerPositions.ContainsKey(newLocation))
                     {
-                        contacts = _aiPositions[newLocation].Concat(_playerPositions[newLocation]);
+                        contacts = _aiPositions[newLocation].Concat(_playerPositions[newLocation])
+                                                            .Where(e => e != entity)
+                                                            .ToList();
                     }
-                    else contacts = _aiPositions[newLocation];
+                    else contacts = _aiPositions[newLocation].Where(e => e != entity).ToList();
                 }
-                else if (_playerPositions.ContainsKey(newLocation)) contacts = _playerPositions[newLocation];
+                else if (_playerPositions.ContainsKey(newLocation))
+                    contacts = _playerPositions[newLocation].Where(e => e != entity).ToList();
 
                 _isStateChanged = true;
             }

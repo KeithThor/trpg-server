@@ -72,6 +72,18 @@ namespace TRPGGame.Services
                 return null;
             }
 
+            int health = StatsCalculator.GetHealth(cTemplate.Stats);
+            int mana = StatsCalculator.GetMana(cTemplate.Stats);
+            var resources = new ResourceStats
+            {
+                CurrentHealth = health,
+                CurrentMana = mana,
+                MaxHealth = health,
+                MaxMana = mana,
+                UnmodifiedMaxHealth = health,
+                UnmodifiedMaxMana = mana
+            };
+
             // Todo: Calculate secondary stats
             var character = new CombatEntity
             {
@@ -83,6 +95,7 @@ namespace TRPGGame.Services
                 OwnerName = template.OwnerName,
                 GrowthPoints = template.AllocatedStats,
                 Abilities = cTemplate.Abilities.ToList(),
+                Resources = resources,
                 SecondaryStats = cTemplate.SecondaryStats.Copy(),
                 StatusEffects = new List<AppliedStatusEffect>(),
                 UnmodifiedStats = cTemplate.Stats.Copy(),

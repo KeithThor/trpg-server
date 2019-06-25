@@ -39,12 +39,12 @@ namespace TRPGGame.Entities.Combat
         /// <summary>
         /// A List containing all of the DelayedAbilities caused by the Attackers in battle.
         /// </summary>
-        public List<DelayedAbility> AttackerDelayedAbilities { get; set; }
+        public List<DelayedAbility> AttackerDelayedAbilities { get; set; } = new List<DelayedAbility>();
 
         /// <summary>
         /// A List containing all of the DelayedAbilities created by the Defenders in battle.
         /// </summary>
-        public List<DelayedAbility> DefenderDelayedAbilities { get; set; }
+        public List<DelayedAbility> DefenderDelayedAbilities { get; set; } = new List<DelayedAbility>();
 
         /// <summary>
         /// If true, the defending Formations are currently active. If false, the attacking Formations are currently active.
