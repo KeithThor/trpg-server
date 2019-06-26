@@ -73,14 +73,21 @@ namespace TRPGGame
         public IReadOnlyDictionary<int, MapEntityManager> MapEntityManagers { get; }
 
         /// <summary>
-        /// Goes through each map and checks their states, invoking any necessary game events as needed.
+        /// Invoked on every game tick.
+        /// <para>Goes through all map managers and checks for all changes on a map.</para>
+        /// <para>Invokes the OnGameTick function in every MapBattleManager.</para>
         /// </summary>
-        public void CheckMapStates()
+        public void OnGameTick()
         {
             var tasks = new List<Task>();
             Parallel.ForEach(MapManagers.Values, (maps) =>
             {
                 tasks.Add(Task.Run(() => maps.CheckChangesAsync()));
+            });
+
+            Parallel.ForEach(MapBattleManagers.Values, (manager) =>
+            {
+                manager.OnGameTick();
             });
 
             Task.WaitAll(tasks.ToArray());

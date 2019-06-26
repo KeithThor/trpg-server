@@ -38,6 +38,12 @@ namespace TRPGGame.Managers
         event EventHandler<SuccessfulActionEventArgs> SuccessfulActionEvent;
 
         /// <summary>
+        /// Event invoked whenever a second has elapsed. Will make the Ai act and will end the turn when
+        /// the amount of seconds elapsed is greater than or equal to the seconds per turn.
+        /// </summary>
+        void OnSecondElapsed();
+
+        /// <summary>
         /// Adds a participant to the battle and returns the battle instance.
         /// <para>Returns null if no battles were found or the battle group is full.</para>
         /// </summary>

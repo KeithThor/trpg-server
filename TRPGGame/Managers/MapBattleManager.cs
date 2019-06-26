@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using TRPGGame.Entities;
 using TRPGGame.EventArgs;
 using TRPGGame.Services;
@@ -16,12 +17,15 @@ namespace TRPGGame.Managers
         private readonly BattleManagerFactory _battleManagerFactory;
         private readonly Dictionary<string, IBattleManager> _battleManagers;
         private readonly Dictionary<int, IBattleManager> _aiBattleManagers;
+        private readonly List<IBattleManager> _uniqueBattleManagers;
+        private int _gameTicks = 0;
 
         public MapBattleManager(BattleManagerFactory battleManagerFactory)
         {
             _battleManagerFactory = battleManagerFactory;
             _battleManagers = new Dictionary<string, IBattleManager>();
             _aiBattleManagers = new Dictionary<int, IBattleManager>();
+            _uniqueBattleManagers = new List<IBattleManager>();
         }
 
         /// <summary>
@@ -66,6 +70,7 @@ namespace TRPGGame.Managers
                 if (entity.OwnerGuid == GameplayConstants.AiId) _aiBattleManagers.Add(entity.Id, manager);
                 else _battleManagers.Add(entity.OwnerGuid.ToString(), manager);
             }
+            _uniqueBattleManagers.Add(manager);
 
             manager.EndOfBattleEvent += OnEndOfBattle;
 
@@ -108,6 +113,25 @@ namespace TRPGGame.Managers
         }
 
         /// <summary>
+        /// Called on every game tick. Calls into each BattleManager every second to allow them to run functions
+        /// based on time.
+        /// </summary>
+        public void OnGameTick()
+        {
+            _gameTicks++;
+
+            // On every 1 second
+            if (_gameTicks >= 1000 / GameplayConstants.GameTicksPerSecond)
+            {
+                _gameTicks = 0;
+                Parallel.ForEach(_uniqueBattleManagers, (manager) =>
+                {
+                    manager.OnSecondElapsed();
+                });
+            }
+        }
+
+        /// <summary>
         /// Invoked at the end of a battle; Removes the IBattleManager instance from the list of BattleManagers.
         /// </summary>
         /// <param name="sender"></param>
@@ -127,6 +151,8 @@ namespace TRPGGame.Managers
             {
                 _aiBattleManagers.Remove(entityId);
             }
+
+            _uniqueBattleManagers.Remove(manager);
         }
     }
 }

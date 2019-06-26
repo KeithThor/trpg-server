@@ -31,6 +31,7 @@ namespace TRPGGame.Managers
 
         private Random _seed;
         private Battle _battle;
+        private readonly System.Timers.Timer _timer;
         private readonly IAbilityManager _abilityManager;
         private readonly IEquipmentManager _equipmentManager;
         private readonly IStatusEffectManager _statusEffectManager;
@@ -39,6 +40,7 @@ namespace TRPGGame.Managers
         private List<int> _aiParticipantIds;
         private int _numOfAttackers = 0;
         private int _numOfDefenders = 0;
+        private int _secondsElapsedInTurn = 0;
 
         /// <summary>
         /// Event handler called after the start of turn events happen.
@@ -64,6 +66,22 @@ namespace TRPGGame.Managers
         /// Event handler called whenever a BattleAction is successfully performed.
         /// </summary>
         public event EventHandler<SuccessfulActionEventArgs> SuccessfulActionEvent;
+
+        /// <summary>
+        /// Event invoked whenever a second has elapsed. Will make the Ai act and will end the turn when
+        /// the amount of seconds elapsed is greater than or equal to the seconds per turn.
+        /// </summary>
+        public void OnSecondElapsed()
+        {
+            _secondsElapsedInTurn++;
+            if (_secondsElapsedInTurn >= GameplayConstants.SecondsPerTurn)
+            {
+                _secondsElapsedInTurn = 0;
+                EndTurn();
+            }
+
+            // Make Ai act here
+        }
 
         /// <summary>
         /// Starts a Battle instance between the attackers and defenders.
@@ -99,7 +117,7 @@ namespace TRPGGame.Managers
                 actionsPerFormation.Add(attacker, activeE);
                 activeEntities.Add(new ActiveEntities
                 {
-                    EntityIds = activeE.Select(e => e.Id),
+                    EntityIds = activeE.Select(e => e.Id).ToList(),
                     FormationId = attacker.Id,
                     OwnerId = attacker.OwnerId
                 });
@@ -110,27 +128,20 @@ namespace TRPGGame.Managers
                 InitializeFormation(defender, false);
             }
 
+            var nextTurnStartDate = DateTime.Now.AddSeconds(GameplayConstants.SecondsPerTurn);
+            double millisecondsToWait = (nextTurnStartDate - DateTime.Now).TotalMilliseconds;
+
             var battle = new Battle
             {
                 Attackers = attackingFormations,
                 Defenders = defendingFormations,
-                TurnExpiration = DateTime.Now.AddSeconds(GameplayConstants.SecondsPerTurn + 15),
+                TurnExpiration = nextTurnStartDate,
                 Round = 1,
                 ActionsLeftPerFormation = actionsPerFormation,
                 IsDefenderTurn = false
             };
 
-            var nextDateStartDateTime = DateTime.Now.AddDays(1).Subtract(DateTime.Now.TimeOfDay);
-            double millisecondsToWait = (nextDateStartDateTime - DateTime.Now).TotalMilliseconds;
-
             _battle = battle;
-
-            // Set timer to end the turn if time runs out.
-            Timer timer = new Timer(
-                                    (arg) => { EndTurn(); },
-                                    null,
-                                    (int)(_battle.TurnExpiration - DateTime.Now).TotalMilliseconds,
-                                    0);
 
             Task.Run(() => StartOfTurnEvent?.Invoke(this, new StartOfTurnEventArgs
             {
@@ -187,7 +198,7 @@ namespace TRPGGame.Managers
 
                 activeEntities.Add(new ActiveEntities
                 {
-                    EntityIds = aEntities.Select(entity => entity.Id),
+                    EntityIds = aEntities.Select(entity => entity.Id).ToList(),
                     FormationId = participant.ActiveFormation.Id,
                     OwnerId = participant.OwnerGuid
                 });
@@ -297,7 +308,7 @@ namespace TRPGGame.Managers
                 var actives = ChooseActiveEntities(formation);
                 activeEntities.Add(new ActiveEntities
                 {
-                    EntityIds = actives.Select(ae => ae.Id),
+                    EntityIds = actives.Select(ae => ae.Id).ToList(),
                     FormationId = formation.Id,
                     OwnerId = formation.OwnerId
                 });
@@ -330,12 +341,14 @@ namespace TRPGGame.Managers
             if (_battle.IsDefenderTurn)
             {
                 endOfTurnAbilities = _battle.DefenderDelayedAbilities
-                                           .Where(abi => abi.TurnsLeft == 0 && !abi.BaseAbility.ActivatesBeforeTurnStart);
+                                           .Where(abi => abi.TurnsLeft == 0 && !abi.BaseAbility.ActivatesBeforeTurnStart)
+                                           .ToList();
             }
             else
             {
                 endOfTurnAbilities = _battle.AttackerDelayedAbilities
-                                           .Where(abi => abi.TurnsLeft == 0 && !abi.BaseAbility.ActivatesBeforeTurnStart);
+                                           .Where(abi => abi.TurnsLeft == 0 && !abi.BaseAbility.ActivatesBeforeTurnStart)
+                                           .ToList();
             }
             if (endOfTurnAbilities != null && endOfTurnAbilities.Count() > 0)
             {
@@ -671,7 +684,7 @@ namespace TRPGGame.Managers
         /// <returns></returns>
         public IEnumerable<string> GetParticipantIds()
         {
-            return _participantIds.Where(id => id != GameplayConstants.AiId.ToString());
+            return _participantIds.Where(id => id != GameplayConstants.AiId.ToString()).ToList();
         }
     }
 }

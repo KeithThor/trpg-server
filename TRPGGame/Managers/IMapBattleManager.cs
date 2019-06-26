@@ -31,5 +31,11 @@ namespace TRPGGame.Managers
         /// <param name="battleManager">The IBattleManager instance that is managing the player's battle.</param>
         /// <returns>Returns true if the IBattleManager was successfully retrieved.</returns>
         bool TryGetBattle(IReadOnlyWorldEntity entity, out IBattleManager battleManager);
+
+        /// <summary>
+        /// Called on every game tick. Calls into each BattleManager every second to allow them to run functions
+        /// based on time.
+        /// </summary>
+        void OnGameTick();
     }
 }

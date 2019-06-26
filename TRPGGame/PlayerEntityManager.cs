@@ -122,6 +122,7 @@ namespace TRPGGame
 
                     _battleManager = args.BattleManager;
                     _battleManager.EndOfBattleEvent += OnEndOfBattle;
+                    _stateManager.SetPlayerInCombat(PlayerId);
                 }
 
                 Task.Run(() => OnBattleInitiated?.Invoke(this, args));
@@ -330,7 +331,6 @@ namespace TRPGGame
                 var attackers = AlliedEntities.Append(Entity).ToList();
 
                 var success = _mapBattleManager.CreateBattle(attackers, defenders);
-                if (success) _stateManager.SetPlayerInCombat(PlayerId);
             }
         }
 

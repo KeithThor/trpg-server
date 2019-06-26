@@ -32,7 +32,7 @@ namespace TRPGGame
             {
                 Thread.Sleep(GameplayConstants.GameTicksPerSecond);
                 _secretData++;
-                _worldStateHandler.CheckMapStates();
+                _worldStateHandler.OnGameTick();
                 if (_secretData % (1000 / GameplayConstants.GameTicksPerSecond) == 0)
                 {
                     GameStateUpdate?.Invoke(this, new GameStateUpdateEvent

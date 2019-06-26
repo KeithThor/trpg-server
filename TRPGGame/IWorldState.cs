@@ -31,8 +31,10 @@ namespace TRPGGame
         IReadOnlyDictionary<int, IMapBattleManager> MapBattleManagers { get; }
 
         /// <summary>
-        /// Checks all maps for updates on their states.
+        /// Invoked on every game tick.
+        /// <para>Goes through all map managers and checks for all changes on a map.</para>
+        /// <para>Invokes the OnGameTick function in every MapBattleManager.</para>
         /// </summary>
-        void CheckMapStates();
+        void OnGameTick();
     }
 }
