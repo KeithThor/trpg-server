@@ -11,19 +11,27 @@ using TRPGServer.Models;
 
 namespace TRPGServer.Hubs
 {
+    /// <summary>
+    /// Hub responsible for establishing a connection between the user and the user's battle instance.
+    /// </summary>
     [Authorize]
     public class BattleHub : Hub
     {
         private readonly IStateManager _stateManager;
-        private readonly WorldEntityManager _worldEntityManager;
+        private readonly IPlayerEntityManagerStore _playerEntityManagerStore;
 
         public BattleHub(IStateManager stateManager,
-                         WorldEntityManager worldEntityManager)
+                         IPlayerEntityManagerStore playerEntityManagerStore)
         {
             _stateManager = stateManager;
-            _worldEntityManager = worldEntityManager;
+            _playerEntityManagerStore = playerEntityManagerStore;
         }
 
+        /// <summary>
+        /// Checks if the user is in battle; if so, returns a copy of the current battle to the user. If not,
+        /// sends an invalid state message.
+        /// </summary>
+        /// <returns></returns>
         public async Task StartConnection()
         {
             var userId = Guid.Parse(Context.UserIdentifier);
@@ -34,17 +42,22 @@ namespace TRPGServer.Hubs
             }
             else
             {
-                var manager = _worldEntityManager.GetPlayerEntityManager(userId);
+                var manager = _playerEntityManagerStore.GetPlayerEntityManager(userId);
                 var battle = new CulledBattle(manager.GetBattleManager().GetBattle());
                 await Clients.Caller.SendAsync("initialized", battle);
             }
         }
 
+        /// <summary>
+        /// Called by the client to attempt to perform an action using the provided BattleAction template.
+        /// </summary>
+        /// <param name="action">A basic data object containing the parameters to perform an action in battle.</param>
+        /// <returns></returns>
         public async Task PerformAction(BattleAction action)
         {
             var userId = Guid.Parse(Context.UserIdentifier);
             action.OwnerId = userId;
-            var manager = _worldEntityManager.GetPlayerEntityManager(userId).GetBattleManager();
+            var manager = _playerEntityManagerStore.GetPlayerEntityManager(userId).GetBattleManager();
             if (manager != null)
             {
                 var success = await manager.PerformActionAsync(action);

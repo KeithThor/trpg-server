@@ -88,6 +88,7 @@ namespace TRPGServer
             services.AddSingleton(bootstrapper.GetInstance<Game>());
             services.AddSingleton(bootstrapper.GetInstance<IWorldState>());
             services.AddSingleton(bootstrapper.GetInstance<WorldEntityManager>());
+            services.AddSingleton(bootstrapper.GetInstance<IPlayerEntityManagerStore>());
             services.AddSingleton(bootstrapper.GetInstance<ICombatEntityManager>());
             services.AddSingleton(bootstrapper.GetInstance<IFormationManager>());
             services.AddSingleton(bootstrapper.GetInstance<IRepository<CharacterBase>>());

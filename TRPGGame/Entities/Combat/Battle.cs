@@ -62,13 +62,6 @@ namespace TRPGGame.Entities.Combat
         /// </summary>
         public DateTime TurnExpiration { get; set; }
 
-        IReadOnlyDictionary<IReadOnlyFormation, IReadOnlyList<IReadOnlyCombatEntity>> IReadOnlyBattle.ActionsLeftPerFormation
-        {
-            get
-            {
-                return (IReadOnlyDictionary<IReadOnlyFormation, IReadOnlyList<IReadOnlyCombatEntity>>)ActionsLeftPerFormation;
-            }
-        }
         IReadOnlyList<IReadOnlyDelayedAbility> IReadOnlyBattle.AttackerDelayedAbilities => AttackerDelayedAbilities;
         IEnumerable<IReadOnlyFormation> IReadOnlyBattle.Attackers => Attackers;
         IEnumerable<IReadOnlyDelayedAbility> IReadOnlyBattle.DefenderDelayedAbilities => DefenderDelayedAbilities;

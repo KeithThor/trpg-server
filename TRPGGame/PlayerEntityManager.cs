@@ -159,7 +159,10 @@ namespace TRPGGame
                 {
                     _currentMapManager = _worldState.MapManagers[Entity.CurrentMapId];
                     _currentMapManager.GameTick += OnGameTick;
+
                     _mapBattleManager = _worldState.MapBattleManagers[Entity.CurrentMapId];
+                    _mapBattleManager.OnCreatedBattle += OnCreatedBattle;
+
                     _currentMapManager.TryAddEntity(Entity, Entity.Position);
                     IsActive = true;
                     LastAccessed = DateTime.Now;
@@ -245,6 +248,9 @@ namespace TRPGGame
         {
             SetMovePath(movePath);
 
+            // Action is targeting self, is invalid
+            if (entityId == Entity.Id || PlayerId.ToString() == ownerId) return;
+
             _targetEntityId = entityId;
             _targetOwnerId = ownerId;
             _actionName = action;
@@ -303,6 +309,7 @@ namespace TRPGGame
                 {
                     defenders = _contactsQueuedForBattle.Where(entity =>
                     {
+                        if (entity == target) return false;
                         return entity.OwnerGuid == GameplayConstants.AiId &&
                                                    !_mapBattleManager.TryGetBattle(entity, out IBattleManager manager);
                     }).Take(GameplayConstants.MaxFormationsPerSide - 1)

@@ -240,10 +240,12 @@ namespace TRPGGame.Managers
                 SanitizeFormation(formation);
             }
 
-            EndOfBattleEvent?.Invoke(this, new EndOfBattleEventArgs
+            var attackersWin = _numOfDefenders <= 0;
+            Task.Run(() => EndOfBattleEvent(this, new EndOfBattleEventArgs
             {
-                ParticipantIds = _participantIds
-            });
+                ParticipantIds = _participantIds,
+                DidAttackersWin = attackersWin
+            }));
         }
 
         /// <summary>
@@ -357,12 +359,7 @@ namespace TRPGGame.Managers
 
             if (_numOfAttackers <= 0 || _numOfDefenders <= 0)
             {
-                var attackersWin = _numOfDefenders <= 0;
-                Task.Run(() => EndOfBattleEvent(this, new EndOfBattleEventArgs
-                {
-                    ParticipantIds = _participantIds,
-                    DidAttackersWin = attackersWin
-                }));
+                EndBattle();
             }
             else
             {

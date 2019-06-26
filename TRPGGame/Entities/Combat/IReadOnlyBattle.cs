@@ -12,7 +12,7 @@ namespace TRPGGame.Entities.Combat
         /// A Dictionary containing the Formations whose turn is currently active and the CombatEntities who've yet
         /// to perform in battle.
         /// </summary>
-        IReadOnlyDictionary<IReadOnlyFormation, IReadOnlyList<IReadOnlyCombatEntity>> ActionsLeftPerFormation { get; }
+        Dictionary<Formation, List<CombatEntity>> ActionsLeftPerFormation { get; }
 
         /// <summary>
         /// A List containing all of the DelayedAbilities created by the Attackers in battle.

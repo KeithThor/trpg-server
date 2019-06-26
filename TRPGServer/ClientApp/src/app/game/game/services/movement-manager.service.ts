@@ -155,6 +155,8 @@ export class MovementManager implements OnDestroy {
 
     this.trackedAction = action;
     this.trackedEntity = entity;
+    this.trackedEntityLocation = location;
+
     let path = this.getPath(location);
     this.storePath(path);
 

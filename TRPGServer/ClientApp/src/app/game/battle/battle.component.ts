@@ -50,7 +50,13 @@ export class BattleComponent implements OnInit, OnDestroy {
   ngOnInit(): void {
     this.subscriptions = [];
     this.userId = sessionStorage.getItem(LocalStorageConstants.userId);
-    this.battleService.initializeAsync();
+
+    this.initializeAsync();
+  }
+
+  /**Initializes and subscribes to all event emitters in the BattleService. */
+  private async initializeAsync(): Promise<void> {
+    await this.battleService.initializeAsync();
 
     this.subscriptions.push(
       this.battleService.onInitialized.subscribe({
@@ -107,6 +113,8 @@ export class BattleComponent implements OnInit, OnDestroy {
         }
       })
     );
+
+    await this.battleService.startConnection();
   }
 
   ngOnDestroy() {

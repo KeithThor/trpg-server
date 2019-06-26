@@ -8,6 +8,8 @@ import { StartOfTurnData } from "../model/start-of-turn-data.model";
 import { CombatEntity } from "../model/combat-entity.model";
 import { Battle } from "../model/battle.model";
 
+/**Service that receives and transmits data from the server about the battle the user is currently in.
+ * Also responsible for sending the user's actions in battle to the server.*/
 @Injectable()
 export class BattleService {
   constructor(private stateHandler: StateHandlerService) {
@@ -47,6 +49,12 @@ export class BattleService {
 
     await this.connection.start()
       .catch((err) => console.log(err));
+  }
+
+  /**Starts the connection to the current battle instance. */
+  public async startConnection(): Promise<void> {
+    await this.connection.send("StartConnection");
+    console.log("After starting connection");
   }
 
   /**Ends the connection to the server asynchronously. */

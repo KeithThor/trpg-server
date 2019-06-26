@@ -20,7 +20,7 @@ namespace TRPGServer.Models
                 activeEntities.Add(new ActiveEntities
                 {
                     FormationId = kvp.Key.Id,
-                    EntityIds = kvp.Value.Select(entity => entity.Id),
+                    EntityIds = kvp.Value.Select(entity => entity.Id).ToList(),
                     OwnerId = kvp.Key.OwnerId
                 });
             }
