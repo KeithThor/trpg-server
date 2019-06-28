@@ -1,4 +1,14 @@
-<div class="container">
+<div class="container" (contextmenu)="onContext($event)">
+  <!-- Context menu -->
+  <game-context-menu *ngIf="showContextMenu"
+                     [xPosition]="contextX"
+                     [yPosition]="contextY"
+                     [entities]="contextEntities"
+                     (onAttackSelected)="onAttackContext($event)"
+                     (onJoinSelected)="onJoinContext($event)"
+                     (onMoveSelected)="onMoveContext()"
+                     (onCancelSelected)="showContextMenu = false"></game-context-menu>
+
   <!-- World Map -->
   <div class="col-offset-1 col-md-6">
     <table *ngIf="showMap()" (click)="showContextMenu = false">
@@ -12,15 +22,6 @@
         </td>
       </tr>
     </table>
-
-    <game-context-menu *ngIf="showContextMenu"
-                       [xPosition]="contextX"
-                       [yPosition]="contextY"
-                       [entities]="contextEntities"
-                       (onAttackSelected)="onAttackContext($event)"
-                       (onJoinSelected)="onJoinContext($event)"
-                       (onMoveSelected)="onMoveContext()"
-                       (onCancelSelected)="showContextMenu = false"></game-context-menu>
   </div>
 
   <!-- Chat box -->

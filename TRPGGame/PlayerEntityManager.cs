@@ -150,7 +150,8 @@ namespace TRPGGame
         public DateTime LastAccessed { get; private set; }
 
         /// <summary>
-        /// Adds the player's entity to the last saved location and begins accepting interactions.
+        /// Enters the player's WorldEntity into it's last saved location in the last saved map.
+        /// <para>Subscribes to all relevant events in that map.</para>
         /// </summary>
         public void BeginPlay()
         {
@@ -418,8 +419,6 @@ namespace TRPGGame
                 _mapBattleManager.OnCreatedBattle -= OnCreatedBattle;
 
                 _currentMapManager = _worldState.MapManagers[newMapId];
-                _currentMapManager.GameTick += OnGameTick;
-                _mapBattleManager.OnCreatedBattle += OnCreatedBattle;
 
                 Entity.CurrentMapId = newMapId;
                 Entity.Position = tile.TransportLocation;
@@ -451,8 +450,6 @@ namespace TRPGGame
                 _mapBattleManager.OnCreatedBattle -= OnCreatedBattle;
 
                 _currentMapManager = _worldState.MapManagers[newMapId];
-                _currentMapManager.GameTick += OnGameTick;
-                _mapBattleManager.OnCreatedBattle += OnCreatedBattle;
 
                 Entity.Position = tile.TransportLocation;
                 IsActive = false;

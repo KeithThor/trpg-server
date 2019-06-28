@@ -6,5 +6,5 @@
                             (onAttackSelected)="onAttackSelected.emit($event)"
                             (onJoinSelected)="onJoinSelected.emit($event)"></game-context-menu-list>
   </div>
-  <div class="context-menu-button">Cancel</div>
+  <div (click)="onCancelSelected.emit()" class="context-menu-button">Cancel</div>
 </div>

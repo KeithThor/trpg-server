@@ -29,7 +29,7 @@ export class GameStateService {
     ]);
 
     this.worldEntityService.onChangeMap.subscribe({
-      next: this.changeMapsHandlerAsync
+      next: this.changeMapsHandlerAsync.bind(this)
     });
   }
 

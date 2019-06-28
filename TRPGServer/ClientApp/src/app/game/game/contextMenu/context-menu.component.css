@@ -1,6 +1,7 @@
 .context-menu {
   position: absolute;
   background-color: black;
+  z-index: 4;
 }
 
 .context-menu-section {

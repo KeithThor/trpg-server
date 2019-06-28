@@ -47,7 +47,6 @@ export class MovementManager implements OnDestroy {
 
   private subscriptions: Subscription[];
   private trackedEntity: WorldEntity;
-  private playerEntityLocation: Coordinate;
   private trackedEntityLocation: Coordinate;
   private entityLocations: Dictionary<number, Coordinate>;
   private trackedAction: string;
@@ -75,7 +74,6 @@ export class MovementManager implements OnDestroy {
 
     locations.forEach(location => {
       if (location.id === playerEntityId) {
-        this.playerEntityLocation = location.location;
         this.currentPath.remove(location.location);
       }
       if (this.trackedEntity != null && location.id === this.trackedEntity.id) {
@@ -109,20 +107,27 @@ export class MovementManager implements OnDestroy {
     this.actOnEntity(this.trackedEntity, this.trackedAction);
   }
 
+  /**Returns the Coordinate location of the player's WorldEntity on the current map. */
+  private getPlayerLocation(): Coordinate {
+    let entityId = this.worldEntityService.playerEntityId;
+    return this.entityLocations.getValue(entityId);
+  }
+
   /**
    * Returns an array of Coordinates that form a path from the player's WorldEntity to the given
    * target coordinate.
    * @param target The coordinate to create a path to.
    */
   private getPath(target: Coordinate): Coordinate[] {
+    let playerEntityLocation = this.getPlayerLocation();
     // Starting position and target are the same positions
-    if (this.playerEntityLocation.positionX === target.positionX
-      && this.playerEntityLocation.positionY === target.positionY) return [];
+    if (playerEntityLocation.positionX === target.positionX
+      && playerEntityLocation.positionY === target.positionY) return [];
 
     let mapData = this.mapService.mapData;
 
     // Todo: use this path to highlight the map to show where the entity will move
-    return Pathfinder.findPath(this.playerEntityLocation, target, mapData);
+    return Pathfinder.findPath(playerEntityLocation, target, mapData);
   }
 
   /**

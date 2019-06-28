@@ -30,6 +30,8 @@ export class TileNodeComponent {
     data.location = this.location;
     data.entity = this.entity;
 
+    console.log("TileNode" + event.clientX + ", " + event.clientY);
+
     this.onContextMenu.emit(data);
   }
 }

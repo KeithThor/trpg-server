@@ -120,6 +120,13 @@ export class GameComponent implements OnInit, OnDestroy {
     this.endConnections();
   }
 
+  public onContext(event: MouseEvent): void {
+    
+    this.contextX = event.pageX;
+    this.contextY = event.pageY;
+    console.log("Game" + event.offsetX + ", " + event.offsetY);
+  }
+
   /**
    * Invoked whenever the user right clicks on any TileNodeComponents in the template.
    *
@@ -140,8 +147,8 @@ export class GameComponent implements OnInit, OnDestroy {
     }
 
     this.contextEntities = this.getEntitiesAtCoordinate(data.location);
-    this.contextX = data.contextEvent.clientX;
-    this.contextY = data.contextEvent.clientY;
+    //this.contextX = data.contextEvent.clientX;
+    //this.contextY = data.contextEvent.clientY;
     this.showContextMenu = true;
   }
 
@@ -175,6 +182,7 @@ export class GameComponent implements OnInit, OnDestroy {
   /**Invoked whenever the user selects the Move button from the context menu. */
   public onMoveContext(): void {
     this.movementManager.moveEntity(this.contextLocation);
+    this.showContextMenu = false;
   }
 
   private async canStartBattleAsync(): Promise<void> {
@@ -291,7 +299,8 @@ export class GameComponent implements OnInit, OnDestroy {
    */
   private onAddEntities(entities: WorldEntity[]): void {
     entities.forEach(e => {
-      this.entities.push(e);
+      if (!this.entities.some(entity => entity.id == e.id)) this.entities.push(e);
+
       var index = this.requestedIds.indexOf(e.id);
       if (index !== -1) this.requestedIds.splice(index, 1);
 

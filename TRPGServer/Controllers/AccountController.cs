@@ -56,8 +56,8 @@ namespace TRPGServer.Controllers
             return new JsonResult(new
             {
                 Token = token,
-                Username = user.Username,
-                UserId = user.Id
+                Username = foundUser.UserName,
+                UserId = foundUser.Id
             });
         }
 

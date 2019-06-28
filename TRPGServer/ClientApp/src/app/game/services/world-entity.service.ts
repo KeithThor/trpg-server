@@ -53,7 +53,7 @@ export class WorldEntityService {
       .build();
     this.connection.on("updateEntities",
       (entities: EntityLocation[]) => this.onUpdateLocations.next(entities));
-    this.connection.on("addEntities", (entities: WorldEntity[]) => this.onAddEntities.next(entities));
+    this.connection.on("addEntities", (entities: WorldEntity[]) => this.addEntities(entities));
     this.connection.on("removeEntities", (ids: number[]) => this.onRemoveEntities.next(ids));
     this.connection.on("battleInitiated", async () => await this.onBattleInitiatedAsync());
     this.connection.on("canStartBattle", () => this.onCanStartBattle.next(true))
@@ -82,12 +82,29 @@ export class WorldEntityService {
   }
 
   /**
+   * Called whenever the server sends new WorldEntities to the client. Emits the onAddEntities subject, containing
+   * the WorldEntities that was sent from the server.
+   *
+   * If the player's entity id has not been received, check if one of the added entities belongs to the player.
+   * @param entities The WorldEntities being added by the server.
+   */
+  public addEntities(entities: WorldEntity[]): void {
+    if (this._playerEntityId == null) {
+      let userId = sessionStorage.getItem(LocalStorageConstants.userId);
+      let playerEntity = entities.find(entity => entity.ownerId == userId);
+      this._playerEntityId = playerEntity.id;
+    }
+    this.onAddEntities.next(entities);
+  }
+
+  /**
    * Sends a message to the server to start the game for the user.
    */
-  public beginPlayAsync(): Promise<void> {
+  public async beginPlayAsync(): Promise<void> {
     if (this.connection == undefined) throw new Error("The connection hasn't been started yet.");
-    console.log("Beginning play");
-    return this.connection.send("BeginPlay").catch(err => console.log(err));
+    
+    await this.connection.send("BeginPlay").catch(err => console.log(err));
+    await this.requestPlayerEntity();
   }
 
   public async initiateBattleAsync(): Promise<void> {
@@ -97,16 +114,6 @@ export class WorldEntityService {
   public async joinBattleAsync(toJoinId: string, isAttacker: boolean): Promise<void> {
     await this.connection.send("joinBattle", toJoinId, isAttacker);
   }
-
-  ///**
-  // * Moves the player entity an amount from it's current position.
-  // * @param deltaPosition The change in X and Y coordinates to move the player entity.
-  // */
-  //public moveEntity(deltaPosition: Coordinate) {
-  //  if (this.connection == undefined) throw new Error("The connection hasn't been started yet.");
-
-  //  this.connection.send("MoveEntity", deltaPosition);
-  //}
 
   /**
    * Moves the player's WorldEntity along the given path.
