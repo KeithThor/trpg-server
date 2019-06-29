@@ -19,17 +19,14 @@ namespace TRPGServer.Hubs
     {
         private readonly WorldEntityManager _worldEntityManager;
         private readonly MapListenerContainer _listenerContainer;
-        private readonly BattleListenerContainer _battleListenerContainer;
         private readonly IStateManager _stateManager;
-
+        
         public WorldEntityHub(WorldEntityManager worldEntityManager,
                               MapListenerContainer container,
-                              BattleListenerContainer battleListenerContainer,
                               IStateManager stateManager)
         {
             _worldEntityManager = worldEntityManager;
             _listenerContainer = container;
-            _battleListenerContainer = battleListenerContainer;
             _stateManager = stateManager;
         }
 

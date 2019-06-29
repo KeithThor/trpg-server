@@ -76,7 +76,7 @@ namespace TRPGGame.Managers
             _secondsElapsedInTurn++;
             if (_secondsElapsedInTurn >= GameplayConstants.SecondsPerTurn)
             {
-                _secondsElapsedInTurn = 0;
+                 _secondsElapsedInTurn = 0;
                 EndTurn();
             }
 

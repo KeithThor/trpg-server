@@ -16,7 +16,7 @@ namespace TRPGGame
         public const int MaxActionsPerTurn = 5;
         public const int ActionPointsPerTurn = 20;
         public const int MaxTileMoveDistance = 1;
-        public const double SecondsPerTurn = 40;
+        public const double SecondsPerTurn = 15;
         public const double EndOfTurnDelayInSeconds = 1;
         public const int DefendingStatusEffectId = 3;
         public const int FleeingStatusEffectId = 4;

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using TRPGGame.Entities;
+using TRPGGame.EventArgs;
 using TRPGGame.Services;
 
 namespace TRPGGame
@@ -20,8 +21,6 @@ namespace TRPGGame
         private ConcurrentDictionary<Guid, PlayerEntityManager> _playerEntityManagers;
         private readonly List<CombatEntity> _combatEntities;
 
-        
-
         public WorldEntityManager(IWorldEntityFactory worldEntityFactory,
                                   PlayerEntityManagerFactory playerEntityManagerFactory,
                                   IWorldState worldState)
@@ -33,6 +32,11 @@ namespace TRPGGame
             _playerEntityManagers = new ConcurrentDictionary<Guid, PlayerEntityManager>();
             _combatEntities = new List<CombatEntity>();
         }
+
+        /// <summary>
+        /// Event invoked whenever a PlayerEntityManager is being created.
+        /// </summary>
+        public event EventHandler<PlayerEntityManagerCreatedEventArgs> OnPlayerEntityManagerCreated;
 
         /// <summary>
         /// Returns a WorldEntity owned by the player with the given id.
@@ -55,7 +59,22 @@ namespace TRPGGame
         public IReadOnlyWorldEntity CreateWorldEntity(Guid ownerId, int activeFormationId)
         {
             var newManager = _playerEntityManagerFactory.Create(ownerId, this);
-            var manager = _playerEntityManagers.GetOrAdd(ownerId, newManager);
+            var success = _playerEntityManagers.TryAdd(ownerId, newManager);
+            PlayerEntityManager manager;
+
+            if (success)
+            {
+                manager = newManager;
+                OnPlayerEntityManagerCreated?.Invoke(this, new PlayerEntityManagerCreatedEventArgs
+                {
+                    CreatedManager = newManager
+                });
+            }
+            else
+            {
+                _playerEntityManagers.TryGetValue(ownerId, out manager);
+            }
+
             if (manager.Entity == null) manager.Entity = _worldEntityFactory.Create(ownerId, activeFormationId);
             else manager.Entity = _worldEntityFactory.Create(ownerId, activeFormationId, manager.Entity);
             _worldEntities.AddOrUpdate(ownerId, manager.Entity, (id, entity) => manager.Entity);
@@ -123,13 +142,44 @@ namespace TRPGGame
             }
             else
             {
-                manager = _playerEntityManagerFactory.Create(ownerId, this);
-                var entitySuccess = _worldEntities.TryGetValue(ownerId, out WorldEntity entity);
-                if (entitySuccess) manager.Entity = entity;
-                _playerEntityManagers.TryAdd(ownerId, manager);
-
-                return manager;
+                if (TryCreateManager(ownerId, out PlayerEntityManager created))
+                {
+                    return created;
+                }
+                else return null;
             }
+        }
+
+        /// <summary>
+        /// Tries to create a new PlayerEntityManager. If successful, returns true and the value of the out
+        /// parameter manager is set to the newly created PlayerEntityManager.
+        /// </summary>
+        /// <param name="ownerId">The id of the user to create a PlayerEntityManager for.</param>
+        /// <param name="manager">The manager that will be created by this function.</param>
+        /// <returns>Returns true if a new PlayerEntityManager was successfully created.</returns>
+        private bool TryCreateManager(Guid ownerId, out PlayerEntityManager manager)
+        {
+            manager = _playerEntityManagerFactory.Create(ownerId, this);
+            var entitySuccess = _worldEntities.TryGetValue(ownerId, out WorldEntity entity);
+
+            if (entitySuccess) manager.Entity = entity;
+            else
+            {
+                manager = null;
+                throw new Exception($"There is no WorldEntity assigned for player {ownerId}!");
+            }
+
+            var success = _playerEntityManagers.TryAdd(ownerId, manager);
+
+            if (success)
+            {
+                OnPlayerEntityManagerCreated?.Invoke(this, new PlayerEntityManagerCreatedEventArgs
+                {
+                    CreatedManager = manager
+                });
+            }
+
+            return success;
         }
 
         /// <summary>

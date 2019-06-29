@@ -1,5 +1,4 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
-import { DisplayableEntity } from "../../../model/display-entity.interface";
 import { Coordinate } from "../../../model/coordinate.model";
 import { CombatEntity } from "../../../model/combat-entity.model";
 

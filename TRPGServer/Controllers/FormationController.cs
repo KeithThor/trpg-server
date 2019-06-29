@@ -9,6 +9,7 @@ using Microsoft.AspNetCore.Mvc;
 using TRPGGame;
 using TRPGGame.Entities;
 using TRPGGame.Managers;
+using TRPGServer.Filters;
 
 namespace TRPGServer.Controllers
 {
@@ -42,6 +43,7 @@ namespace TRPGServer.Controllers
 
         [HttpPost]
         [Route("")]
+        [GameState(PlayerStateConstants.Free, PlayerStateConstants.MakeFormation)]
         public IActionResult Post(FormationTemplate template)
         {
             template.OwnerId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -60,6 +62,7 @@ namespace TRPGServer.Controllers
 
         [HttpPatch]
         [Route("")]
+        [GameState(PlayerStateConstants.Free, PlayerStateConstants.MakeFormation)]
         public IActionResult Patch(FormationTemplate template)
         {
             template.OwnerId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);

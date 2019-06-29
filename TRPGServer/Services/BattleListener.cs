@@ -27,6 +27,7 @@ namespace TRPGServer.Services
             _battleManager.EndOfTurnEvent += OnEndOfTurn;
             _battleManager.StartOfTurnEvent += OnStartOfTurn;
             _battleManager.SuccessfulActionEvent += OnSuccessfulAction;
+            _battleManager.JoinBattleEvent += OnJoinBattle;
         }
 
         public event EventHandler<System.EventArgs> OnDestroy;
@@ -38,21 +39,12 @@ namespace TRPGServer.Services
         /// <param name="args"></param>
         private async void OnStartOfTurn(object sender, StartOfTurnEventArgs args)
         {
-            var activeEntities = new List<dynamic>();
-            foreach (var entity in args.ActiveEntities)
-            {
-                activeEntities.Add(new
-                {
-                    entity.FormationId,
-                    entity.EntityIds
-                });
-            }
             int turnExpiration = (int)(args.TurnExpiration - DateTime.Now).TotalSeconds;
 
             // Todo: Send delayed abilities too
             await _battleHubContext.Clients.Users(args.ParticipantIds).SendAsync("startOfTurn", new
             {
-                activeEntities,
+                args.ActiveEntities,
                 args.AffectedEntities,
                 args.IsDefendersTurn,
                 turnExpiration
@@ -70,7 +62,8 @@ namespace TRPGServer.Services
             await _battleHubContext.Clients.Users(args.ParticipantIds).SendAsync("joinedBattle", new
             {
                 args.IsAttacker,
-                args.JoinedFormation
+                args.JoinedFormation,
+                args.ActiveEntities
             });
         }
 

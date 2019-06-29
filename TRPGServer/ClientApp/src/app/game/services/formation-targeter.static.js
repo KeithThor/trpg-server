@@ -17,7 +17,7 @@ var FormationTargeter = /** @class */ (function () {
         if (ability.isPositionStatic) {
             targetFormation.positions.forEach(function (row, xIndex) {
                 row.forEach(function (entity, yIndex) {
-                    if (ability.targets.some(function (val) { return val === xIndex * formation_model_1.FormationConstants.maxColumns + yIndex + 1; })) {
+                    if (ability.targets.some(function (val) { return val === yIndex * formation_model_1.FormationConstants.maxColumns + xIndex + 1; })) {
                         targets.push(entity);
                     }
                 });

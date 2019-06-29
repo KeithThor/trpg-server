@@ -79,6 +79,7 @@ namespace TRPGServer
             services.AddSingleton<JwtSecurityTokenHandler>();
             services.AddSingleton<MapListenerContainer>();
             services.AddSingleton<BattleListenerContainer>();
+            services.AddSingleton<PlayerListenerContainer>();
 
             services.AddSingleton<GameDataHandler>();
             services.AddTransient<MapDataHandler>();
@@ -115,6 +116,8 @@ namespace TRPGServer
             app.ApplicationServices.GetRequiredService<GameDataHandler>();
 
             AddMapEntityListeners(app);
+
+            app.ApplicationServices.GetRequiredService<PlayerListenerContainer>();
         }
 
         /// <summary>

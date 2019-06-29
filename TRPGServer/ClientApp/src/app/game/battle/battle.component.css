@@ -1,3 +1,19 @@
 .hud-block {
   display: inline-block;
 }
+
+.formation-ally {
+  color: lightblue;
+}
+
+.formation-enemy {
+  color: red;
+}
+
+.formation-name {
+  text-align: center;
+}
+
+.formation-player {
+  color: limegreen;
+}

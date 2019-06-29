@@ -32,6 +32,7 @@ export class BattleComponent implements OnInit, OnDestroy {
 
   // Game data
   private userId: string;
+  private userFormation: Formation;
   private isUserAttacker: boolean;
   private attackingFormations: Formation[];
   private defendingFormations: Formation[];
@@ -61,11 +62,11 @@ export class BattleComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.battleService.onInitialized.subscribe({
         next: (data) => {
-          this.initializeFormations(data);
           this.activeEntities = data.activeEntities;
           this.secondsInTurn = data.secondsLeftInTurn;
           this.isDefendersTurn = data.isDefenderTurn;
           this.round = data.round;
+          this.initializeFormations(data);
         }
       })
     );
@@ -113,6 +114,23 @@ export class BattleComponent implements OnInit, OnDestroy {
         }
       })
     );
+
+    this.subscriptions.push(
+      this.battleService.onJoinedBattle.subscribe({
+        next: (data) => {
+          if (data.isAttacker) {
+            this.attackingFormations.push(data.joinedFormation);
+          }
+          else this.attackingFormations.push(data.joinedFormation);
+
+          if (data.activeEntities != null && data.activeEntities.length > 0) {
+            data.activeEntities.forEach(entitySet => {
+              this.activeEntities.push(entitySet);
+            });
+          }
+        }
+      })
+    )
 
     await this.battleService.startConnection();
   }
@@ -194,9 +212,19 @@ export class BattleComponent implements OnInit, OnDestroy {
     this.attackingFormations = data.attackers;
     this.defendingFormations = data.defenders;
 
-    if (data.attackers.some(attacker => attacker.ownerId === this.userId)) this.isUserAttacker = true;
-    else this.isUserAttacker = false;
+    let userFormation = data.attackers.find(attacker => attacker.ownerId === this.userId);
+    if (userFormation != null) {
+      this.isUserAttacker = true;
+      this.userFormation = userFormation;
+    }
+    else {
+      this.isUserAttacker = false;
+      this.userFormation = data.defenders.find(defender => defender.ownerId === this.userId);
+    }
 
+    if (this.isUserAttacker !== data.isDefenderTurn) {
+      this.setNextActiveEntity();
+    }
     //this.formationEntities = {};
 
     //this.indexFormations(data.attackers, true);
@@ -270,6 +298,14 @@ export class BattleComponent implements OnInit, OnDestroy {
   private startTurn(): void {
     if (this.isUserAttacker === !this.isDefendersTurn) {
       this.setNextActiveEntity();
+    }
+    else {
+      this.activeAbility = null;
+      this.activeEntity = null;
+      this.activeEntityPosition = null;
+      this.targetFormation = null;
+      this.targetPosition = null;
+      this.targetPositions = null;
     }
   }
 
@@ -452,9 +488,24 @@ export class BattleComponent implements OnInit, OnDestroy {
     if (nodeState.entity == null) return "";
     if (this.hoveredEntity != null && nodeState.entity === this.hoveredEntity) return "formation-node-hovered";
     if (this.activeEntity != null && this.activeEntity === nodeState.entity) return "formation-node-active";
+
     // If the node contains an entity that can act but is not active
-    if (this.activeEntities.some(ae => ae.entityIds.some(eid => eid === nodeState.entity.id))) return "formation-node-inactive";
+    if (this.activeEntities != null) {
+      if (this.activeEntities.some(ae => ae.entityIds.some(eid => eid === nodeState.entity.id))) return "formation-node-inactive";
+    }
 
     else return "";
+  }
+
+  /**
+   * Returns the css style for a formation name for the given Formation.
+   * @param formation The Formation to return css for.
+   */
+  public getFormationNameStyle(formation: Formation): string {
+    if (formation.ownerId === this.userId) return "formation-player";
+
+    // If on same side as user, return ally. Else return enemy.
+    if (this.isUserAttacker === this.attackingFormations.some(attacker => attacker.id === formation.id)) return "formation-ally";
+    else return "formation-enemy";
   }
 }

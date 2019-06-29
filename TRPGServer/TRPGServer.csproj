@@ -58,6 +58,7 @@
     <None Remove="ClientApp\src\app\game\game\contextMenu\context-menu.component.ts" />
     <None Remove="ClientApp\src\app\game\game\contextMenu\contextMenuList\context-menu-list.component.ts" />
     <None Remove="ClientApp\src\app\game\game\services\movement-manager.service.ts" />
+    <None Remove="ClientApp\src\app\game\model\joined-battle.model.ts" />
     <None Remove="ClientApp\src\app\game\services\pathfinder.static.ts" />
     <None Remove="ClientApp\src\app\shared\components\confirmationPrompt\confirmation-prompt.component.ts" />
     <None Remove="ClientApp\src\app\game\game\tile-node.component.ts" />
@@ -133,6 +134,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\game\contextMenu\context-menu.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\game\contextMenu\contextMenuList\context-menu-list.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\game\services\movement-manager.service.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\model\joined-battle.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\services\pathfinder.static.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\shared\components\confirmationPrompt\confirmation-prompt.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\game\tile-node.component.ts" />

@@ -17,7 +17,7 @@ export class FormationTargeter {
     if (ability.isPositionStatic) {
       targetFormation.positions.forEach((row, xIndex) => {
         row.forEach((entity, yIndex) => {
-          if (ability.targets.some(val => val === xIndex * FormationConstants.maxColumns + yIndex + 1)) {
+          if (ability.targets.some(val => val === yIndex * FormationConstants.maxColumns + xIndex + 1)) {
             targets.push(entity);
           }
         });

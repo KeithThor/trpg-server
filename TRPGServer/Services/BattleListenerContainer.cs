@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using TRPGGame;
 using TRPGGame.Managers;
 using TRPGServer.Hubs;
 
@@ -14,13 +15,23 @@ namespace TRPGServer.Services
     public class BattleListenerContainer
     {
         private readonly IHubContext<BattleHub> _battleHubContext;
+        private readonly IWorldState _worldState;
 
-        public BattleListenerContainer(IHubContext<BattleHub> battleHubContext)
+        public BattleListenerContainer(IHubContext<BattleHub> battleHubContext,
+                                       IWorldState worldState)
         {
             _battleHubContext = battleHubContext;
+            _worldState = worldState;
+            //foreach (var manager in _worldState.MapBattleManagers.Values)
+            //{
+            //    manager.OnCreatedBattle += (sender, args) =>
+            //    {
+            //        CreateListener(args.BattleManager);
+            //    };
+            //}
         }
 
-        public List<BattleListener> BattleListeners { get; set; }
+        public List<BattleListener> BattleListeners { get; set; } = new List<BattleListener>();
 
         /// <summary>
         /// Creates a BattleListener that listens to events emitted from the given IBattleManager instance.

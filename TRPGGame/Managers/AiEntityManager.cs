@@ -93,7 +93,7 @@ namespace TRPGGame.Managers
         {
             if (_rand.Next(1, 5) <= 1)
             {
-                MoveEntity();
+                //MoveEntity();
             }
         }
 

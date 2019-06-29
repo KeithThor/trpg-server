@@ -11,6 +11,7 @@ using TRPGGame.Entities.Data;
 using TRPGGame.Managers;
 using TRPGGame.Repository;
 using TRPGGame.Services;
+using TRPGServer.Filters;
 
 namespace TRPGServer.Controllers
 {
@@ -145,6 +146,7 @@ namespace TRPGServer.Controllers
         [Route("")]
         [HttpPatch]
         [Authorize]
+        [GameState(PlayerStateConstants.Free, PlayerStateConstants.MakeFormation, PlayerStateConstants.MakeCharacter)]
         public async Task<IActionResult> Patch([FromBody]CharacterTemplate template)
         {
             template.OwnerId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
@@ -159,6 +161,7 @@ namespace TRPGServer.Controllers
         [Route("")]
         [HttpDelete]
         [Authorize]
+        [GameState(PlayerStateConstants.Free, PlayerStateConstants.MakeFormation, PlayerStateConstants.MakeCharacter)]
         public IActionResult Delete([FromBody]int entityId)
         {
             var ownerId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);

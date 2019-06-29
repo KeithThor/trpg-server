@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnDestroy } from "@angular/core";
+import { Component, Input, OnInit, OnDestroy, Output, EventEmitter } from "@angular/core";
 import { Subscription, Observable } from "rxjs";
 
 /**Component responsible for displaying the amount of time left in a turn in battle. */
@@ -18,6 +18,7 @@ export class TimerComponent implements OnInit, OnDestroy {
     this._timeLeft = value;
     this.startTimer();
   }
+  @Output() public timeLeftChange: EventEmitter<number> = new EventEmitter();
 
   private timerSubscription: Subscription;
 
@@ -35,7 +36,10 @@ export class TimerComponent implements OnInit, OnDestroy {
     this.timerSubscription = timer.subscribe({
       next: (val) => {
         if (this.timeLeft == null || this.timeLeft <= 0) return;
-        else this.timeLeft--;
+        else {
+          this.timeLeft--;
+          this.timeLeftChange.emit(this.timeLeft);
+        }
       }
     });
   }

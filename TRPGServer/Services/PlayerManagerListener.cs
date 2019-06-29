@@ -28,12 +28,18 @@ namespace TRPGServer.Services
             _manager.OnDestroy += ManagerOnDestroy;
             _manager.OnMovementStopped += OnMovementStopped;
             _manager.OnJoinBattleSuccess += OnJoinBattleSuccess;
+            _manager.OnBattleInitiated += OnBattleInitiated;
         }
 
         /// <summary>
         /// Event invoked whenever this listener is going to be destroyed.
         /// </summary>
         public event EventHandler<EventArgs> OnDestroy;
+
+        /// <summary>
+        /// Gets the PlayerEntityManager that this listener is listening to.
+        /// </summary>
+        public PlayerEntityManager Manager { get => _manager; }
 
         /// <summary>
         /// Called whenever the PlayerEntityManager this listener listens to is queued for destruction.

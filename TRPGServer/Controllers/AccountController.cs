@@ -53,6 +53,8 @@ namespace TRPGServer.Controllers
             var claims = await _userManager.GetClaimsAsync(foundUser);
             var token = _tokenBuilder.CreateToken(foundUser, claims);
 
+            _stateManager.SetPlayerMakeCharacter(Guid.Parse(foundUser.Id));
+
             return new JsonResult(new
             {
                 Token = token,

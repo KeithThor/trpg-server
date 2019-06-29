@@ -8,7 +8,7 @@
 
     <!-- Timer -->
     <div class="hud-component">
-      <game-timer-component [timeLeft]="secondsInTurn"
+      <game-timer-component [(timeLeft)]="secondsInTurn"
                             class="game-timer"></game-timer-component>
     </div>
   </div>
@@ -17,13 +17,16 @@
   <div class="row">
     <!-- Attacking formations -->
     <div class="col-md-5">
-      <game-formation-grid *ngFor="let formation of attackingFormations"
-                           [formation]="formation"
-                           [getNodeStateFunc]="getNodeState.bind(this)"
-                           (onMouseEnter)="onMouseEnterFormationGrid($event)"
-                           (onMouseLeave)="targetFormation = null"
-                           (onNodeClicked)="onNodeClicked($event)"
-                           (onNodeMouseEnter)="onNodeMouseEnter($event)"></game-formation-grid>
+      <div *ngFor="let formation of attackingFormations">
+        <div class="formation-name" [ngClass]="getFormationNameStyle(formation)">{{formation.name}}</div>
+        <game-formation-grid [formation]="formation"
+                             [getNodeStateFunc]="getNodeState.bind(this)"
+                             (onMouseEnter)="onMouseEnterFormationGrid($event)"
+                             (onMouseLeave)="targetFormation = null"
+                             (onNodeClicked)="onNodeClicked($event)"
+                             (onNodeMouseEnter)="onNodeMouseEnter($event)"></game-formation-grid>
+      </div>
+      
     </div>
 
     <!-- Defending formations -->

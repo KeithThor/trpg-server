@@ -1,4 +1,5 @@
 ﻿using System;
+using TRPGGame.EventArgs;
 
 namespace TRPGGame
 {
@@ -8,6 +9,11 @@ namespace TRPGGame
     /// </summary>
     public interface IPlayerEntityManagerStore
     {
+        /// <summary>
+        /// Event invoked whenever a PlayerEntityManager is being created.
+        /// </summary>
+        event EventHandler<PlayerEntityManagerCreatedEventArgs> OnPlayerEntityManagerCreated;
+
         /// <summary>
         /// Gets the PlayerEntityManager responsible for managing the current player's entity.
         /// </summary>
