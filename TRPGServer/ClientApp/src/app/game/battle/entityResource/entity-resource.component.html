@@ -15,7 +15,7 @@
     <div>
       <!-- Health bar -->
       <div class="resource-component">
-        <game-resource-bar [resourceName]="Health"
+        <game-resource-bar [resourceName]="'Health'"
                            [current]="entity.resources.currentHealth"
                            [max]="entity.resources.maxHealth"
                            [resourceCurrentStyles]="getHealthStyles()"></game-resource-bar>
@@ -23,7 +23,7 @@
 
       <!-- Mana bar -->
       <div class="resource-component">
-        <game-resource-bar [resourceName]="Mana"
+        <game-resource-bar [resourceName]="'Mana'"
                            [current]="entity.resources.currentMana"
                            [max]="entity.resources.maxMana"
                            [resourceCurrentStyles]="getManaStyles()"></game-resource-bar>

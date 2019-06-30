@@ -49,7 +49,7 @@ export class FormationTargeter {
     if (!ability.canTargetBeBlocked) return false;
 
     let column = this.getColumn(targetPosition);
-    if (column != 1) {
+    if (column !== 1) {
       let row = this.getRow(targetPosition);
       let entityRow = targetFormation.positions[row - 1];
       for (var i = 0; i < column - 1; i++) {

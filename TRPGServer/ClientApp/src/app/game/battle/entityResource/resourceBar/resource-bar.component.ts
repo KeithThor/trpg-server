@@ -26,5 +26,5 @@ export class ResourceBarComponent {
   @Input() max: number;
   @Input() resourceMaxStyles: any;
   @Input() resourceCurrentStyles: any;
-  @Input() resouceTextStyles: any;
+  @Input() resourceTextStyles: any;
 }

@@ -48,7 +48,7 @@ var FormationTargeter = /** @class */ (function () {
         if (!ability.canTargetBeBlocked)
             return false;
         var column = this.getColumn(targetPosition);
-        if (column != 1) {
+        if (column !== 1) {
             var row = this.getRow(targetPosition);
             var entityRow = targetFormation.positions[row - 1];
             for (var i = 0; i < column - 1; i++) {

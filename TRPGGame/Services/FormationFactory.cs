@@ -113,7 +113,7 @@ namespace TRPGGame.Services
 
             return new Formation
             {
-                Id = _id,
+                Id = _id++,
                 LeaderId = leaderId,
                 Name = template.Name,
                 OwnerId = GameplayConstants.AiId,

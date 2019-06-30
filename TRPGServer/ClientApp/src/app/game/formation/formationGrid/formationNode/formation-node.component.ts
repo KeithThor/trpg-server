@@ -1,6 +1,7 @@
 import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { Coordinate } from "../../../model/coordinate.model";
 import { CombatEntity } from "../../../model/combat-entity.model";
+import { Formation } from "../../../model/formation.model";
 
 /** A component that wraps around a DisplayEntityComponent and handles coordination with a FormationComponent.*/
 @Component({
@@ -13,6 +14,7 @@ import { CombatEntity } from "../../../model/combat-entity.model";
 })
 export class FormationNodeComponent {
   @Input() entity: CombatEntity;
+  @Input() formation: Formation;
   @Input() specialIconsFunc: (entity: CombatEntity) => string[];
   @Input() coordinate: Coordinate;
   @Output() onClick: EventEmitter<FormationNodeState> = new EventEmitter();
@@ -60,11 +62,14 @@ export class FormationNodeComponent {
     let args = new FormationNodeState();
     args.coordinate = this.coordinate;
     args.entity = this.entity;
+    args.formation = this.formation;
     return args;
   }
 }
 
+/**Basic object containing data about a FormationNodeComponent used in events.*/
 export class FormationNodeState {
   public entity: CombatEntity;
   public coordinate: Coordinate;
+  public formation: Formation;
 }

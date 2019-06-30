@@ -12,7 +12,8 @@ export class EntityResourceComponent {
 
   public getHealthStyles(): object {
     return {
-      "background-color": "red"
+      "background-color": "red",
+      "width": "50%"
     };
   }
 

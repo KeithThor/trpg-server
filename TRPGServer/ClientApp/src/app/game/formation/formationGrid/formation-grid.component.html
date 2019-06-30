@@ -1,10 +1,11 @@
-<div class="formation-grid" (click)="onClicked.emit(formation)"
-                            (mouseenter)="onMouseEnter.emit(formation)"
-                            (mouseleave)="onMouseLeave.emit(formation)">
-  <table *ngIf="formation != null">
+<div class="formation-grid">
+  <table *ngIf="formation != null" (click)="onClicked.emit(formation)"
+                                   (mouseenter)="onMouseEnter.emit(formation)"
+                                   (mouseleave)="onMouseLeave.emit(formation)">
     <tr *ngFor="let row of formation.positions; let i = index" class="formation-row">
       <td *ngFor="let entity of row; let j = index">
         <game-formation-node [entity]="entity"
+                             [formation]="formation"
                              [specialIconsFunc]="specialIconsFunc"
                              [coordinate]="getCoordinate(j, i)"
                              [getNodeStateFunc]="getNodeStateFunc"

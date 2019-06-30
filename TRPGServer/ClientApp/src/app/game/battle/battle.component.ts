@@ -121,7 +121,7 @@ export class BattleComponent implements OnInit, OnDestroy {
           if (data.isAttacker) {
             this.attackingFormations.push(data.joinedFormation);
           }
-          else this.attackingFormations.push(data.joinedFormation);
+          else this.defendingFormations.push(data.joinedFormation);
 
           if (data.activeEntities != null && data.activeEntities.length > 0) {
             data.activeEntities.forEach(entitySet => {
@@ -174,6 +174,7 @@ export class BattleComponent implements OnInit, OnDestroy {
   private clearSelection(): void {
     this.activeEntity = null;
     this.activeAbility = null;
+    this.targetPositions = null;
   }
 
   /**
@@ -294,19 +295,21 @@ export class BattleComponent implements OnInit, OnDestroy {
     if (!isFound) throw new Error("Couldn't find CombatEntity in the given Formation in setNextActiveEntity!");
   }
 
-
+  /**On the start of a turn, sets the next active entity if it's the player's turn. Else resets all
+   * the player's selections.*/
   private startTurn(): void {
     if (this.isUserAttacker === !this.isDefendersTurn) {
       this.setNextActiveEntity();
     }
     else {
-      this.activeAbility = null;
       this.activeEntity = null;
       this.activeEntityPosition = null;
       this.targetFormation = null;
       this.targetPosition = null;
-      this.targetPositions = null;
     }
+
+    this.activeAbility = null;
+    this.targetPositions = null;
   }
 
   ///**
@@ -382,6 +385,15 @@ export class BattleComponent implements OnInit, OnDestroy {
     this.battleService.performAction(action);
   }
 
+  /**
+   * Called when the context menu is opened in the BattleComponent.
+   * @param event
+   */
+  public onContextMenu(event: MouseEvent): void {
+    event.preventDefault();
+    this.clearSelection();
+  }
+
   /**Creates a BattleAction object from class variables. */
   private createBattleAction(): BattleAction {
     let action = new BattleAction();
@@ -419,15 +431,19 @@ export class BattleComponent implements OnInit, OnDestroy {
 
   /**
    * Whenever the user's mouse enters a FormationNode, if there is an active ability, show all of the targets that
-   * will be hit by the target ability.
+   * will be hit by the target ability. Else, sets the hovered entity to that node's CombatEntity.
    * @param args
    */
   public onNodeMouseEnter(args: FormationNodeState): void {
-    if (this.activeAbility == null) return;
+    if (this.activeAbility == null) {
+      this.hoveredEntity = args.entity;
+      return;
+    }
+
     if (this.targetFormation == null) return;
     if (!this.isValidTarget(args)) return;
 
-    this.targetPosition = args.coordinate.positionX * FormationConstants.maxColumns + args.coordinate.positionY + 1;
+    this.targetPosition = args.coordinate.positionY * FormationConstants.maxRows + args.coordinate.positionX + 1;
 
     this.targetPositions = FormationTargeter.translate(this.activeAbility.ability.centerOfTargets,
                                                        this.activeAbility.ability.targets,
@@ -452,7 +468,10 @@ export class BattleComponent implements OnInit, OnDestroy {
     // If target can't be blocked, any target position is valid
     if (!this.activeAbility.ability.canTargetBeBlocked) return true;
 
-    let positionNumber = args.coordinate.positionX * FormationConstants.maxColumns + args.coordinate.positionY + 1;
+    // Allow the user to attack its own formation even if the active ability can be blocked by the formation
+    if (this.targetFormation.ownerId === this.userId) return true;
+
+    let positionNumber = args.coordinate.positionY * FormationConstants.maxColumns + args.coordinate.positionX + 1;
     return !FormationTargeter.isTargetBlocked(this.activeAbility.ability, positionNumber, this.targetFormation);
   }
 
@@ -480,14 +499,17 @@ export class BattleComponent implements OnInit, OnDestroy {
    * @param nodeState The state of the given node.
    */
   public getNodeState(nodeState: FormationNodeState): string {
-    let position = nodeState.coordinate.positionX * FormationConstants.maxColumns + nodeState.coordinate.positionY + 1;
+    let position = nodeState.coordinate.positionY * FormationConstants.maxRows + nodeState.coordinate.positionX + 1;
 
-    if (this.targetPosition === position) return "formation-node-target-center";
-    if (this.targetPositions != null && this.targetPositions.indexOf(position) !== -1) return "formation-node-target";
+    // If the Formation of this node is the same as the player's target
+    if (this.targetFormation != null && nodeState.formation.id === this.targetFormation.id) {
+      if (this.targetPosition === position) return "formation-node-target-center";
+      if (this.targetPositions != null && this.targetPositions.indexOf(position) !== -1) return "formation-node-target";
+    }
 
     if (nodeState.entity == null) return "";
-    if (this.hoveredEntity != null && nodeState.entity === this.hoveredEntity) return "formation-node-hovered";
-    if (this.activeEntity != null && this.activeEntity === nodeState.entity) return "formation-node-active";
+    if (this.hoveredEntity != null && nodeState.entity.id === this.hoveredEntity.id) return "formation-node-hovered";
+    if (this.activeEntity != null && this.activeEntity.id === nodeState.entity.id) return "formation-node-active";
 
     // If the node contains an entity that can act but is not active
     if (this.activeEntities != null) {

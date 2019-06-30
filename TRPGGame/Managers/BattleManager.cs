@@ -401,7 +401,7 @@ namespace TRPGGame.Managers
             var actorFormation = GetFormation(action.OwnerId, out bool isAttacker);
             if (actorFormation == null) return false;
 
-            var actor = actorFormation.Positions.FirstOrDefaultTwoD(entity => entity.Id == action.ActorId);
+            var actor = actorFormation.Positions.FirstOrDefaultTwoD(entity => entity != null && entity.Id == action.ActorId);
             if (actor == null) return false;
 
             // If actor should not be acting, return null

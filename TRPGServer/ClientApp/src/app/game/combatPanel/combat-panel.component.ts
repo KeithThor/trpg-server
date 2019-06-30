@@ -30,6 +30,7 @@ export class CombatPanelComponent {
   @Output() onSelectAbility: EventEmitter<SelectedAbilityData> = new EventEmitter();
   @Output() onDefend: EventEmitter<void> = new EventEmitter();
   @Output() onFlee: EventEmitter<void> = new EventEmitter();
+  @Output() onResetState: EventEmitter<void> = new EventEmitter();
 
   public inActionPanel: boolean;
   public inCategoryPanel: boolean;
@@ -51,6 +52,8 @@ export class CombatPanelComponent {
     this.hoveredCategory = null
     this.inActionPanel = false;
     this.inCategoryPanel = false;
+
+    this.onResetState.emit();
   }
 
   /**Returns an array of Abilities that belong to the currently active entity filtered by
@@ -77,6 +80,12 @@ export class CombatPanelComponent {
           return ability.isSkill
             && ability.category.id === this.activeCategory.id;
         });
+      case CommandTypesConstants.defend:
+        this.onDefend.emit();
+        break;
+      case CommandTypesConstants.flee:
+        this.onFlee.emit();
+        break;
       default:
         return null;
     }

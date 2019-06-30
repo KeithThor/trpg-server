@@ -4,6 +4,7 @@
     <div class="grid-block" *ngFor="let formationIndex of getFormationLimitAsArray()">
       <div class="grid-row" *ngFor="let row of getPositions(); let i = index">
         <div class="grid-node" [ngClass]="getStyleForPosition(getPosition(formationIndex, position))" *ngFor="let position of row; let j = index">
+          {{getPosition(formationIndex, position)}}
         </div>
       </div>
     </div>
