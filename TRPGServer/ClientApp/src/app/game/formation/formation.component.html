@@ -1,68 +1,78 @@
 <div class="container">
   <div class="row">
-    <div class="col-md-6">
-      <!--Formation grid-->
-      <div class="formation-container">
-        <game-formation-grid *ngIf="isLoaded" [formation]="activeFormation"
-                                              [specialIconsFunc]="getExtraIcons.bind(this)"
-                                              [getNodeStateFunc]="getNodeState.bind(this)"
-                                              (onNodeClicked)="onNodeClick($event)"
-                                              (onNodeMouseEnter)="onNodeMouseEnter($event)"
-                                              (onNodeMouseLeave)="onNodeMouseLeave($event)">
-        </game-formation-grid>
-      </div>
+    <div class="entity-carousel">
+      <game-entity-card *ngFor="let entity of entities" [entity]="entity"
+                        [extraIcons]="getExtraIcons(entity)"
+                        [customStyles]="getCustomStyles(entity)"
+                        (onClick)="selectEntity($event)"
+                        (onMouseEnter)="setHoveredEntity($event)"
+                        (onMouseLeave)="setHoveredEntity(null)"></game-entity-card>
     </div>
-
-    <!--Formation settings-->
-    <div class="col-md-4">
-      <form #form="ngForm" name="formationForm">
-        <div class="form-group">
-          <label for="formationName">Formation Name</label>
-          <input name="formationName" type="text" class="form-control" id="formationName" [(ngModel)]="activeFormation.name"/>
-        </div>
-        <div class="form-group">
-          <div class="leader-icon">
-            <game-display-entity *ngIf="activeFormationLeader != null" [entity]="activeFormationLeader"></game-display-entity>
-          </div>
-          <button class="btn btn-secondary" (click)="chooseLeaderClicked()">Choose Leader</button>
-        </div>
-        <div class="form-group">
-          <label for="makeActive">Make Active Formation</label>
-          <input class="form-control" type="checkbox" name="makeActive" [(ngModel)]="makeActive"/>
-        </div>
-      </form>
-    </div>
+    <h3 class="section-title">Create Formation</h3>
+  </div>
+  
+  <div class="row">
     <div class="col-md-2">
       <div *ngIf="isLoaded" class="formation-tab">
-
+        <div class="formation-tab-header">
+          My Formations
+        </div>
         <!--Formations list-->
-        <div *ngFor="let leader of getFormationLeaders(); let i = index">
-          <div>
+        <div class="formation-card" *ngFor="let leader of getFormationLeaders(); let i = index">
+          <div class="formation-card-text">
             {{formations[i].name}}
           </div>
           <game-display-entity [displayName]="false" [entity]="leader" (click)="selectFormation(i)"></game-display-entity>
         </div>
 
         <!--New Formation button-->
-        <div class="new-formation" (click)="newFormation()">
-          <div>New Formation</div>
-          <img src="images/misc/unseen_monster.png" draggable="false" />
+        <div class="new-formation formation-card" (click)="newFormation()">
+          <div class="formation-card-text">New Formation</div>
+          <div class="formation-icon-container">
+            <img class="formation-icon" src="images/misc/unseen_monster.png" draggable="false" />
+          </div>
         </div>
       </div>
       <button (click)="sendRequestAsync()">{{getButtonName()}}</button>
+    </div>
+
+
+    <!--Formation settings-->
+    <div class="col-md-6">
+      <form #form="ngForm" name="formationForm">
+        <div class="form-group">
+          <label for="formationName">Formation Name</label>
+          <input name="formationName" type="text" class="form-control" id="formationName" [(ngModel)]="activeFormation.name" />
+        </div>
+        <div class="form-group">
+          <game-entity-card [entity]="activeFormationLeader"></game-entity-card>
+          <button class="btn btn-secondary" (click)="chooseLeaderClicked()">Choose Leader</button>
+        </div>
+        <div class="form-group">
+          <label for="makeActive">Make Active Formation</label>
+          <input class="form-control" type="checkbox" name="makeActive" [(ngModel)]="makeActive" />
+        </div>
+      </form>
+    </div>
+
+    <div class="col-md-4">
+      <!--Formation grid-->
+      <div class="formation-container">
+        <game-formation-grid *ngIf="isLoaded" [formation]="activeFormation"
+                             [specialIconsFunc]="getExtraIcons.bind(this)"
+                             [getNodeStateFunc]="getNodeState.bind(this)"
+                             (onNodeClicked)="onNodeClick($event)"
+                             (onNodeMouseEnter)="onNodeMouseEnter($event)"
+                             (onNodeMouseLeave)="onNodeMouseLeave($event)"
+                             (onNodeContextMenu)="onNodeContextMenu($event)">
+        </game-formation-grid>
+      </div>
     </div>
   </div>
 
   <!--Entities list-->
   <div class="row">
-    <div *ngIf="isLoaded" class="entity-tab">
-      <game-combat-panel [activeEntity]="getCombatPanelEntity()" [activeEntityPosition]="getCombatPanelEntityPosition()">
-      </game-combat-panel>
-      <div (mouseenter)="setHoveredEntity(entity)" (mouseleave)="setHoveredEntity(null)"
-           [ngClass]="getNodeState(entity)" *ngFor="let entity of entities" class="entity-node">
-        <game-display-entity [entity]="entity" [clickHandler]="selectEntity.bind(this)" [extraIcons]="getExtraIcons(entity)">
-        </game-display-entity>
-      </div>
-    </div>
+    <game-combat-panel [activeEntity]="getCombatPanelEntity()" [activeEntityPosition]="getCombatPanelEntityPosition()">
+    </game-combat-panel>
   </div>
 </div>

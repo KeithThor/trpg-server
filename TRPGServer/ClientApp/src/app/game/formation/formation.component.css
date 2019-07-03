@@ -1,5 +1,51 @@
+.entity-carousel {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  background-color: black;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.formation-card {
+  border-radius: 2px;
+  border: 1px solid white;
+  background-color: #000e24;
+  margin: 4px 4px;
+}
+
+.formation-card-text {
+  text-align: center;
+  color: white;
+  -webkit-user-select: none; /* Safari */
+  -moz-user-select: none; /* Firefox */
+  -ms-user-select: none; /* IE10+/Edge */
+  user-select: none; /* Standard */
+}
+
+.formation-icon {
+  position: absolute;
+  margin-left: auto;
+  margin-right: auto;
+  left: 0;
+  right: 0;
+  height: 32px;
+  width: 32px;
+}
+
+.formation-icon-container {
+  height: 40px;
+}
+
 .formation-tab {
   background-color: darkslategrey;
+  height: 100%;
+}
+
+.formation-tab-header {
+  text-align: center;
+  border: 2px solid black;
 }
 
 .entity-tab {
@@ -30,4 +76,9 @@
 
 .node-hovered {
   background-color: blue;
+}
+
+.section-title {
+  text-align: center;
+  margin-bottom: 20px;
 }

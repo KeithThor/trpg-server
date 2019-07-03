@@ -17,6 +17,7 @@ export class FormationGridComponent {
   @Output() onNodeClicked: EventEmitter<FormationNodeState> = new EventEmitter();
   @Output() onNodeMouseEnter: EventEmitter<FormationNodeState> = new EventEmitter();
   @Output() onNodeMouseLeave: EventEmitter<FormationNodeState> = new EventEmitter();
+  @Output() onNodeContextMenu: EventEmitter<FormationNodeState> = new EventEmitter();
   @Output() onMouseEnter: EventEmitter<Formation> = new EventEmitter();
   @Output() onMouseLeave: EventEmitter<Formation> = new EventEmitter();
   @Output() onClicked: EventEmitter<Formation> = new EventEmitter();
@@ -43,6 +44,14 @@ export class FormationGridComponent {
    */
   public nodeMouseLeave(args: FormationNodeState): void {
     this.onNodeMouseLeave.emit(args);
+  }
+
+  /**
+   * Emits the onNodeContextMenu event when the contextmenu event is emitted from the child node component.
+   * @param args
+   */
+  public nodeContextMenu(args: FormationNodeState): void {
+    this.onNodeContextMenu.emit(args);
   }
 
   /**

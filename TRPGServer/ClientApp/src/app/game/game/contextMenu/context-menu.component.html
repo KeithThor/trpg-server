@@ -1,4 +1,4 @@
-<div class="context-menu" [ngStyle]="{'left.px': xPosition, 'top.px': yPosition}">
+<div class="context-menu" [ngStyle]="getMenuPosition()">
   <div (click)="onMoveSelected.emit()">Move Here</div>
   <div class="context-menu-section" *ngIf="entities != null && entities.length > 0">
     <game-context-menu-list *ngFor="let entity of entities"

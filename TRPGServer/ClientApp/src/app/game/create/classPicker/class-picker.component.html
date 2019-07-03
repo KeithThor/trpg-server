@@ -1,16 +1,8 @@
-<div>
-  <form #form="ngForm">
-    <div class="form-group">
-      <label for="classSelect">Starting Class</label>
-      <input type="hidden" [(ngModel)]="selectedClassId" name="classSelectHidden"/>
-      <select [ngModel]="selectedClassId" class="form-control" name="classSelect" (ngModelChange)="onClassChanged($event)"
-              [disabled]="!canChooseClass">
-        <option *ngFor="let template of classTemplates" value="{{template.id}}">{{template.name}}</option>
-      </select>
-    </div>
-  </form>
-
-  <div>
-
-  </div>
+<div class="form-group">
+  <label for="classSelect">Starting Class</label>
+  <input type="hidden" [(ngModel)]="selectedClassId" name="classSelectHidden" />
+  <select [ngModel]="selectedClassId" class="form-control" name="classSelect" (ngModelChange)="onClassChanged($event)"
+          [disabled]="!canChooseClass">
+    <option *ngFor="let template of classTemplates" value="{{template.id}}">{{template.name}}</option>
+  </select>
 </div>

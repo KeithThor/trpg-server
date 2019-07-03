@@ -1,0 +1,10 @@
+.entity-card {
+  position: relative;
+  width: 48px;
+  height: 64px;
+  background-color: #000e24;
+  border-radius: 3px;
+  border: 1px solid white;
+  margin: 3px;
+  overflow: hidden;
+}

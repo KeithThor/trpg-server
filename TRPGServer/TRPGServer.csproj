@@ -120,7 +120,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\battle\timer\timer.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\classPicker\class-picker.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\description\description.component.ts" />
-    <TypeScriptCompile Include="ClientApp\src\app\game\create\editEntity\edit-entity.component.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\entityCard\entity-card.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\create.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\statSlider\statIcon\stat-icon.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\create\statPicker\stat-picker.component.ts" />

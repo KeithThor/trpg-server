@@ -1,6 +1,6 @@
 .icon-label {
   text-align: center;
-  word-wrap: hyphenate;
+  white-space: nowrap;
   color: white;
   -webkit-user-select: none;
   -moz-user-select: none;

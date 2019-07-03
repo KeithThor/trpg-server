@@ -1,15 +1,87 @@
+
 <div class="container">
   <div class="row">
-    <div class="col-md-5">
-      <div (mouseenter)="changeHoveredComponentName('edit')" class="entity-selection">
-        <game-edit-entity *ngFor="let entity of entities" [entity]="entity" [clickHandler]="selectEntity.bind(self)"></game-edit-entity>
-        <div class="edit-entity" (click)="newEntity()">
-          <div class="icon-label">New</div>
-          <div class="icon-container">
-            <img class="icon" src="images/misc/unseen_monster.png" draggable="false" />
-          </div>
+    <div (mouseenter)="changeHoveredComponentName('edit')" class="entity-selection">
+
+      <!-- CombatEntity carousel -->
+      <game-entity-card *ngFor="let entity of entities"
+                        [entity]="entity"
+                        [customStyles]="getCustomCardStyles(entity)"
+                        (onClick)="selectEntity($event)"></game-entity-card>
+
+      <!-- New Entity button -->
+      <div [ngStyle]="getCustomCardStyles(null)" class="entity-card" (click)="newEntity()">
+        <div class="icon-label">New</div>
+        <div class="icon-container">
+          <img class="icon" src="images/misc/unseen_monster.png" draggable="false" />
         </div>
       </div>
+    </div>
+
+    <h3 class="page-title">Create Character</h3>
+  </div>
+
+  <div class="row">
+
+    <!-- Right window -->
+    <div class="options-window col-md-6">
+
+      <div class="panel-basic">
+        <div>
+          <!-- Character options form -->
+          <form #form="ngForm" name="characterForm">
+
+            <!-- Name input -->
+            <div class="form-group">
+              <label for="nameInput">Character Name: </label>
+              <input class="form-control" [(ngModel)]="name" type="text" name="nameInput" />
+            </div>
+
+            <!-- Hair input -->
+            <div class="form-group">
+              <label for="hairSelection">Hair: </label>
+              <select class="form-control" [(ngModel)]="hairId" name="hairSelection">
+                <option *ngFor="let hair of hairs" value="{{hair.id}}">{{hair.name}}</option>
+              </select>
+            </div>
+
+            <!-- Race and Sex (Body) input -->
+            <div class="form-group">
+              <label for="bodySelection">Race and Sex: </label>
+              <input type="hidden" [(ngModel)]="baseId" name="bodyHiddenInput" />
+              <select class="form-control" [ngModel]="baseId" (ngModelChange)="onBaseChanged($event)"
+                      name="bodySelection" [disabled]="isEditing">
+                <option *ngFor="let base of bases" value="{{base.id}}">{{base.name}}</option>
+              </select>
+            </div>
+
+            <!-- Class picker -->
+            <game-class-picker [(selectedClassId)]="selectedClassId"
+                               [classTemplates]="classTemplates"
+                               [canChooseClass]="!isEditing"></game-class-picker>
+
+            <!-- Submit button -->
+            <button class="btn btn-primary" (click)="sendRequestAsync()">
+              {{getButtonText()}}
+            </button>
+          </form>
+        </div>
+      </div>
+      
+
+      <!-- Stat picker -->
+      <div class="panel-basic">
+        <game-stat-picker *ngIf="isLoaded" #statPicker [base]="selectedBase" [(stats)]="growthPoints"
+                          (onMouseEnterEvent)="changeHoveredComponentName($event)"></game-stat-picker>
+      </div>
+      
+    </div>
+
+    <!-- Left window -->
+    <div class="col-md-6">
+
+      <!-- Window to view currently editing CombatEntity -->
+      <label>Model Viewer</label>
       <div class="entity-viewer-container" *ngIf="isLoaded">
         <div class="entity-viewer">
           <div class="icon-label">{{name}}</div>
@@ -17,37 +89,9 @@
           <img class="icon-enlarged" src="{{getHairUri()}}" />
         </div>
       </div>
+
+      <!-- Description component -->
       <game-description-component [hoveredComponentName]="hoveredComponentName"></game-description-component>
-    </div>
-    <div class="options-window col-md-5">
-      <form #form="ngForm" name="characterForm">
-        <div class="form-group">
-          <label for="nameInput">Character Name: </label>
-          <input class="form-control" [(ngModel)]="name" type="text" name="nameInput" />
-        </div>
-        <div class="form-group">
-          <label for="hairSelection">Hair: </label>
-          <select class="form-control" [(ngModel)]="hairId" name="hairSelection">
-            <option *ngFor="let hair of hairs" value="{{hair.id}}">{{hair.name}}</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="bodySelection">Race and Sex: </label>
-          <input type="hidden" [(ngModel)]="baseId" name="bodyHiddenInput" />
-          <select class="form-control" [ngModel]="baseId" (ngModelChange)="onBaseChanged($event)"
-                  name="bodySelection" [disabled]="isEditing">
-            <option *ngFor="let base of bases" value="{{base.id}}">{{base.name}}</option>
-          </select>
-        </div>
-        <button class="btn btn-primary" (click)="sendRequestAsync()">
-          {{getButtonText()}}
-        </button>
-      </form>
-      <game-stat-picker *ngIf="isLoaded" #statPicker [base]="selectedBase" [(stats)]="growthPoints"
-                        (onMouseEnterEvent)="changeHoveredComponentName($event)"></game-stat-picker>
-      <game-class-picker [(selectedClassId)]="selectedClassId"
-                         [classTemplates]="classTemplates"
-                         [canChooseClass]="!isEditing"></game-class-picker>
     </div>
   </div>
 </div>

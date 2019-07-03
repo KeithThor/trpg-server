@@ -179,7 +179,10 @@ export class FormationComponent implements OnInit {
     let entity = args.entity;
     let position = args.coordinate;
 
+    // Clicked on empty node with no selected entity, do nothing
     if (this.selectedEntity == null && entity == null) return;
+
+    // Either choosing a leader or selecting an entity
     else if (this.selectedEntity == null && entity != null) {
       if (this.isChoosingLeader) {
         this.isChoosingLeader = false;
@@ -187,13 +190,26 @@ export class FormationComponent implements OnInit {
       }
       else this.selectEntity(entity);
     }
+
+    // Selecting the same entity twice, deselects that entity
     else if (entity != null && this.selectedEntity.id === entity.id) this.selectedEntity = null;
+
     else if (this.selectedEntity != null) {
       let entityAsCombatEntity = this.activeFormation.positions[position.positionY][position.positionX];
       let previousPosition = this.findOccupiedPosition(this.selectedEntity, this.activeFormation);
+
+      // If this is the first entity being placed into the formation, make it the leader
       if (this.activeFormationLeader == null) this.activeFormationLeader = this.selectedEntity;
+
       // Place selected entity into position, removing the occupying entity from the formation
       if (previousPosition == null) {
+        let removingEntity = this.activeFormation.positions[position.positionY][position.positionX];
+
+        // Entity being removed is formation leader, make new entity the formation leader
+        if (removingEntity != null && removingEntity.id === this.activeFormationLeader.id) {
+          this.activeFormationLeader = this.selectedEntity;
+        }
+
         this.activeFormation.positions[position.positionY][position.positionX] = this.selectedEntity;
         this.selectedEntity = null;
       }
@@ -203,6 +219,18 @@ export class FormationComponent implements OnInit {
         this.activeFormation.positions[previousPosition.positionY][previousPosition.positionX] = entityAsCombatEntity;
         this.selectedEntity = null;
       }
+    }
+  }
+
+  /**
+   * When a Formation node is right clicked, remove the CombatEntity that exists in that position from the formation.
+   * @param args
+   */
+  public onNodeContextMenu(args: FormationNodeState): void {
+    let entity = this.activeFormation.positions[args.coordinate.positionY][args.coordinate.positionX];
+    if (entity != null && args.entity != null) {
+      if (entity.id === args.entity.id)
+        this.activeFormation.positions[args.coordinate.positionY][args.coordinate.positionX] = null;
     }
   }
 
@@ -263,6 +291,18 @@ export class FormationComponent implements OnInit {
     if (this.selectedEntity != null && nodeState.entity === this.selectedEntity) return "node-active";
     if (this.hoveredEntity != null && nodeState.entity === this.hoveredEntity) return "node-hovered";
     else return "";
+  }
+
+  /**
+   * Returns an object containing custom styles for an EntityCardComponent depending on the entity that the card
+   * represents.
+   * @param entity The CombatEntity encapsulated by the EntityCardComponent.
+   */
+  public getCustomStyles(entity: CombatEntity): object {
+    if (entity == null) return {};
+    if (this.selectedEntity != null && entity.id === this.selectedEntity.id) return { "background-color": "green" };
+    if (this.hoveredEntity != null && entity.id === this.hoveredEntity.id) return { "background-color": "blue" };
+    else return {};
   }
 
   /** Gets the name of the request button which changes depending on whether the user is editing a formation or creating a new one. */

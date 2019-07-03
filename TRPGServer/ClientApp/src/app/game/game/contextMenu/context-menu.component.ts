@@ -15,4 +15,11 @@ export class ContextMenuComponent {
   @Output() onJoinSelected: EventEmitter<WorldEntity> = new EventEmitter();
   @Output() onMoveSelected: EventEmitter<void> = new EventEmitter();
   @Output() onCancelSelected: EventEmitter<void> = new EventEmitter();
+
+  public getMenuPosition(): object {
+    return {
+      'left': "calc(" + this.xPosition + 'px - 20%)',
+      'top.px': this.yPosition
+    };
+  }
 }

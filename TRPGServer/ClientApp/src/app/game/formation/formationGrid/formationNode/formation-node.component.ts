@@ -20,6 +20,7 @@ export class FormationNodeComponent {
   @Output() onClick: EventEmitter<FormationNodeState> = new EventEmitter();
   @Output() onMouseEnter: EventEmitter<FormationNodeState> = new EventEmitter();
   @Output() onMouseLeave: EventEmitter<FormationNodeState> = new EventEmitter();
+  @Output() onContextMenu: EventEmitter<FormationNodeState> = new EventEmitter();
   @Input() getNodeStateFunc: (nodeState: FormationNodeState) => string;
 
   /**
@@ -47,6 +48,17 @@ export class FormationNodeComponent {
   public emitOnMouseLeave(): void {
     let args = this.createEventArgs();
     this.onMouseLeave.emit(args);
+  }
+
+  /**
+   * Called by the template to emit the contextmenu event.
+   * @param event
+   */
+  public emitOnContextMenu(event: MouseEvent): void {
+    event.preventDefault();
+    
+    let args = this.createEventArgs();
+    this.onContextMenu.emit(args);
   }
 
   /** Gets the css class name that represents this node's state. */

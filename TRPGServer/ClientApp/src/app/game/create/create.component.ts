@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild, PACKAGE_ROOT_URL } from "@angular/core";
+import { Component, OnInit, ViewChild } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { CreateCharacterData, CharacterHair, CharacterBase, CharacterTemplate } from "../model/character.model";
 import { CombatEntity } from "../model/combat-entity.model";
@@ -12,7 +12,7 @@ import { ClassTemplate } from "../model/class-template.model";
   templateUrl: './create.component.html',
   styleUrls: [
     './create.component.css',
-    './editEntity/edit-entity.component.css',
+    '../entityCard/entity-card.component.css',
     '../displayEntity/display-entity.component.css'
   ]
 })
@@ -178,6 +178,17 @@ export class CreateComponent implements OnInit {
     });
 
     this.markFormsPristine();
+  }
+
+  /**
+   * Gets a custom style object for an EntityCardComponent provided its encapsulated CombatEntity.
+   * @param entity The CombatEntity contained within an EntityCardComponent.
+   */
+  public getCustomCardStyles(entity: CombatEntity): object {
+    if (this.isEditing && entity != null && entity.id === this.entityId) return { "background-color": "#095900" };
+    if (entity == null && !this.isEditing) return { "background-color": "#095900" };
+
+    else return {};
   }
 
   /** Marks the forms in this template pristine. */

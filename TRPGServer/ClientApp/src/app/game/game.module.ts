@@ -17,7 +17,6 @@ import { WorldEntityComponent } from "./worldEntity/world-entity.component";
 import { CreateComponent } from "./create/create.component";
 import { BrowserModule } from "@angular/platform-browser";
 import { TileNodeComponent } from "./game/tile-node.component";
-import { EditEntityComponent } from "./create/editEntity/edit-entity.component";
 import { StatPickerComponent } from "./create/statPicker/stat-picker.component";
 import { StatSliderComponent } from "./create/statPicker/statSlider/stat-slider.component";
 import { StatIconComponent } from "./create/statPicker/statSlider/statIcon/stat-icon.component";
@@ -42,6 +41,7 @@ import { ResourceBarComponent } from "./battle/entityResource/resourceBar/resour
 import { TimerComponent } from "./battle/timer/timer.component";
 import { ContextMenuComponent } from "./game/contextMenu/context-menu.component";
 import { ContextMenuListComponent } from "./game/contextMenu/contextMenuList/context-menu-list.component";
+import { EntityCardComponent } from "./entityCard/entity-card.component";
 
 @NgModule({
   declarations: [
@@ -53,7 +53,7 @@ import { ContextMenuListComponent } from "./game/contextMenu/contextMenuList/con
     TileNodeComponent,
     MapTileComponent,
     WorldEntityComponent,
-    EditEntityComponent,
+    EntityCardComponent,
     StatPickerComponent,
     StatSliderComponent,
     StatIconComponent,
