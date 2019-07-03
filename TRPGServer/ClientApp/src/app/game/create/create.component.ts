@@ -216,10 +216,12 @@ export class CreateComponent implements OnInit {
     }
 
     let template = new CharacterTemplate();
+    
     template.name = this.name;
     template.baseId = this.baseId;
     template.hairId = this.hairId;
     template.allocatedStats = this.growthPoints;
+    template.entityId = this.entityId;
 
     if (!this.isEditing && this.selectedClassId == null) {
       alert("Please select a starting class before creating a new character.");
@@ -239,8 +241,9 @@ export class CreateComponent implements OnInit {
 
             let baseIconUri = this.bases.find(b => b.id === template.baseId).iconUri;
             if (baseIconUri != null) entity.iconUris.baseIconUri = baseIconUri;
-            let hairIconUri = this.hairs.find(h => h.id === template.hairId).iconUri;
+            let hairIconUri = this.hairs.find(h => h.id == template.hairId).iconUri;
             if (hairIconUri != null) entity.iconUris.hairIconUri = hairIconUri;
+            entity.growthPoints = template.allocatedStats;
 
             this.markFormsPristine();
           }

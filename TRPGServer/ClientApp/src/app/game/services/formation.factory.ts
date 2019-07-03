@@ -2,6 +2,7 @@ import { Injectable } from "@angular/core";
 import { Formation, FormationConstants } from "../model/formation.model";
 import { CombatEntity } from "../model/combat-entity.model";
 
+/**Factory responsible for creating and copying Formation objects. */
 @Injectable()
 export class FormationFactory {
   /** Creates and returns a new empty Formation. */

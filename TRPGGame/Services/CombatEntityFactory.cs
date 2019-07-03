@@ -161,6 +161,7 @@ namespace TRPGGame.Services
         /// Updates an existing combat entity with the template given asynchronously.
         /// <para>Will return null if the operation failed.</para>
         /// </summary>
+        /// <param name="entity">The CombatEntity to update.</param>
         /// <param name="template">The template to use to update the entity with.</param>
         /// <returns>Returns the modified combat entity or null if no entity was modified.</returns>
         public async Task<CombatEntity> UpdateAsync(CombatEntity entity, CharacterTemplate template)
@@ -169,14 +170,13 @@ namespace TRPGGame.Services
 
             var hairData = await _characterHairRepo.GetDataAsync();
             var baseData = await _characterBaseRepo.GetDataAsync();
-            CharacterIconSet iconUris;
+            var iconUris = new CharacterIconSet(entity.IconUris);
 
             try
             {
                 // Find the corresponding iconUris and arrange them in the correct order
                 var hair = hairData.First(h => h.Id == template.HairId).IconUri;
 
-                iconUris = new CharacterIconSet(entity.IconUris);
                 iconUris.HairIconUri = hair;
             }
             catch (ArgumentException e)
@@ -185,25 +185,12 @@ namespace TRPGGame.Services
                 return null;
             }
 
-            var modifiedEntity = new CombatEntity
-            {
-                Name = template.Name,
-                GroupId = template.GroupId,
-                IconUris = entity.IconUris,
-                Id = entity.Id,
-                OwnerId = entity.OwnerId,
-                OwnerName = entity.OwnerName,
-                GrowthPoints = template.AllocatedStats,
-                SecondaryStats = entity.SecondaryStats,
-                Stats = entity.Stats,
-                Abilities = entity.Abilities,
-                EquippedItems = entity.EquippedItems,
-                UnmodifiedStats = entity.UnmodifiedStats,
-                StatusEffects = entity.StatusEffects
-            };
-            modifiedEntity.IconUris.HairIconUri = iconUris.HairIconUri;
+            entity.Name = template.Name;
+            entity.GroupId = template.GroupId;
+            entity.IconUris = iconUris;
+            entity.GrowthPoints = template.AllocatedStats;
 
-            return modifiedEntity;
+            return entity;
         }
 
         /// <summary>

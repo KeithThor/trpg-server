@@ -123,7 +123,11 @@ namespace TRPGGame.Managers
 
             lock (_lock)
             {
-                if (_formations.ContainsKey(template.OwnerId)) _formations[template.OwnerId].Add(formation);
+                if (_formations.ContainsKey(template.OwnerId))
+                {
+                    _formations[template.OwnerId].Remove(oldFormation);
+                    _formations[template.OwnerId].Add(formation);
+                }
                 else _formations.Add(template.OwnerId, swap);
             }
 

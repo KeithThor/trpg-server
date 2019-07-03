@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Formation, FormationConstants, FormationTemplate } from "../model/formation.model";
+import { Formation, FormationTemplate } from "../model/formation.model";
 import { DisplayableEntity } from "../model/display-entity.interface";
 import { CombatEntity } from "../model/combat-entity.model";
 import { FormationFactory } from "../services/formation.factory";
@@ -52,7 +52,6 @@ export class FormationComponent implements OnInit {
       .subscribe({
         next: (entities) => {
           this.entities = entities;
-          console.log(this.entities);
         },
         complete: () => {
           loadedEntities = true;
