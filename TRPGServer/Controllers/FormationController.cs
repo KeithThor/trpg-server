@@ -20,15 +20,12 @@ namespace TRPGServer.Controllers
     {
         private readonly IFormationManager _formationManager;
         private readonly IStateManager _stateManager;
-        private readonly WorldEntityManager _worldEntityManager;
 
         public FormationController(IFormationManager formationManager,
-                                   IStateManager stateManager,
-                                   WorldEntityManager worldEntityManager)
+                                   IStateManager stateManager)
         {
             _formationManager = formationManager;
             _stateManager = stateManager;
-            _worldEntityManager = worldEntityManager;
         }
 
         [HttpGet]
@@ -51,12 +48,9 @@ namespace TRPGServer.Controllers
 
             if (formation == null) return new BadRequestResult();
 
-            if (template.MakeActive)
-            {
-                _worldEntityManager.CreateWorldEntity(template.OwnerId, formation.Id);
-                if (_stateManager.GetPlayerState(template.OwnerId) != PlayerStateConstants.InCombat)
-                    _stateManager.SetPlayerFree(template.OwnerId);
-            }
+            if (_stateManager.GetPlayerState(template.OwnerId) != PlayerStateConstants.InCombat)
+                _stateManager.SetPlayerFree(template.OwnerId);
+
             return new CreatedAtActionResult("post", "formation", template, formation);
         }
 

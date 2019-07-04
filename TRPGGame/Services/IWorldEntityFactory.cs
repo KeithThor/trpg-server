@@ -22,9 +22,9 @@ namespace TRPGGame.Services
         /// the player who will own this Entity.
         /// </summary>
         /// <param name="playerId">The id of the player who will own the new entity.</param>
-        /// <param name="formationId">The id of the formation that this entity will represent.</param>
+        /// <param name="formation">The Formation that this entity will represent.</param>
         /// <returns></returns>
-        WorldEntity Create(Guid playerId, int formationId);
+        WorldEntity Create(Guid playerId, Formation formation);
 
         /// <summary>
         /// Creates a new WorldEntity using the id of the formation that this WorldEntity represents and the id of
@@ -33,6 +33,7 @@ namespace TRPGGame.Services
         /// <param name="playerId">The id of the player who will own the new entity.</param>
         /// <param name="formationId">The id of the formation that this entity will represent.</param>
         /// <returns></returns>
+        [Obsolete]
         WorldEntity Create(Guid playerId, int formationId, WorldEntity oldEntity);
     }
 }

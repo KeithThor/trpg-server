@@ -41,6 +41,7 @@ namespace TRPGGame
             containerBuilder.RegisterType<WorldEntityManager>()
                             .As<WorldEntityManager>()
                             .As<IPlayerEntityManagerStore>()
+                            .As<IWorldEntityAssigner>()
                             .SingleInstance();
             containerBuilder.RegisterType<CombatEntityManager>()
                             .As<CombatEntityManager>()

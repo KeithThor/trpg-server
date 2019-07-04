@@ -15,12 +15,15 @@ namespace TRPGGame.Managers
         // Todo: Get FormationDbContext instead of in memory store.
         private readonly Dictionary<Guid, List<Formation>> _formations;
         private readonly IFormationFactory _formationFactory;
+        private readonly IWorldEntityAssigner _worldEntityAssigner;
         private object _lock = new object();
 
-        public FormationManager(IFormationFactory formationFactory)
+        public FormationManager(IFormationFactory formationFactory,
+                                IWorldEntityAssigner worldEntityAssigner)
         {
             _formations = new Dictionary<Guid, List<Formation>>();
             _formationFactory = formationFactory;
+            _worldEntityAssigner = worldEntityAssigner;
         }
 
         /// <summary>
@@ -33,15 +36,23 @@ namespace TRPGGame.Managers
         {
             var formation = _formationFactory.Create(template);
             var swap = new List<Formation> { formation };
+            var shouldSetWorldEntity = template.MakeActive;
 
             if (formation != null)
             {
                 lock (_lock)
                 {
                     if (_formations.ContainsKey(template.OwnerId)) _formations[template.OwnerId].Add(formation);
-                    else _formations.Add(template.OwnerId, swap);
+                    else
+                    {
+                        _formations.Add(template.OwnerId, swap);
+                        shouldSetWorldEntity = true;
+                    }
                 }
             }
+
+            if (shouldSetWorldEntity) _worldEntityAssigner.AssignWorldEntity(template.OwnerId, formation);
+
             return formation;
         }
 
@@ -107,6 +118,7 @@ namespace TRPGGame.Managers
         {
             if (template.Id == null) return null;
             Formation oldFormation = null;
+            bool shouldSetWorldEntity = template.MakeActive;
 
             lock (_lock)
             {
@@ -123,13 +135,20 @@ namespace TRPGGame.Managers
 
             lock (_lock)
             {
-                if (_formations.ContainsKey(template.OwnerId))
+                if (_formations.ContainsKey(template.OwnerId) && _formations[template.OwnerId].Count > 1)
                 {
                     _formations[template.OwnerId].Remove(oldFormation);
                     _formations[template.OwnerId].Add(formation);
                 }
-                else _formations.Add(template.OwnerId, swap);
+                else if (_formations.ContainsKey(template.OwnerId) && _formations[template.OwnerId].Count > 1)
+                {
+                    _formations.Add(template.OwnerId, swap);
+                    shouldSetWorldEntity = true;
+                }
+                else throw new Exception($"Tried to update the Formation of player {template.OwnerId} when none exists!");
             }
+
+            if (shouldSetWorldEntity) _worldEntityAssigner.AssignWorldEntity(template.OwnerId, formation);
 
             return formation;
         }

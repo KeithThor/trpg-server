@@ -170,14 +170,13 @@ namespace TRPGGame.Services
 
             var hairData = await _characterHairRepo.GetDataAsync();
             var baseData = await _characterBaseRepo.GetDataAsync();
-            var iconUris = new CharacterIconSet(entity.IconUris);
 
             try
             {
                 // Find the corresponding iconUris and arrange them in the correct order
                 var hair = hairData.First(h => h.Id == template.HairId).IconUri;
 
-                iconUris.HairIconUri = hair;
+                entity.IconUris.HairIconUri = hair;
             }
             catch (ArgumentException e)
             {
@@ -187,7 +186,6 @@ namespace TRPGGame.Services
 
             entity.Name = template.Name;
             entity.GroupId = template.GroupId;
-            entity.IconUris = iconUris;
             entity.GrowthPoints = template.AllocatedStats;
 
             return entity;

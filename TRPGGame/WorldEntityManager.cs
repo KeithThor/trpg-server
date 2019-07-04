@@ -12,7 +12,7 @@ namespace TRPGGame
     /// <summary>
     /// Responsible for managing all the entities across all maps.
     /// </summary>
-    public class WorldEntityManager : IPlayerEntityManagerStore
+    public class WorldEntityManager : IPlayerEntityManagerStore, IWorldEntityAssigner
     {
         private readonly IWorldEntityFactory _worldEntityFactory;
         private readonly PlayerEntityManagerFactory _playerEntityManagerFactory;
@@ -54,9 +54,9 @@ namespace TRPGGame
         /// Creates a new WorldEntity and assigns it to the PlayerEntityManager.
         /// </summary>
         /// <param name="ownerId">The id of the player who will own this new entity.</param>
-        /// <param name="activeFormationId">The id of the formation this WorldEntity represents.</param>
+        /// <param name="activeFormation">The Formation this WorldEntity represents.</param>
         /// <returns></returns>
-        public IReadOnlyWorldEntity CreateWorldEntity(Guid ownerId, int activeFormationId)
+        public IReadOnlyWorldEntity AssignWorldEntity(Guid ownerId, Formation activeFormation)
         {
             var newManager = _playerEntityManagerFactory.Create(ownerId, this);
             var success = _playerEntityManagers.TryAdd(ownerId, newManager);
@@ -75,8 +75,8 @@ namespace TRPGGame
                 _playerEntityManagers.TryGetValue(ownerId, out manager);
             }
 
-            if (manager.Entity == null) manager.Entity = _worldEntityFactory.Create(ownerId, activeFormationId);
-            else manager.Entity = _worldEntityFactory.Create(ownerId, activeFormationId, manager.Entity);
+            manager.Entity = _worldEntityFactory.Create(ownerId, activeFormation);
+
             _worldEntities.AddOrUpdate(ownerId, manager.Entity, (id, entity) => manager.Entity);
 
             return manager.Entity;

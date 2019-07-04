@@ -17,15 +17,12 @@ namespace TRPGGame.Services
     /// </summary>
     public class WorldEntityFactory : IWorldEntityFactory
     {
-        public WorldEntityFactory(IFormationFactory formationFactory,
-                                  IFormationManager formationManager)
+        public WorldEntityFactory(IFormationFactory formationFactory)
         {
             _id = 1;
             _formationFactory = formationFactory;
-            _formationManager = formationManager;
         }
         private readonly IFormationFactory _formationFactory;
-        private readonly IFormationManager _formationManager;
 
         private static int _id;
 
@@ -36,9 +33,8 @@ namespace TRPGGame.Services
         /// <param name="playerId">The id of the player who will own the new entity.</param>
         /// <param name="formationId">The id of the formation that this entity will represent.</param>
         /// <returns></returns>
-        public WorldEntity Create(Guid playerId, int formationId)
+        public WorldEntity Create(Guid playerId, Formation formation)
         {
-            var formation = _formationManager.GetFormation(playerId, formationId);
             if (formation == null) return null;
             var leader = formation.Positions.FirstOrDefaultTwoD(entity => entity != null && entity.Id == formation.LeaderId);
 
@@ -46,10 +42,10 @@ namespace TRPGGame.Services
             {
                 Id = _id++,
                 OwnerGuid = playerId,
-                ActiveFormation = (Formation)formation,
+                ActiveFormation = formation,
                 CurrentMapId = GameplayConstants.StartingMapId,
                 Position = GameplayConstants.StartingPosition,
-                IconUris = (CharacterIconSet)leader.IconUris,
+                IconUris = leader.IconUris,
                 Name = leader.OwnerName
             };
         }
@@ -61,22 +57,24 @@ namespace TRPGGame.Services
         /// <param name="playerId">The id of the player who will own the new entity.</param>
         /// <param name="formationId">The id of the formation that this entity will represent.</param>
         /// <returns></returns>
+        [Obsolete]
         public WorldEntity Create(Guid playerId, int formationId, WorldEntity oldEntity)
         {
-            var formation = _formationManager.GetFormation(playerId, formationId);
-            if (formation == null) return null;
-            var leader = formation.Positions.FirstOrDefaultTwoD(entity => entity != null && entity.Id == formation.LeaderId);
+            //var formation = _formationManager.GetFormation(playerId, formationId);
+            //if (formation == null) return null;
+            //var leader = formation.Positions.FirstOrDefaultTwoD(entity => entity != null && entity.Id == formation.LeaderId);
 
-            return new WorldEntity
-            {
-                Id = oldEntity.Id,
-                OwnerGuid = playerId,
-                ActiveFormation = (Formation)formation,
-                CurrentMapId = oldEntity.CurrentMapId,
-                Position = oldEntity.Position,
-                IconUris = (CharacterIconSet)leader.IconUris,
-                Name = leader.OwnerName
-            };
+            //return new WorldEntity
+            //{
+            //    Id = oldEntity.Id,
+            //    OwnerGuid = playerId,
+            //    ActiveFormation = (Formation)formation,
+            //    CurrentMapId = oldEntity.CurrentMapId,
+            //    Position = oldEntity.Position,
+            //    IconUris = (CharacterIconSet)leader.IconUris,
+            //    Name = leader.OwnerName
+            //};
+            return null;
         }
 
         /// <summary>
