@@ -135,15 +135,19 @@ namespace TRPGGame.Managers
 
             lock (_lock)
             {
-                if (_formations.ContainsKey(template.OwnerId) && _formations[template.OwnerId].Count > 1)
+                if (_formations.ContainsKey(template.OwnerId))
                 {
-                    _formations[template.OwnerId].Remove(oldFormation);
-                    _formations[template.OwnerId].Add(formation);
-                }
-                else if (_formations.ContainsKey(template.OwnerId) && _formations[template.OwnerId].Count > 1)
-                {
-                    _formations.Add(template.OwnerId, swap);
-                    shouldSetWorldEntity = true;
+                    if (_formations[template.OwnerId].Count >= 1)
+                    {
+                        _formations[template.OwnerId].Remove(oldFormation);
+                        _formations[template.OwnerId].Add(formation);
+                        if (_formations[template.OwnerId].Count == 1) shouldSetWorldEntity = true;
+                    }
+                    else
+                    {
+                        _formations.Add(template.OwnerId, swap);
+                        shouldSetWorldEntity = true;
+                    }
                 }
                 else throw new Exception($"Tried to update the Formation of player {template.OwnerId} when none exists!");
             }

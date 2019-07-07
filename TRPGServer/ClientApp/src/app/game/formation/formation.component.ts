@@ -228,8 +228,18 @@ export class FormationComponent implements OnInit {
   public onNodeContextMenu(args: FormationNodeState): void {
     let entity = this.activeFormation.positions[args.coordinate.positionY][args.coordinate.positionX];
     if (entity != null && args.entity != null) {
-      if (entity.id === args.entity.id)
+      if (entity.id === args.entity.id) {
         this.activeFormation.positions[args.coordinate.positionY][args.coordinate.positionX] = null;
+
+        // If the removed entity was the leader, find another leader from the formation
+        if (this.activeFormationLeader != null && this.activeFormationLeader.id === args.entity.id) {
+          let otherEntity = TwoDArray.find(this.activeFormation.positions, entity => {
+            return entity != null && entity.id !== args.entity.id;
+          });
+
+          this.activeFormationLeader = otherEntity;
+        }
+      }
     }
   }
 
