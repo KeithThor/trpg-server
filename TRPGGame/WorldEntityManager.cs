@@ -166,7 +166,7 @@ namespace TRPGGame
             else
             {
                 manager = null;
-                throw new Exception($"There is no WorldEntity assigned for player {ownerId}!");
+                return false;
             }
 
             var success = _playerEntityManagers.TryAdd(ownerId, manager);

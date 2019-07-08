@@ -1,7 +1,23 @@
 .context-menu {
   position: absolute;
-  background-color: black;
   z-index: 4;
+  margin: 4px;
+  border: 1px solid black;
+  border-radius: 3px;
+  background-color: black;
+}
+
+.context-element {
+  margin: 3px;
+  background-color: black;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.context-element:hover {
+  color: aqua;
 }
 
 .context-menu-section {
@@ -11,4 +27,13 @@
 
 .context-menu-button {
   background-color: #bfd7ff;
+  padding: 0px 3px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.context-menu-button:hover {
+  color: aqua;
 }

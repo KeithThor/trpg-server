@@ -297,8 +297,8 @@ export class FormationComponent implements OnInit {
    */
   public getNodeState(nodeState: FormationNodeState): string {
     if (nodeState.entity == null) return "";
-    if (this.selectedEntity != null && nodeState.entity === this.selectedEntity) return "node-active";
-    if (this.hoveredEntity != null && nodeState.entity === this.hoveredEntity) return "node-hovered";
+    if (this.selectedEntity != null && nodeState.entity.id === this.selectedEntity.id) return "node-active";
+    if (this.hoveredEntity != null && nodeState.entity.id === this.hoveredEntity.id) return "node-hovered";
     else return "";
   }
 

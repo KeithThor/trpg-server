@@ -1,4 +1,4 @@
-import { Component, Input, HostListener } from "@angular/core";
+import { Component, Input } from "@angular/core";
 import { trigger, state, style, transition, animate } from "@angular/animations";
 import { WorldEntity } from "../model/world-entity.model";
 import { CharacterIconSet } from "../model/character.model";
@@ -84,11 +84,13 @@ export class WorldEntityComponent {
     else return "entity-neutral-name";
   }
 
-  @HostListener('contextmenu', ['$event'])
-  public openContextMenu(event: Event): void {
+  /**
+   * When the contextmenu is opened on the WorldEntity's name, stop the propagation.
+   * @param event
+   */
+  public onNameContextMenu(event: MouseEvent): void {
+    event.stopPropagation();
     event.preventDefault();
-    // Todo: Shows options for world entity
-    console.log("Context menu opens");
   }
 }
 

@@ -1,5 +1,5 @@
 <div id="chatbox">
-  <div #container id="message-container">
+  <!--<div #container id="message-container">
     <chatbox-message-component *ngFor="let m of receivedMessages" [message]="m"></chatbox-message-component>
   </div>
   <div class="input-group">
@@ -10,9 +10,31 @@
         <option value="private">&lt;Private&gt;</option>
       </select>
     </span>
-    <input class="form-control" [(ngModel)]="message.content" type="text" name="content" placeholder="Message" />
+    <input #messageBox class="form-control" type="text" name="content" placeholder="Message"
+           [(ngModel)]="message.content"
+           (focus)="isTextboxFocused = true"
+           (blur)="isTextboxFocused = false"/>
     <span class="input-group-addon">
       <button class="btn btn-default" (click)="sendMessageAsync()" type="submit">Send</button>
     </span>
+  </div>-->
+  <div #container id="message-container">
+    <chatbox-message-component *ngFor="let m of receivedMessages" [message]="m"></chatbox-message-component>
   </div>
+
+  <div class="message-bar">
+    <select class="message-type-selector" [(ngModel)]="message.messageType" name="messageType">
+      <option selected value="local">&lt;Local&gt;</option>
+      <option value="global">&lt;Global&gt;</option>
+      <option value="private">&lt;Private&gt;</option>
+    </select>
+
+    <input #messageBox class="message-box" type="text" name="content" placeholder="Message"
+           [(ngModel)]="message.content"
+           (focus)="isTextboxFocused = true"
+           (blur)="isTextboxFocused = false" />
+
+    <button class="message-button" (click)="sendMessageAsync()" type="submit">Send</button>
+  </div>
+
 </div>

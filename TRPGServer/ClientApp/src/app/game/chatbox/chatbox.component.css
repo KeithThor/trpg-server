@@ -2,5 +2,39 @@
   height: 500px;
   max-height: 500px;
   background: white;
-  overflow-y: scroll;
+  overflow-y: auto;
+}
+
+.message-bar {
+  height: 30px;
+  width: 100%;
+}
+
+.message-box {
+  display: inline-block;
+  margin: 0px;
+  height: 100%;
+  width: 60%;
+  padding: 0px;
+  float: left;
+}
+
+.message-button {
+  display: inline-block;
+  margin: 0px;
+  height: 100%;
+  border-radius: 0px 4px 4px 0px;
+  width: 20%;
+  padding: 0px;
+  float: left;
+}
+
+.message-type-selector {
+  border-radius: 4px 0px 0px 4px;
+  display: inline-block;
+  margin: 0px;
+  height: 100%;
+  padding: 0px;
+  float: left;
+  width: 20%;
 }

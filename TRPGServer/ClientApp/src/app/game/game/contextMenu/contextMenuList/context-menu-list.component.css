@@ -1,0 +1,11 @@
+.context-list-item {
+  padding: 0px 6px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+.context-list-item:hover {
+  color: aqua;
+}

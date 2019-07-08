@@ -1,4 +1,4 @@
-<div class="container" (contextmenu)="onContext($event)">
+<div class="container-fluid" (contextmenu)="onContext($event)">
   <!-- Context menu -->
   <game-context-menu *ngIf="showContextMenu"
                      [xPosition]="contextX"
@@ -10,8 +10,8 @@
                      (onCancelSelected)="showContextMenu = false"></game-context-menu>
 
   <!-- World Map -->
-  <div class="col-offset-1 col-md-6">
-    <table *ngIf="showMap()" (click)="showContextMenu = false">
+  <div class="col-md-7">
+    <table class="game-map" *ngIf="showMap()" (click)="showContextMenu = false">
       <tr *ngFor="let mapRow of getTileIds(); let i = index">
         <td *ngFor="let mapTileId of mapRow; let j = index">
           <game-tile-node class="node"

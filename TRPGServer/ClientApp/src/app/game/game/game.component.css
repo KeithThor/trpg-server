@@ -1,3 +1,14 @@
+.container-fluid {
+  background-color: black;
+}
+
+.game-map {
+  margin: auto;
+  margin-top: 50px;
+  border-bottom: 4px solid #0f1114;
+  border-right: 4px solid #161a1f;
+}
+
 .prompt {
   position: absolute;
   z-index: 10;
