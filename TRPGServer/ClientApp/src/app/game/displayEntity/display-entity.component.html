@@ -1,4 +1,4 @@
-<div class="entity-container" (click)="onClick()">
+<div [ngStyle]="getEntityStyle()" class="entity-container" (click)="onClick()">
   <div *ngIf="displayName" class="icon-label">
     {{entity.name}}
   </div>

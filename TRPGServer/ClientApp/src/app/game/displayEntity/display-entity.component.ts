@@ -29,4 +29,15 @@ export class DisplayEntityComponent {
   public onClick(): void {
     if (this.clickHandler != null) this.clickHandler(this.entity);
   }
+
+  /**Returns an object containing the custom style for the DisplayEntityComponent. */
+  public getEntityStyle(): any {
+    let value: string;
+    if (this.entity.resources.currentHealth > 0) value = "1.0";
+    else value = "0.4";
+
+    return {
+      "opacity": value
+    };
+  }
 }
