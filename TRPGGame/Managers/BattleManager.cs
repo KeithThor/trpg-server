@@ -415,6 +415,7 @@ namespace TRPGGame.Managers
             if (!action.IsDefending &&
                 !action.IsFleeing)
             {
+                // If using an item, prepare item to have it's charges deducted later
                 if (action.IsUsingItem)
                 {
                     item = actor.EquippedItems.FirstOrDefault(i => i.ConsumableAbility.Id == action.AbilityId);
@@ -426,6 +427,7 @@ namespace TRPGGame.Managers
                     
                     ability = item.ConsumableAbility;
                 }
+                // Not an item, check to see if character is restricted from using Ability
                 else
                 {
                     ability = actor.Abilities.FirstOrDefault(abi => abi.Id == action.AbilityId);
@@ -435,6 +437,7 @@ namespace TRPGGame.Managers
                 }
 
                 var targetFormation = GetFormation(action.TargetFormationId, out bool throwAway);
+                // If the ability has a delay, create a DelayedAbility
                 if (ability.DelayedTurns > 0)
                 {
                     var delayedAbility = _abilityManager.CreateDelayedAbility(actor, ability, action, targetFormation);
@@ -442,15 +445,22 @@ namespace TRPGGame.Managers
                     else _battle.DefenderDelayedAbilities.Add(delayedAbility);
                     affectedEntities = new List<CombatEntity> { actor };
                 }
+                // Not a delayed ability, try to apply effects immediately
                 else
                 {
                     affectedEntities = _abilityManager.Attack(actor, ability, action, targetFormation);
+
+                    // Invalid ability or targets
                     if (affectedEntities == null) return false;
                 }
 
+                // Action was successful, remove the actor from characters free to act
                 _battle.ActionsLeftPerFormation[actorFormation].Remove(actor);
+
+                // If Ability was granted by an item, reduce the charges of the item
                 if (item != null) _equipmentManager.ReduceCharges(actor, item);
 
+                // If any of the affected entities died, remove them from the number of living characters
                 foreach (var entity in affectedEntities)
                 {
                     if (entity.Resources.CurrentHealth <= 0)

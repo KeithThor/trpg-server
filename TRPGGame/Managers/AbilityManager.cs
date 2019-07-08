@@ -48,6 +48,9 @@ namespace TRPGGame.Managers
             var targets = FormationTargeter.GetTargets(ability, targetPosition, targetFormation).ToList();
             if (targets == null || targets.Count == 0) return null;
 
+            // Will be an invalid Ability usage if all targets are dead (later on will add ability to revive)
+            if (!targets.Any(entity => entity.Resources.CurrentHealth > 0)) return null;
+
             ConsumeResources(attacker, ability);
             ApplyEffects(attacker, ability, targets);
 
@@ -151,6 +154,7 @@ namespace TRPGGame.Managers
                 else
                 {
                     _statusEffectManager.RemoveAll(target);
+                    target.Resources.CurrentHealth = 0;
                 }
             }
 

@@ -164,7 +164,7 @@ export class BattleComponent implements OnInit, OnDestroy {
     // Remove actor from activeEntities array
     let activeEntities: ActiveEntities = this.activeEntities.find(ae => ae.ownerId === action.actor.ownerId);
     let removeIndex = activeEntities.entityIds.indexOf(action.actor.id);
-    if (removeIndex != -1) activeEntities.entityIds.splice(removeIndex);
+    if (removeIndex != -1) activeEntities.entityIds.splice(removeIndex, 1);
 
     // Clears selection if the active entity was the actor successfully performing an action
     if (this.activeEntity.id === action.actor.id) this.clearSelection();
@@ -193,7 +193,7 @@ export class BattleComponent implements OnInit, OnDestroy {
 
       if (foundEntity == null) return;
 
-      array[index] = foundEntity;
+      array[index] = entity;
     });
   }
 

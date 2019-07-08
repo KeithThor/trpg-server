@@ -52,8 +52,8 @@ namespace TRPGGame.Services
 
             result += GetDamagePerStat(ability.DamagePerStat, attacker.Stats);
             result += ability.Damage;
-            result += result * (attacker.SecondaryStats.DamagePercentage + 100) / 100;
-            result += ApplyBonusDamage(result, attacker.SecondaryStats.Damage);
+            result = result * (attacker.SecondaryStats.DamagePercentage + 100) / 100;
+            result = ApplyBonusDamage(result, attacker.SecondaryStats.Damage);
 
             if (isCrit)
             {

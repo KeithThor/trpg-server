@@ -99,6 +99,9 @@ namespace TRPGGame.Services
             }
 
             newTargets.RemoveAll(target => toRemove.Contains(target));
+
+            newTargets = newTargets.Select(target => target - change).ToList();
+
             return newTargets;
         }
 
