@@ -7,7 +7,6 @@ import { CombatEntity } from "../model/combat-entity.model";
 import { LocalStorageConstants } from "../../constants";
 import { Formation, FormationConstants } from "../model/formation.model";
 import { SuccessfulAction, BattleAction } from "../model/battle-action.model";
-import { TwoDArray } from "../../shared/static/two-d-array.static";
 import { FormationNodeState } from "../formation/formationGrid/formationNode/formation-node.component";
 import { FormationTargeter } from "../services/formation-targeter.static";
 import { SelectedAbilityData } from "../combatPanel/combat-panel.component";
@@ -45,6 +44,7 @@ export class BattleComponent implements OnInit, OnDestroy {
   public targetFormation: Formation;
   public activeEntityPosition: number;
   public activeAbility: SelectedAbilityData;
+  public errorMessage: string;
 
   private subscriptions: Subscription[];
 
@@ -93,8 +93,9 @@ export class BattleComponent implements OnInit, OnDestroy {
 
     this.subscriptions.push(
       this.battleService.onInvalidAction.subscribe({
-        next: (action) => {
-          this.showInvalidAction(action);
+        next: (invalidAction) => {
+          this.showInvalidAction(invalidAction.action);
+          this.errorMessage = invalidAction.errorMessage;
         }
       })
     );

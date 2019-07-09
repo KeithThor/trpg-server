@@ -8,6 +8,7 @@ using TRPGGame.Entities;
 using TRPGGame.Entities.Combat;
 using TRPGGame.EventArgs;
 using TRPGGame.Repository;
+using TRPGGame.Static;
 using TRPGShared;
 
 namespace TRPGGame.Managers
@@ -341,7 +342,7 @@ namespace TRPGGame.Managers
                 {
                     foreach (var ability in startOfTurnAbilities)
                     {
-                        var entities = _abilityManager.Attack(ability);
+                        var entities = _abilityManager.PerformDelayedAbility(ability);
                         foreach (var entity in entities)
                         {
                             if (!affectedEntities.Contains(entity)) affectedEntities.Add(entity);
@@ -406,7 +407,7 @@ namespace TRPGGame.Managers
                 {
                     foreach (var ability in endOfTurnAbilities)
                     {
-                        var entities = _abilityManager.Attack(ability);
+                        var entities = _abilityManager.PerformDelayedAbility(ability);
                         foreach (var entity in entities)
                         {
                             if (!affectedEntities.Contains(entity)) affectedEntities.Add(entity);
@@ -450,110 +451,85 @@ namespace TRPGGame.Managers
         /// </summary>
         /// <param name="action">The action to perform, containing data about the actor and the abilities used.</param>
         /// <returns></returns>
-        public async Task<bool> PerformActionAsync(BattleAction action)
+        public async Task<BattleActionResult> PerformActionAsync(BattleAction action)
         {
             IEnumerable<CombatEntity> affectedEntities;
             Ability ability = null;
             CombatEntity actor = null;
+            var result = new BattleActionResult { IsSuccess = true };
 
             var statusEffects = await _statusEffectRepo.GetDataAsync();
 
             lock (_key)
             {
-                if (_battle == null) return false;
+                if (_battle == null)
+                {
+                    result.FailureReason = BattleErrorWriter.WriteNotInitiated();
+                    result.IsSuccess = false;
+                    return result;
+                }
 
                 var actorFormation = GetFormation(action.OwnerId, out bool isAttacker);
-                if (actorFormation == null) return false;
+                if (actorFormation == null)
+                {
+                    result.FailureReason = BattleErrorWriter.WriteNotParticipating();
+                    result.IsSuccess = false;
+                    return result;
+                }
 
                 actor = actorFormation.Positions.FirstOrDefaultTwoD(entity => entity != null && entity.Id == action.ActorId);
-                if (actor == null) return false;
+                if (actor == null)
+                {
+                    result.FailureReason = BattleErrorWriter.WriteActorNotFound();
+                    result.IsSuccess = false;
+                    return result;
+                }
 
-                // If actor should not be acting, return null
-                if (!_battle.ActionsLeftPerFormation.ContainsKey(actorFormation)) return false;
-                if (!_battle.ActionsLeftPerFormation[actorFormation].Contains(actor)) return false;
-                if (actor.StatusEffects.Any(se => se.BaseStatus.IsStunned)) return false;
-                
-                Item item = null;
+                // Not player's turn
+                if (_battle.IsDefenderTurn != !isAttacker)
+                {
+                    result.FailureReason = BattleErrorWriter.WriteNotPlayersTurn();
+                    result.IsSuccess = false;
+                    return result;
+                }
+
+                if (!_battle.ActionsLeftPerFormation.ContainsKey(actorFormation))
+                {
+                    result.FailureReason = BattleErrorWriter.WriteNoMoreActions();
+                    result.IsSuccess = false;
+                    return result;
+                }
+
+                if (!_battle.ActionsLeftPerFormation[actorFormation].Contains(actor))
+                {
+                    result.FailureReason = BattleErrorWriter.WriteEntityCannotAct(actor);
+                    result.IsSuccess = false;
+                    return result;
+                }
+
+                if (actor.StatusEffects.Any(se => se.BaseStatus.IsStunned))
+                {
+                    result.FailureReason = BattleErrorWriter.WriteEntityIsStunned(actor);
+                    result.IsSuccess = false;
+                    return result;
+                }
 
                 if (!action.IsDefending &&
                     !action.IsFleeing)
                 {
-                    // If using an item, prepare item to have it's charges deducted later
-                    if (action.IsUsingItem)
-                    {
-                        item = actor.EquippedItems.FirstOrDefault(i => i.ConsumableAbility.Id == action.AbilityId);
-                        if (item == null) item = actor.PlayerInventory
-                                                      .Items
-                                                      .FirstOrDefault(i => i != null && i.ConsumableAbility.Id == action.AbilityId);
+                    affectedEntities = PerformAbility(action,
+                                                      actor,
+                                                      actorFormation,
+                                                      isAttacker,
+                                                      ability,
+                                                      ref result);
 
-                        if (item == null) return false;
-
-                        ability = item.ConsumableAbility;
-                    }
-                    // Not an item, check to see if character is restricted from using Ability
-                    else
-                    {
-                        ability = actor.Abilities.FirstOrDefault(abi => abi.Id == action.AbilityId);
-                        if (ability == null) return false;
-                        if (ability.IsSpell && actor.StatusEffects.Any(se => se.BaseStatus.IsSilenced)) return false;
-                        if (!ability.IsSpell && actor.StatusEffects.Any(se => se.BaseStatus.IsRestricted)) return false;
-                    }
-
-                    var targetFormation = GetFormation(action.TargetFormationId, out bool throwAway);
-                    // If the ability has a delay, create a DelayedAbility
-                    if (ability.DelayedTurns > 0)
-                    {
-                        var delayedAbility = _abilityManager.CreateDelayedAbility(actor, ability, action, targetFormation);
-                        if (isAttacker) _battle.AttackerDelayedAbilities.Add(delayedAbility);
-                        else _battle.DefenderDelayedAbilities.Add(delayedAbility);
-                        affectedEntities = new List<CombatEntity> { actor };
-                    }
-                    // Not a delayed ability, try to apply effects immediately
-                    else
-                    {
-                        affectedEntities = _abilityManager.Attack(actor, ability, action, targetFormation);
-
-                        // Invalid ability or targets
-                        if (affectedEntities == null) return false;
-                    }
-
-                    // Action was successful, remove the actor from characters free to act
-                    _battle.ActionsLeftPerFormation[actorFormation].Remove(actor);
-
-                    // If Ability was granted by an item, reduce the charges of the item
-                    if (item != null) _equipmentManager.ReduceCharges(actor, item);
-
-                    // If any of the affected entities died, remove them from the number of living characters
-                    foreach (var entity in affectedEntities)
-                    {
-                        if (entity.Resources.CurrentHealth <= 0)
-                        {
-                            if (actorFormation.Positions.ContainsTwoD(entity)) _numOfAttackers--;
-                            else _numOfDefenders--;
-                        }
-                    }
-
-                    
+                    if (affectedEntities == null) return result;
                 }
                 // Is defending or fleeing
                 else
                 {
-                    StatusEffect statusEffect;
-                    if (action.IsDefending)
-                    {
-                        statusEffect = statusEffects.FirstOrDefault(se => se.Id == GameplayConstants.DefendingStatusEffectId);
-                    }
-                    else statusEffect = statusEffects.FirstOrDefault(se => se.Id == GameplayConstants.FleeingStatusEffectId);
-
-                    _statusEffectManager.Apply(actor, actor, statusEffect);
-                    _battle.ActionsLeftPerFormation[actorFormation].Remove(actor);
-                    affectedEntities = new List<CombatEntity> { actor };
-
-                    if (action.IsDefending)
-                    {
-                        var nextActiveEntity = GetNextActiveEntity(actorFormation, _battle.ActionsLeftPerFormation[actorFormation]);
-                        if (nextActiveEntity != null) _battle.ActionsLeftPerFormation[actorFormation].Add(nextActiveEntity);
-                    }
+                    affectedEntities = PerformFleeOrDefend(action, actor, statusEffects, actorFormation);
                 }
             }
 
@@ -566,7 +542,153 @@ namespace TRPGGame.Managers
                 ParticipantIds = _participantIds
             }));
 
-            return true;
+            return result;
+        }
+
+        /// <summary>
+        /// Performs an ability using the specified parameters.
+        /// </summary>
+        /// <param name="action">The object containing the original battle commands.</param>
+        /// <param name="actor">The CombatEntity performing the ability.</param>
+        /// <param name="actorFormation">The Formation of the CombatEntity performing the Ability.</param>
+        /// <param name="isAttacker">Set to true if the CombatEntity is on the attacking side in battle.</param>
+        /// <param name="ability">The Ability being performed.</param>
+        /// <param name="result">A reference to the BattleActionResult object.</param>
+        /// <returns>Returns an IEnumerable of CombatEntities affected by the Ability.</returns>
+        private IEnumerable<CombatEntity> PerformAbility(BattleAction action,
+                                                         CombatEntity actor,
+                                                         Formation actorFormation,
+                                                         bool isAttacker,
+                                                         Ability ability,
+                                                         ref BattleActionResult result)
+        {
+            IEnumerable<CombatEntity> affectedEntities;
+            Item item = null;
+
+            // If using an item, prepare item to have it's charges deducted later
+            if (action.IsUsingItem)
+            {
+                item = actor.EquippedItems.FirstOrDefault(i => i.ConsumableAbility.Id == action.AbilityId);
+                if (item == null) item = actor.PlayerInventory
+                                              .Items
+                                              .FirstOrDefault(i => i != null && i.ConsumableAbility.Id == action.AbilityId);
+
+                if (item == null)
+                {
+                    result.FailureReason = BattleErrorWriter.WriteItemDoesntExist(actor);
+                    result.IsSuccess = false;
+                    return null;
+                }
+
+                ability = item.ConsumableAbility;
+            }
+            // Not an item, check to see if character is restricted from using Ability
+            else
+            {
+                ability = actor.Abilities.FirstOrDefault(abi => abi.Id == action.AbilityId);
+                if (ability == null)
+                {
+                    result.FailureReason = BattleErrorWriter.WriteAbilityDoesntExist(actor);
+                    result.IsSuccess = false;
+                    return null;
+                }
+
+                if (ability.IsSpell && actor.StatusEffects.Any(se => se.BaseStatus.IsSilenced))
+                {
+                    result.FailureReason = BattleErrorWriter.WriteEntityIsSilenced(actor, ability);
+                    result.IsSuccess = false;
+                    return null;
+                }
+
+                if (!ability.IsSpell && actor.StatusEffects.Any(se => se.BaseStatus.IsRestricted))
+                {
+                    result.FailureReason = BattleErrorWriter.WriteEntityIsRestricted(actor, ability);
+                    result.IsSuccess = false;
+                    return null;
+                }
+            }
+
+            var targetFormation = GetFormation(action.TargetFormationId, out bool throwAway);
+            // If the ability has a delay, create a DelayedAbility
+            if (ability.DelayedTurns > 0)
+            {
+                var delayedAbilityResult = _abilityManager.CreateDelayedAbility(actor, ability, action, targetFormation);
+                if (delayedAbilityResult.DelayedAbility == null)
+                {
+                    result.FailureReason = delayedAbilityResult.FailureReason;
+                    result.IsSuccess = false;
+                    return null;
+                }
+
+                if (isAttacker) _battle.AttackerDelayedAbilities.Add(delayedAbilityResult.DelayedAbility);
+                else _battle.DefenderDelayedAbilities.Add(delayedAbilityResult.DelayedAbility);
+                affectedEntities = new List<CombatEntity> { actor };
+            }
+            // Not a delayed ability, try to apply effects immediately
+            else
+            {
+                var abilityResult = _abilityManager.PerformAbility(actor, ability, action, targetFormation);
+                if (abilityResult.FailureReason != null)
+                {
+                    result.FailureReason = abilityResult.FailureReason;
+                    result.IsSuccess = false;
+                    return null;
+                }
+
+                affectedEntities = abilityResult.AffectedEntities;
+            }
+
+            // Action was successful, remove the actor from characters free to act
+            _battle.ActionsLeftPerFormation[actorFormation].Remove(actor);
+
+            // If Ability was granted by an item, reduce the charges of the item
+            if (item != null) _equipmentManager.ReduceCharges(actor, item);
+
+            // If any of the affected entities died, remove them from the number of living characters
+            foreach (var entity in affectedEntities)
+            {
+                if (entity.Resources.CurrentHealth <= 0)
+                {
+                    if (actorFormation.Positions.ContainsTwoD(entity)) _numOfAttackers--;
+                    else _numOfDefenders--;
+                }
+            }
+
+            return affectedEntities;
+        }
+
+        /// <summary>
+        /// Performs a flee or defend action for the provided CombatEntity.
+        /// </summary>
+        /// <param name="action">The object holding the original action.</param>
+        /// <param name="actor">The CombatEntity performing the flee or defend action.</param>
+        /// <param name="statusEffects">An IEnumerable containing all of the possible StatusEffects in the game.</param>
+        /// <param name="actorFormation">The formation of the CombatEntity performing the flee or defend action.</param>
+        /// <returns>Contains an IEnumerable of CombatEntities affected by the flee or defend command.</returns>
+        private IEnumerable<CombatEntity> PerformFleeOrDefend(BattleAction action,
+                                                              CombatEntity actor,
+                                                              IEnumerable<StatusEffect> statusEffects,
+                                                              Formation actorFormation)
+        {
+            IEnumerable<CombatEntity> affectedEntities;
+            StatusEffect statusEffect;
+            if (action.IsDefending)
+            {
+                statusEffect = statusEffects.FirstOrDefault(se => se.Id == GameplayConstants.DefendingStatusEffectId);
+            }
+            else statusEffect = statusEffects.FirstOrDefault(se => se.Id == GameplayConstants.FleeingStatusEffectId);
+
+            _statusEffectManager.Apply(actor, actor, statusEffect);
+            _battle.ActionsLeftPerFormation[actorFormation].Remove(actor);
+            affectedEntities = new List<CombatEntity> { actor };
+
+            if (action.IsDefending)
+            {
+                var nextActiveEntity = GetNextActiveEntity(actorFormation, _battle.ActionsLeftPerFormation[actorFormation]);
+                if (nextActiveEntity != null) _battle.ActionsLeftPerFormation[actorFormation].Add(nextActiveEntity);
+            }
+
+            return affectedEntities;
         }
 
         /// <summary>

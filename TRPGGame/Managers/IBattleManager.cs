@@ -8,6 +8,22 @@ using TRPGGame.EventArgs;
 namespace TRPGGame.Managers
 {
     /// <summary>
+    /// Object containing the result of PerformActionAsync.
+    /// </summary>
+    public class BattleActionResult
+    {
+        /// <summary>
+        /// If the action was a failure, will contain the reason for the failure.
+        /// </summary>
+        public string FailureReason { get; set; }
+
+        /// <summary>
+        /// Returns true if the action was a success.
+        /// </summary>
+        public bool IsSuccess { get; set; }
+    }
+
+    /// <summary>
     /// Manager responsible for handling Battle-related functions for a single battle instance.
     /// </summary>
     public interface IBattleManager
@@ -66,7 +82,7 @@ namespace TRPGGame.Managers
         /// </summary>
         /// <param name="action">The action to perform, containing data about the actor and the abilities used.</param>
         /// <returns></returns>
-        Task<bool> PerformActionAsync(BattleAction action);
+        Task<BattleActionResult> PerformActionAsync(BattleAction action);
 
         /// <summary>
         /// Starts a Battle instance between the attackers and defenders.

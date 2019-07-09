@@ -8,6 +8,7 @@ import { StartOfTurnData } from "../model/start-of-turn-data.model";
 import { CombatEntity } from "../model/combat-entity.model";
 import { Battle } from "../model/battle.model";
 import { JoinedBattleArgs } from "../model/joined-battle.model";
+import { InvalidAction } from "../model/invalid-action.model";
 
 /**Service that receives and transmits data from the server about the battle the user is currently in.
  * Also responsible for sending the user's actions in battle to the server.*/
@@ -19,7 +20,7 @@ export class BattleService {
 
   private connection: HubConnection;
   public onInitialized: ReplaySubject<Battle>;
-  public onInvalidAction: ReplaySubject<BattleAction>;
+  public onInvalidAction: ReplaySubject<InvalidAction>;
   public onStartOfTurn: ReplaySubject<StartOfTurnData>;
   public onSuccessfulAction: ReplaySubject<SuccessfulAction>;
   public onEndOfTurn: ReplaySubject<CombatEntity[]>;
@@ -43,7 +44,7 @@ export class BattleService {
       .build();
 
     this.connection.on("initialized", (data: Battle) => this.onInitialized.next(data));
-    this.connection.on("invalidAction", (action: BattleAction) => this.onInvalidAction.next(action));
+    this.connection.on("invalidAction", (action: InvalidAction) => this.onInvalidAction.next(action));
     this.connection.on("startOfTurn", (data: StartOfTurnData) => this.onStartOfTurn.next(data));
     this.connection.on("endOfTurn", (data: CombatEntity[]) => this.onEndOfTurn.next(data));
     this.connection.on("endBattle", (didAttackersWin: boolean) => this.onEndOfBattle.next(didAttackersWin));

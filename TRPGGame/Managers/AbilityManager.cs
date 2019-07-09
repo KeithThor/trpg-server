@@ -5,6 +5,7 @@ using System.Text;
 using TRPGGame.Entities;
 using TRPGGame.Entities.Combat;
 using TRPGGame.Services;
+using TRPGGame.Static;
 using TRPGShared;
 
 namespace TRPGGame.Managers
@@ -31,14 +32,26 @@ namespace TRPGGame.Managers
         /// <param name="action">Contains info about the targets for the attack.</param>
         /// <param name="targetFormation">The Formation that the CombatEntity is targeting with its action.</param>
         /// <returns></returns>
-        public IEnumerable<CombatEntity> Attack(CombatEntity attacker,
-                                                Ability ability,
-                                                BattleAction action,
-                                                Formation targetFormation)
+        public AbilityResult PerformAbility(CombatEntity attacker,
+                                            Ability ability,
+                                            BattleAction action,
+                                            Formation targetFormation)
         {
+            var result = new AbilityResult();
+
+            // Target position is out of bounds
             if (!ability.IsPointBlank && !ability.IsPositionStatic &&
-                (action.TargetPosition > 9 || action.TargetPosition < 1)) return null;
-            if (!IsValidAttack(attacker, ability)) return null;
+                (action.TargetPosition > 9 || action.TargetPosition < 1))
+            {
+                result.FailureReason = BattleErrorWriter.WriteTargetPositionOutOfBounds();
+                return result;
+            }
+
+            if (!IsValidAttack(attacker, ability, out string failureReason))
+            {
+                result.FailureReason = failureReason;
+                return result;
+            }
 
             int targetPosition = action.TargetPosition;
             if (ability.IsPointBlank)
@@ -46,18 +59,28 @@ namespace TRPGGame.Managers
                 targetPosition = GetTargetPosition(attacker, targetFormation);
             }
             var targets = FormationTargeter.GetTargets(ability, targetPosition, targetFormation).ToList();
-            if (targets == null || targets.Count == 0) return null;
+            if (targets == null || targets.Count == 0)
+            {
+                result.FailureReason = BattleErrorWriter.WriteNoTargets();
+                return result;
+            }
 
             // Filter out all dead targets
             targets = targets.Where(entity => entity.Resources.CurrentHealth > 0).ToList();
             // Will be an invalid Ability usage if all targets are dead (later on will add ability to revive)
-            if (targets.Count == 0) return null;
+            if (targets.Count == 0)
+            {
+                result.FailureReason = BattleErrorWriter.WriteAllTargetsAreDead();
+                return result;
+            }
 
             ConsumeResources(attacker, ability);
             ApplyEffects(attacker, ability, targets);
 
             targets.Add(attacker);
-            return targets;
+
+            result.AffectedEntities = targets;
+            return result;
         }
         
         /// <summary>
@@ -66,7 +89,7 @@ namespace TRPGGame.Managers
         /// </summary>
         /// <param name="ability">The DelayedAbility to activate the effects of.</param>
         /// <returns></returns>
-        public IEnumerable<CombatEntity> Attack(DelayedAbility ability)
+        public IEnumerable<CombatEntity> PerformDelayedAbility(DelayedAbility ability)
         {
             var affectedEntities = new List<CombatEntity>();
             var targetPosition = ability.TargetPosition;
@@ -87,16 +110,13 @@ namespace TRPGGame.Managers
         /// <param name="ability">The Ability to get consumed resource amounts from.</param>
         private static void ConsumeResources(CombatEntity attacker, Ability ability)
         {
-            int totalActionPointCost = ability.ActionPointCost - attacker.SecondaryStats.ActionPointCostReduction;
-            totalActionPointCost = totalActionPointCost * (100 - attacker.SecondaryStats.ActionPointCostReductionPercentage) / 100;
-            attacker.Resources.CurrentActionPoints -= totalActionPointCost;
+            int actionPointCost = ResourceCalculator.GetTotalActionPointCost(attacker, ability);
+            int manaCost = ResourceCalculator.GetTotalManaCost(attacker, ability);
+            int healthCost = ResourceCalculator.GetTotalHealthCost(attacker, ability);
 
-            int totalManaCost = ability.ManaCost + (attacker.Resources.MaxMana * ability.ManaPercentCost / 100);
-            totalManaCost -= attacker.SecondaryStats.ManaCostReduction;
-            totalManaCost = totalManaCost * (100 - attacker.SecondaryStats.ManaCostReductionPercentage) / 100;
-            attacker.Resources.CurrentMana -= totalManaCost;
-
-            attacker.Resources.CurrentHealth -= ability.HealthCost + (attacker.Resources.MaxHealth * ability.HealthPercentCost / 100);
+            attacker.Resources.CurrentActionPoints -= actionPointCost;
+            attacker.Resources.CurrentMana -= manaCost;
+            attacker.Resources.CurrentHealth -= healthCost;
         }
 
         /// <summary>
@@ -107,18 +127,34 @@ namespace TRPGGame.Managers
         /// <param name="action">The object containing details about the action being performed.</param>
         /// <param name="targetFormation">The Formation that the CombatEntity is targeting with its action.</param>
         /// <returns></returns>
-        public DelayedAbility CreateDelayedAbility(CombatEntity attacker, Ability ability, BattleAction action, Formation targetFormation)
+        public DelayedAbilityResult CreateDelayedAbility(CombatEntity attacker,
+                                                         Ability ability,
+                                                         BattleAction action,
+                                                         Formation targetFormation)
         {
+            var result = new DelayedAbilityResult();
+
+            // Target out of bounds
             if (!ability.IsPointBlank && !ability.IsPositionStatic &&
-                (action.TargetPosition > 9 || action.TargetPosition < 1)) return null;
-            if (!IsValidAttack(attacker, ability)) return null;
+                (action.TargetPosition > 9 || action.TargetPosition < 1))
+            {
+                result.FailureReason = BattleErrorWriter.WriteTargetPositionOutOfBounds();
+                return result;
+            }
+
+            if (!IsValidAttack(attacker, ability, out string failureReason))
+            {
+                result.FailureReason = failureReason;
+                return result;
+            }
             
             int targetPosition = action.TargetPosition;
             if (ability.IsPointBlank) targetPosition = GetTargetPosition(attacker, targetFormation);
 
             ConsumeResources(attacker, ability);
             bool isCrit = IsCritical(attacker, ability);
-            return new DelayedAbility
+
+            result.DelayedAbility = new DelayedAbility
             {
                 Actor = attacker,
                 BaseAbility = ability,
@@ -129,6 +165,8 @@ namespace TRPGGame.Managers
                 IsCrit = isCrit,
                 TurnsLeft = ability.DelayedTurns
             };
+
+            return result;
         }
 
         /// <summary>
@@ -203,16 +241,31 @@ namespace TRPGGame.Managers
         /// <param name="attacker">The attacking CombatEntity.</param>
         /// <param name="ability">The ability being used by the CombatEntity.</param>
         /// <returns></returns>
-        private bool IsValidAttack(CombatEntity attacker, Ability ability)
+        private bool IsValidAttack(CombatEntity attacker, Ability ability, out string failureReason)
         {
-            if (attacker.Resources.CurrentActionPoints < ability.ActionPointCost) return false;
-            if (attacker.Resources.CurrentMana < ability.ManaCost) return false;
-            if (attacker.Resources.CurrentHealth < ability.HealthCost) return false;
+            failureReason = "";
 
-            var manaCost = attacker.Resources.MaxMana * ability.ManaPercentCost / 100;
-            if (attacker.Resources.CurrentMana < manaCost) return false;
-            var healthCost = attacker.Resources.MaxHealth * ability.HealthPercentCost / 100;
-            if (attacker.Resources.CurrentHealth < healthCost) return false;
+            int actionPointCost = ResourceCalculator.GetTotalActionPointCost(attacker, ability);
+            int manaCost = ResourceCalculator.GetTotalManaCost(attacker, ability);
+            int healthCost = ResourceCalculator.GetTotalHealthCost(attacker, ability);
+
+            if (attacker.Resources.CurrentActionPoints < actionPointCost)
+            {
+                failureReason = BattleErrorWriter.WriteInsufficientActionPoints(attacker, ability);
+                return false;
+            }
+
+            if (attacker.Resources.CurrentMana < manaCost)
+            {
+                failureReason = BattleErrorWriter.WriteInsufficientMana(attacker, ability);
+                return false;
+            }
+
+            if (attacker.Resources.CurrentHealth < healthCost)
+            {
+                failureReason = BattleErrorWriter.WriteInsufficientHealth(attacker, ability);
+                return false;
+            }
 
             return true;
         }

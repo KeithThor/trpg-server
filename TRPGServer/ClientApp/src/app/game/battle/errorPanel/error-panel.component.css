@@ -1,0 +1,10 @@
+.error-panel {
+  background-color: black;
+  width: 200px;
+}
+
+.error-panel-text {
+  text-wrap: normal;
+  padding: 5px;
+  color: white;
+}

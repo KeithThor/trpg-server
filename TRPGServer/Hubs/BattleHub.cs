@@ -64,8 +64,14 @@ namespace TRPGServer.Hubs
             var battleManager = manager.GetBattleManager();
             if (battleManager != null)
             {
-                var success = await battleManager.PerformActionAsync(action);
-                if (!success) await Clients.Caller.SendAsync("invalidAction", action);
+                var result = await battleManager.PerformActionAsync(action);
+                var response = new
+                {
+                    Action = action,
+                    ErrorMessage = result.FailureReason
+                };
+
+                if (!result.IsSuccess) await Clients.Caller.SendAsync("invalidAction", response);
             }
         }
     }

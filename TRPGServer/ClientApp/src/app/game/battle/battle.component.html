@@ -11,6 +11,10 @@
       <game-timer-component [(timeLeft)]="secondsInTurn"
                             class="game-timer"></game-timer-component>
     </div>
+
+    <div class="hud-component">
+      <game-error-panel [(errorMessage)]="errorMessage"></game-error-panel>
+    </div>
   </div>
 
   <!-- Formations -->
