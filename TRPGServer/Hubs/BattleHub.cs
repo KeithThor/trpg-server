@@ -57,10 +57,14 @@ namespace TRPGServer.Hubs
         {
             var userId = Guid.Parse(Context.UserIdentifier);
             action.OwnerId = userId;
-            var manager = _playerEntityManagerStore.GetPlayerEntityManager(userId).GetBattleManager();
-            if (manager != null)
+
+            var manager = _playerEntityManagerStore.GetPlayerEntityManager(userId);
+            manager.SetDateAccessed();
+
+            var battleManager = manager.GetBattleManager();
+            if (battleManager != null)
             {
-                var success = await manager.PerformActionAsync(action);
+                var success = await battleManager.PerformActionAsync(action);
                 if (!success) await Clients.Caller.SendAsync("invalidAction", action);
             }
         }

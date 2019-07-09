@@ -297,6 +297,7 @@ namespace TRPGGame.Managers
             Task.Run(() => EndOfBattleEvent(this, new EndOfBattleEventArgs
             {
                 ParticipantIds = _participantIds,
+                AiWorldEntityIds = _aiParticipantIds,
                 DidAttackersWin = attackersWin
             }));
         }

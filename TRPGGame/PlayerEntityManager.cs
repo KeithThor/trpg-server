@@ -459,6 +459,18 @@ namespace TRPGGame
         }
 
         /// <summary>
+        /// Sets the date last accessed to the current time, delaying the point at which this PlayerEntityManager gets
+        /// garbage collected automatically.
+        /// </summary>
+        public void SetDateAccessed()
+        {
+            lock (_lock)
+            {
+                LastAccessed = DateTime.Now;
+            }
+        }
+
+        /// <summary>
         /// Gets the map that the player entity current resides in.
         /// </summary>
         /// <returns>The read-only instance of the map.</returns>

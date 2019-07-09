@@ -146,6 +146,7 @@ export class BattleComponent implements OnInit, OnDestroy {
    */
   private applyAction(action: SuccessfulAction): void {
     this.removeActiveEntity(action);
+    this.setNextActiveEntity();
 
     if (action.ability != null) {
       // Animate ability effects
@@ -172,8 +173,8 @@ export class BattleComponent implements OnInit, OnDestroy {
 
   /**Clears the currently active Entity and Ability. */
   private clearSelection(): void {
-    this.activeEntity = null;
     this.activeAbility = null;
+    this.targetPosition = null;
     this.targetPositions = null;
   }
 
@@ -182,18 +183,20 @@ export class BattleComponent implements OnInit, OnDestroy {
    * @param entities An array of all newly updated CombatEntities.
    */
   private applyEntityChanges(entities: CombatEntity[]): void {
-    entities.forEach((entity, index, array) => {
+    entities.forEach(entity => {
       let formation: Formation = this.attackingFormations.find(f => f.ownerId === entity.ownerId);
       if (formation == null) formation = this.defendingFormations.find(f => f.ownerId === entity.ownerId);
       if (formation == null) return;
-
-      let foundEntity = TwoDArray.find(formation.positions, e => {
-        return e != null && e.id === entity.id;
-      });
-
-      if (foundEntity == null) return;
-
-      array[index] = entity;
+      
+      for (var i = 0; i < formation.positions.length; i++) {
+        for (var j = 0; j < formation.positions[i].length; j++) {
+          if (formation.positions[i][j] == null) continue;
+          if (formation.positions[i][j].id === entity.id) {
+            formation.positions[i][j] = entity;
+            return;
+          }
+        }
+      }
     });
   }
 
@@ -302,7 +305,6 @@ export class BattleComponent implements OnInit, OnDestroy {
       this.setNextActiveEntity();
     }
     else {
-      this.activeEntity = null;
       this.activeEntityPosition = null;
       this.targetFormation = null;
       this.targetPosition = null;
@@ -509,7 +511,10 @@ export class BattleComponent implements OnInit, OnDestroy {
 
     if (nodeState.entity == null) return "";
     if (this.hoveredEntity != null && nodeState.entity.id === this.hoveredEntity.id) return "formation-node-hovered";
-    if (this.activeEntity != null && this.activeEntity.id === nodeState.entity.id) return "formation-node-active";
+
+    if (this.isDefendersTurn !== this.isUserAttacker) {
+      if (this.activeEntity != null && this.activeEntity.id === nodeState.entity.id) return "formation-node-active";
+    }
 
     // If the node contains an entity that can act but is not active
     if (this.activeEntities != null) {

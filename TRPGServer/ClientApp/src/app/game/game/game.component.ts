@@ -168,6 +168,7 @@ export class GameComponent implements OnInit, OnDestroy {
    * @param entity The WorldEntity that the user selected to Attack.
    */
   public onAttackContext(entity: WorldEntity): void {
+    this.showContextMenu = false;
     this.movementManager.actOnEntity(entity, MovementConstants.attack);
   }
 
@@ -176,6 +177,7 @@ export class GameComponent implements OnInit, OnDestroy {
    * @param entity The WorldEntity that the user selected to join.
    */
   public onJoinContext(entity: WorldEntity): void {
+    this.showContextMenu = false;
     this.movementManager.actOnEntity(entity, MovementConstants.join);
   }
 
