@@ -1,43 +1,54 @@
 .health {
   color: #ba0000;
+  text-shadow: 1px 1px 1px black;
 }
 
 .mana {
   color: #030072;
+  text-shadow: 1px 1px 1px black;
 }
 
 .action-point {
   color: #05890c;
+  text-shadow: 1px 1px 1px black;
 }
 
 .blunt {
   color: #b7b7b7;
+  text-shadow: 1px 1px 1px black;
 }
 
 .sharp {
   color: #e5e5e5;
+  text-shadow: 1px 1px 1px black;
 }
 
 .fire {
   color: #db0000;
+  text-shadow: 1px 1px 1px black;
 }
 
 .frost {
   color: #4ee0d1;
+  text-shadow: 1px 1px 1px black;
 }
 
 .lightning {
   color: #c1b207;
+  text-shadow: 1px 1px 1px black;
 }
 
 .earth {
   color: #007703;
+  text-shadow: 1px 1px 1px black;
 }
 
 .holy {
   color: #f7c759;
+  text-shadow: 1px 1px 1px black;
 }
 
 .shadow {
   color: #540043;
+  text-shadow: 1px 1px 1px black;
 }

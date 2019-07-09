@@ -14,6 +14,7 @@ export class FormationGridComponent {
   @Input() formation: Formation;
   @Input() specialIconsFunc: (entity: CombatEntity) => string[];
   @Input() getNodeStateFunc: (nodeState: FormationNodeState) => string;
+  @Input() getNameStylesFunc: (formation: Formation) => any;
   @Output() onNodeClicked: EventEmitter<FormationNodeState> = new EventEmitter();
   @Output() onNodeMouseEnter: EventEmitter<FormationNodeState> = new EventEmitter();
   @Output() onNodeMouseLeave: EventEmitter<FormationNodeState> = new EventEmitter();
@@ -52,6 +53,12 @@ export class FormationGridComponent {
    */
   public nodeContextMenu(args: FormationNodeState): void {
     this.onNodeContextMenu.emit(args);
+  }
+
+  /**Gets a custom style object for this Formation's name. */
+  public getNameStyles(): any {
+    if (this.getNameStylesFunc != null) return this.getNameStylesFunc(this.formation);
+    else return {};
   }
 
   /**

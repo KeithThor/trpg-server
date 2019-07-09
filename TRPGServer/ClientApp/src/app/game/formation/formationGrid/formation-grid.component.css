@@ -1,0 +1,20 @@
+.formation-ally {
+  color: lightblue;
+}
+
+.formation-enemy {
+  color: red;
+}
+
+.formation-grid {
+  margin: auto;
+  float: left;
+}
+
+.formation-name {
+  text-align: center;
+}
+
+.formation-player {
+  color: limegreen;
+}

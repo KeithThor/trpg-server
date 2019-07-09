@@ -39,7 +39,7 @@ namespace TRPGServer.Services
             var token = new JwtSecurityToken(
                 issuer: "localhost",
                 audience: "players",
-                expires: DateTime.Now.AddMinutes(30),
+                expires: DateTime.Now.AddMinutes(120),
                 signingCredentials: signingCredentials,
                 claims: claims);
 

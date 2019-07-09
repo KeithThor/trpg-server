@@ -1,9 +1,9 @@
 <div class="container" (contextmenu)="onContextMenu($event)">
   <!-- Top HUD elements -->
   <div class="row">
-    <!-- Entity resources -->
+    <!-- ActiveEntity resources -->
     <div class="hud-component">
-      <game-entity-resource [entity]="hoveredEntity == null ? activeEntity: hoveredEntity"></game-entity-resource>
+      <game-entity-resource [entity]="activeEntity"></game-entity-resource>
     </div>
 
     <!-- Timer -->
@@ -12,8 +12,14 @@
                             class="game-timer"></game-timer-component>
     </div>
 
+    <!-- Error Message Component -->
     <div class="hud-component">
       <game-error-panel [(errorMessage)]="errorMessage"></game-error-panel>
+    </div>
+
+    <!-- HoveredEntity resources -->
+    <div class="hud-component">
+      <game-entity-resource [entity]="hoveredEntity"></game-entity-resource>
     </div>
   </div>
 
@@ -22,8 +28,8 @@
     <!-- Attacking formations -->
     <div class="col-md-5">
       <div *ngFor="let formation of attackingFormations">
-        <div class="formation-name" [ngClass]="getFormationNameStyle(formation)">{{formation.name}}</div>
         <game-formation-grid [formation]="formation"
+                             [getNameStylesFunc]="getFormationNameStyle.bind(this)"
                              [getNodeStateFunc]="getNodeState.bind(this)"
                              (onMouseEnter)="onMouseEnterFormationGrid($event)"
                              (onMouseLeave)="targetFormation = null"
@@ -37,6 +43,7 @@
     <div class="col-md-5">
       <game-formation-grid *ngFor="let formation of defendingFormations"
                            [formation]="formation"
+                           [getNameStylesFunc]="getFormationNameStyle.bind(this)"
                            [getNodeStateFunc]="getNodeState.bind(this)"
                            (onMouseEnter)="onMouseEnterFormationGrid($event)"
                            (onMouseLeave)="targetFormation = null"

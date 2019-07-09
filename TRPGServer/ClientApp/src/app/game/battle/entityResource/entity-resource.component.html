@@ -1,17 +1,13 @@
-<div *ngIf="entity != null">
+<div class="entity-resource-card" *ngIf="entity != null">
   <!-- Entity viewer -->
   <div class="resource-block">
-    <game-display-entity [entity]="entity"
-                         [displayName]="false"></game-display-entity>
+    <!--<game-display-entity [entity]="entity"
+                         [displayName]="false"></game-display-entity>-->
+    <game-entity-card [entity]="entity"></game-entity-card>
   </div>
 
   <!-- Resource viewer -->
   <div class="resource-block">
-    <!-- Entity name -->
-    <div>
-      {{entity.name}}
-    </div>
-
     <div>
       <!-- Health bar -->
       <div class="resource-component">
@@ -31,7 +27,7 @@
 
       <!-- Action points -->
       <div>
-        Action Points: {{entity.resources.actionPoints}}
+        Action Points: <span class="action-point">{{entity.resources.currentActionPoints}}</span>
       </div>
     </div>
   </div>
