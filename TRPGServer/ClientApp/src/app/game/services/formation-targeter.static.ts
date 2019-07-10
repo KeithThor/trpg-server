@@ -53,7 +53,7 @@ export class FormationTargeter {
       let row = this.getRow(targetPosition);
       let entityRow = targetFormation.positions[row - 1];
       for (var i = 0; i < column - 1; i++) {
-        if (entityRow[i] != null) return true;
+        if (entityRow[i] != null && entityRow[i].resources.currentHealth > 0) return true;
       }
     }
 

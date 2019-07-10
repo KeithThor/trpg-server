@@ -19,6 +19,8 @@ export class StateHandlerService {
       case PlayerStateConstants.makeFormation:
         await this.router.navigateByUrl("/formation");
         break;
+      case PlayerStateConstants.free:
+        await this.router.navigateByUrl("/game");
       default:
         break;
     }

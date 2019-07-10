@@ -69,10 +69,10 @@ namespace TRPGGame.Managers
         /// <param name="args"></param>
         private void OnEndOfBattle(object sender, EndOfBattleEventArgs args)
         {
-            var areAllEntitiesDead = _entity.ActiveFormation.Positions
-                                            .AnyTwoD(entity => entity != null && entity.Resources.CurrentHealth > 0);
+            var areAnyEntitiesLiving = _entity.ActiveFormation.Positions
+                                              .AnyTwoD(entity => entity != null && entity.Resources.CurrentHealth > 0);
 
-            if (areAllEntitiesDead)
+            if (!areAnyEntitiesLiving)
             {
                 _mapManager.RemoveEntity(_entity);
                 _mapBattleManager.OnCreatedBattle -= OnCreatedBattle;
@@ -82,7 +82,7 @@ namespace TRPGGame.Managers
                 });
             }
 
-            _isMovementDisabled = areAllEntitiesDead;
+            _isMovementDisabled = !areAnyEntitiesLiving;
             _battleManager.EndOfBattleEvent -= OnEndOfBattle;
         }
 

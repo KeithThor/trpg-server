@@ -47,7 +47,7 @@ namespace TRPGGame.Services
                     var entityRow = targetFormation.Positions[row - 1];
                     for (int i = 0; i < column - 1; i++)
                     {
-                        if (entityRow[i] != null) return null;
+                        if (entityRow[i] != null && entityRow[i].Resources.CurrentHealth > 0) return null;
                     }
                 }
             }

@@ -475,10 +475,8 @@ export class BattleComponent implements OnInit, OnDestroy {
    * @param args
    */
   public onNodeMouseEnter(args: FormationNodeState): void {
-    if (this.activeAbility == null) {
-      this.hoveredEntity = args.entity;
-      return;
-    }
+    this.hoveredEntity = args.entity;
+    if (this.activeAbility == null) return;
 
     if (this.targetFormation == null) return;
     if (!this.isValidTarget(args)) return;
@@ -510,7 +508,7 @@ export class BattleComponent implements OnInit, OnDestroy {
 
     // Allow the user to attack its own formation even if the active ability can be blocked by the formation
     if (this.targetFormation.ownerId === this.userId) return true;
-
+    
     let positionNumber = args.coordinate.positionY * FormationConstants.maxColumns + args.coordinate.positionX + 1;
     return !FormationTargeter.isTargetBlocked(this.activeAbility.ability, positionNumber, this.targetFormation);
   }

@@ -361,6 +361,7 @@ namespace TRPGGame
 
             if (_battleManager != null)
             {
+                _battleManager.EndOfBattleEvent += OnEndOfBattle;
                 _stateManager.SetPlayerInCombat(PlayerId);
                 Task.Run(() => OnJoinBattleSuccess?.Invoke(this, new JoinBattleSuccessEventArgs
                 {

@@ -76,17 +76,20 @@ namespace TRPGGame.Managers
         /// </summary>
         public void OnSecondElapsed()
         {
-            if (!_isBattleActive) return;
-            _secondsElapsedInTurn++;
-            if (_battle != null && DateTime.Now >= _battle.TurnExpiration)
+            lock (_key)
             {
-                 _secondsElapsedInTurn = 0;
-                _battle.TurnExpiration = DateTime.MaxValue;
+                if (!_isBattleActive) return;
+                _secondsElapsedInTurn++;
+                if (_battle != null && DateTime.Now >= _battle.TurnExpiration)
+                {
+                    _secondsElapsedInTurn = 0;
+                    _battle.TurnExpiration = DateTime.MaxValue;
 
-                EndTurn();
+                    EndTurn();
+                }
+
+                // Make Ai act here
             }
-
-            // Make Ai act here
         }
 
         /// <summary>

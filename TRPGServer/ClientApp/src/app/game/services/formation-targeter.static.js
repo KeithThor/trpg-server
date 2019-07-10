@@ -52,7 +52,7 @@ var FormationTargeter = /** @class */ (function () {
             var row = this.getRow(targetPosition);
             var entityRow = targetFormation.positions[row - 1];
             for (var i = 0; i < column - 1; i++) {
-                if (entityRow[i] != null)
+                if (entityRow[i] != null && entityRow[i].resources.currentHealth > 0)
                     return true;
             }
         }
