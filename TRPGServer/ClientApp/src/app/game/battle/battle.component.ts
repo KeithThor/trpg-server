@@ -10,6 +10,7 @@ import { SuccessfulAction, BattleAction } from "../model/battle-action.model";
 import { FormationNodeState } from "../formation/formationGrid/formationNode/formation-node.component";
 import { FormationTargeter } from "../services/formation-targeter.static";
 import { SelectedAbilityData } from "../combatPanel/combat-panel.component";
+import { GameplayConstants } from "../gameplay-constants.static";
 
 /**Component responsible for displaying to the user the state of a battle as well as allowing
  * the user to perform actions in battle.*/
@@ -184,7 +185,14 @@ export class BattleComponent implements OnInit, OnDestroy {
    * @param entities An array of all newly updated CombatEntities.
    */
   private applyEntityChanges(entities: CombatEntity[]): void {
-    entities.forEach(entity => {
+    let playerEntities: CombatEntity[] = [];
+    let aiEntities = entities.filter(entity => {
+      if (entity.ownerId !== GameplayConstants.aiId) playerEntities.push(entity);
+      return entity.ownerId === GameplayConstants.aiId;
+    });
+
+    // Update a player's CombatEntity
+    playerEntities.forEach(entity => {
       let formation: Formation = this.attackingFormations.find(f => f.ownerId === entity.ownerId);
       if (formation == null) formation = this.defendingFormations.find(f => f.ownerId === entity.ownerId);
       if (formation == null) return;
@@ -199,6 +207,35 @@ export class BattleComponent implements OnInit, OnDestroy {
         }
       }
     });
+
+    // Update the ai's CombatEntity
+    if (aiEntities.length > 0) {
+      let aiFormations = this.attackingFormations.concat(this.defendingFormations)
+        .filter(formation => formation.ownerId === GameplayConstants.aiId);
+
+      aiFormations.forEach(formation => {
+        for (var i = 0; i < formation.positions.length; i++) {
+          for (var j = 0; j < formation.positions[i].length; j++) {
+            if (aiEntities.length === 0) return;
+            if (formation.positions[i][j] == null) continue;
+
+            let removeIndex: number;
+            var found = aiEntities.some((entity, index) => {
+              if (entity.id === formation.positions[i][j].id) {
+                removeIndex = index;
+                return true;
+              }
+              else return false;
+            });
+
+            if (found) {
+              var entity = aiEntities.splice(removeIndex, 1)[0];
+              formation.positions[i][j] = entity;
+            }
+          }
+        }
+      });
+    }
   }
 
   /**
