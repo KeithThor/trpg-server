@@ -76,10 +76,13 @@ namespace TRPGGame.Managers
         /// </summary>
         public void OnSecondElapsed()
         {
+            if (!_isBattleActive) return;
             _secondsElapsedInTurn++;
-            if (_secondsElapsedInTurn >= GameplayConstants.SecondsPerTurn)
+            if (_battle != null && DateTime.Now >= _battle.TurnExpiration)
             {
                  _secondsElapsedInTurn = 0;
+                _battle.TurnExpiration = DateTime.MaxValue;
+
                 EndTurn();
             }
 
@@ -139,7 +142,6 @@ namespace TRPGGame.Managers
                 }
 
                 var nextTurnStartDate = DateTime.Now.AddSeconds(GameplayConstants.SecondsPerTurn);
-                double millisecondsToWait = (nextTurnStartDate - DateTime.Now).TotalMilliseconds;
 
                 battle = new Battle
                 {
