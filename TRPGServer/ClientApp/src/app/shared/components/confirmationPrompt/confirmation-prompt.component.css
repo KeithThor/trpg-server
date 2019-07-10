@@ -1,5 +1,21 @@
+.prompt-body {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  background-color: dimgrey;
+  padding: 5px;
+}
+
+.prompt-button {
+  margin: auto;
+  float: left;
+}
+
 .prompt-title {
   background-color: darkred;
+  text-align: center;
 }
 .prompt-text {
   background-color: antiquewhite;

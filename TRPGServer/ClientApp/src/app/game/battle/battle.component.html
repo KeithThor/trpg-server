@@ -1,4 +1,11 @@
 <div class="container" (contextmenu)="onContextMenu($event)">
+  <!-- Exit battle prompt -->
+  <shared-confirmation-prompt *ngIf="showExitPrompt"
+                              [title]="didAttackersWin ? 'Victory' : 'Defeat'"
+                              [message]="didAttackersWin ? 'Your team was victorious!' : 'Your team was defeated!'"
+                              [optionOne]="'Back to Game'"
+                              (onOptionOneClicked)="exitBattle()"></shared-confirmation-prompt>
+
   <!-- Top HUD elements -->
   <div class="row">
     <!-- ActiveEntity resources -->
@@ -8,8 +15,7 @@
 
     <!-- Timer -->
     <div class="hud-component">
-      <game-timer-component [(timeLeft)]="secondsInTurn"
-                            class="game-timer"></game-timer-component>
+      <game-timer-component [(timeLeft)]="secondsInTurn"></game-timer-component>
     </div>
 
     <!-- Error Message Component -->

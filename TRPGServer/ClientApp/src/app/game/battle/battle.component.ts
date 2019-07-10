@@ -11,6 +11,8 @@ import { FormationNodeState } from "../formation/formationGrid/formationNode/for
 import { FormationTargeter } from "../services/formation-targeter.static";
 import { SelectedAbilityData } from "../combatPanel/combat-panel.component";
 import { GameplayConstants } from "../gameplay-constants.static";
+import { StateHandlerService } from "../services/state-handler.service";
+import { PlayerStateConstants } from "../player-state-constants.static";
 
 /**Component responsible for displaying to the user the state of a battle as well as allowing
  * the user to perform actions in battle.*/
@@ -20,7 +22,8 @@ import { GameplayConstants } from "../gameplay-constants.static";
   styleUrls: ["./battle.component.css"]
 })
 export class BattleComponent implements OnInit, OnDestroy {
-  constructor(private battleService: BattleService) {
+  constructor(private battleService: BattleService,
+    private stateHandler: StateHandlerService) {
     this.subscriptions = [];
   }
 
@@ -46,6 +49,8 @@ export class BattleComponent implements OnInit, OnDestroy {
   public activeEntityPosition: number;
   public activeAbility: SelectedAbilityData;
   public errorMessage: string;
+  public showExitPrompt: boolean = false;
+  public didAttackersWin: boolean = false;
 
   private subscriptions: Subscription[];
 
@@ -112,7 +117,8 @@ export class BattleComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.battleService.onEndOfBattle.subscribe({
         next: (didAttackersWin) => {
-          // Show victory or defeat message
+          this.didAttackersWin = didAttackersWin;
+          this.showExitPrompt = true;
         }
       })
     );
@@ -178,6 +184,11 @@ export class BattleComponent implements OnInit, OnDestroy {
     this.activeAbility = null;
     this.targetPosition = null;
     this.targetPositions = null;
+  }
+
+  /**Exits the current battle. */
+  public exitBattle(): void {
+    this.stateHandler.handleStateAsync(PlayerStateConstants.free);
   }
 
   /**

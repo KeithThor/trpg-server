@@ -5,6 +5,8 @@ import { HttpClientModule } from "@angular/common/http";
 import { RouterModule } from "@angular/router";
 import { ModuleWithProviders } from "@angular/compiler/src/core";
 import { ConfirmationPromptComponent } from "./components/confirmationPrompt/confirmation-prompt.component";
+import { CommonModule } from "@angular/common";
+import { BrowserModule } from "@angular/platform-browser";
 
 @NgModule({
   declarations: [
@@ -13,7 +15,9 @@ import { ConfirmationPromptComponent } from "./components/confirmationPrompt/con
 
   imports: [
     HttpClientModule,
-    RouterModule
+    RouterModule,
+    CommonModule,
+    BrowserModule
   ],
 
   providers: [
