@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
+using System.Timers;
 using TRPGGame.Entities;
 using TRPGGame.Entities.Combat;
 using TRPGGame.EventArgs;
@@ -28,13 +28,18 @@ namespace TRPGGame.Managers
             _statusEffectManager = statusEffectManager;
             _statusEffectRepo = statusEffectRepo;
             _seed = new Random();
+
+            _timer = new Timer();
+            _timer.AutoReset = false;
+            _timer.Interval = GameplayConstants.EndOfTurnDelayInSeconds;
+            _timer.Elapsed += (sender, args) => StartTurn();
         }
 
         private Random _seed;
         private Battle _battle;
         private readonly object _key = new object();
         private bool _isBattleActive = false;
-        private readonly System.Timers.Timer _timer;
+        private Timer _timer;
         private readonly IAbilityManager _abilityManager;
         private readonly IEquipmentManager _equipmentManager;
         private readonly IStatusEffectManager _statusEffectManager;
@@ -442,11 +447,8 @@ namespace TRPGGame.Managers
                 {
                     // Call start turn after a delay
                     var dueDate = DateTime.Now.AddSeconds(GameplayConstants.EndOfTurnDelayInSeconds);
-                    Timer timer = new Timer(
-                                        (arg) => { StartTurn(); },
-                                        null,
-                                        (int)(dueDate - DateTime.Now).TotalMilliseconds,
-                                        0);
+                    
+                    _timer.Start();
                 }
             }
         }
