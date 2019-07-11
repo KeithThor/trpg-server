@@ -47,7 +47,7 @@ namespace TRPGGame.Managers
                 return result;
             }
 
-            if (!IsValidAttack(attacker, ability, out string failureReason))
+            if (!HasEnoughResources(attacker, ability, out string failureReason))
             {
                 result.FailureReason = failureReason;
                 return result;
@@ -142,7 +142,7 @@ namespace TRPGGame.Managers
                 return result;
             }
 
-            if (!IsValidAttack(attacker, ability, out string failureReason))
+            if (!HasEnoughResources(attacker, ability, out string failureReason))
             {
                 result.FailureReason = failureReason;
                 return result;
@@ -236,12 +236,12 @@ namespace TRPGGame.Managers
         }
 
         /// <summary>
-        /// Returns true if the given ability is valid for the CombatEntity using it.
+        /// Returns true if the provided CombatEntity has enough resources to use an Ability.
         /// </summary>
         /// <param name="attacker">The attacking CombatEntity.</param>
         /// <param name="ability">The ability being used by the CombatEntity.</param>
         /// <returns></returns>
-        private bool IsValidAttack(CombatEntity attacker, Ability ability, out string failureReason)
+        private bool HasEnoughResources(CombatEntity attacker, Ability ability, out string failureReason)
         {
             failureReason = "";
 

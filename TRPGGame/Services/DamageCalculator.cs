@@ -127,6 +127,15 @@ namespace TRPGGame.Services
             var result = damage.Copy();
             var totalArmor = defender.SecondaryStats.Armor * (defender.SecondaryStats.ArmorPercentage + 100) / 100;
             result -= totalArmor;
+
+            if (result.Blunt < 0) result.Blunt = 0;
+            if (result.Sharp < 0) result.Sharp = 0;
+            if (result.Fire < 0) result.Fire = 0;
+            if (result.Frost < 0) result.Frost = 0;
+            if (result.Lightning < 0) result.Lightning = 0;
+            if (result.Holy < 0) result.Holy = 0;
+            if (result.Shadow < 0) result.Shadow = 0;
+            
             result = result * 100 / (defender.SecondaryStats.Resistances + 100);
 
             return result;
