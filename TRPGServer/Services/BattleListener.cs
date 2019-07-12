@@ -41,12 +41,20 @@ namespace TRPGServer.Services
         {
             int turnExpiration = (int)(args.TurnExpiration - DateTime.Now).TotalSeconds;
 
+            // Get action points changed for CombatEntities that are not in AffectedEntities
+            var actionPointsChanged = args.ActionPointData.Select(kvp => new
+            {
+                FormationId = kvp.Key,
+                ActionPointData = kvp.Value
+            }).ToList();
+
             // Todo: Send delayed abilities too
             await _battleHubContext.Clients.Users(args.ParticipantIds).SendAsync("startOfTurn", new
             {
                 args.ActiveEntities,
                 args.AffectedEntities,
                 args.IsDefendersTurn,
+                actionPointsChanged,
                 turnExpiration
             });
         }

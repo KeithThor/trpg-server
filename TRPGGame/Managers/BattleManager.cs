@@ -321,6 +321,7 @@ namespace TRPGGame.Managers
             var affectedEntities = new List<IReadOnlyCombatEntity>();
             var activatedAbilities = new List<IReadOnlyAbility>();
             var activeEntities = new List<ActiveEntities>();
+            var actionPointData = new Dictionary<int, IEnumerable<ActionPointData>>();
 
             lock (_key)
             {
@@ -362,7 +363,10 @@ namespace TRPGGame.Managers
                 foreach (var formation in activeGroup)
                 {
                     affectedEntities.AddRange(ApplyStatusEffects(formation));
-                    IncreaseActionPoints(formation);
+
+                    var data = IncreaseActionPoints(formation);
+                    actionPointData.Add(formation.Id, data);
+
                     var actives = ChooseActiveEntities(formation);
                     activeEntities.Add(new ActiveEntities
                     {
@@ -380,6 +384,7 @@ namespace TRPGGame.Managers
             {
                 DelayedAbilities = activatedAbilities,
                 AffectedEntities = affectedEntities,
+                ActionPointData = actionPointData,
                 TurnExpiration = _battle.TurnExpiration,
                 ActiveEntities = activeEntities,
                 IsDefendersTurn = _battle.IsDefenderTurn,
@@ -854,17 +859,23 @@ namespace TRPGGame.Managers
         /// Increases action points for a CombatEntity based on its action point regeneration.
         /// </summary>
         /// <param name="entity">The CombatEntity whose action points should be increased.</param>
-        private void IncreaseActionPoints(CombatEntity entity)
+        private ActionPointData IncreaseActionPoints(CombatEntity entity)
         {
             lock (_key)
             {
-                if (entity == null) return;
-                if (entity.Resources.CurrentHealth <= 0 || entity.StatusEffects.Any(se => se.BaseStatus.IsStunned)) return;
+                if (entity == null) return null;
+                if (entity.Resources.CurrentHealth <= 0 || entity.StatusEffects.Any(se => se.BaseStatus.IsStunned)) return null;
 
                 int randPoints = _seed.Next(0, entity.SecondaryStats.BonusActionPoints);
                 int total = GameplayConstants.ActionPointsPerTurn + randPoints;
                 total += total * entity.SecondaryStats.BonusActionPointsPercentage / 100;
                 entity.Resources.CurrentActionPoints += total;
+
+                return new ActionPointData
+                {
+                    EntityId = entity.Id,
+                    CurrentActionPoints = entity.Resources.CurrentActionPoints
+                };
             }
         }
 
@@ -872,17 +883,22 @@ namespace TRPGGame.Managers
         /// Increases action points for every CombatEntity that is able in a Formation.
         /// </summary>
         /// <param name="formation">The Formation to get the CombatEntities from.</param>
-        private void IncreaseActionPoints(Formation formation)
+        private IEnumerable<ActionPointData> IncreaseActionPoints(Formation formation)
         {
             lock (_key)
             {
+                var actionPointData = new List<ActionPointData>();
+
                 foreach (var row in formation.Positions)
                 {
                     foreach (var entity in row)
                     {
-                        IncreaseActionPoints(entity);
+                        var data = IncreaseActionPoints(entity);
+                        if (data != null) actionPointData.Add(data);
                     }
                 }
+
+                return actionPointData;
             }
         }
 

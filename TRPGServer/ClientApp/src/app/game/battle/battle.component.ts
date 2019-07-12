@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from "@angular/core";
 import { BattleService } from "../services/battle.service";
 import { Subscription } from "rxjs/Subscription";
 import { Battle } from "../model/battle.model";
-import { ActiveEntities } from "../model/start-of-turn-data.model";
+import { ActiveEntities, ActionPointsChanged, ActionPointData } from "../model/start-of-turn-data.model";
 import { CombatEntity } from "../model/combat-entity.model";
 import { LocalStorageConstants } from "../../constants";
 import { Formation, FormationConstants } from "../model/formation.model";
@@ -81,10 +81,11 @@ export class BattleComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.battleService.onStartOfTurn.subscribe({
         next: (data) => {
-          this.applyEntityChanges(data.affectedEntities);
-          this.activeEntities = data.activeEntities;
           this.isDefendersTurn = data.isDefendersTurn;
           this.secondsInTurn = data.turnExpiration;
+          this.applyEntityChanges(data.affectedEntities);
+          this.applyActionPoints(data.actionPointsChanged);
+          this.activeEntities = data.activeEntities;
           this.startTurn();
         }
       })
@@ -101,7 +102,6 @@ export class BattleComponent implements OnInit, OnDestroy {
     this.subscriptions.push(
       this.battleService.onInvalidAction.subscribe({
         next: (invalidAction) => {
-          this.showInvalidAction(invalidAction.action);
           this.errorMessage = invalidAction.errorMessage;
         }
       })
@@ -253,11 +253,28 @@ export class BattleComponent implements OnInit, OnDestroy {
   }
 
   /**
-   * If an action is invalid, send a message to the player alerting them.
-   * @param action The action that was invalid.
+   * Applies up-to-date action point data for every CombatEntity in every active Formation.
+   * @param data Object containing the amount of action points changed for every CombatEntity in a Formation.
    */
-  private showInvalidAction(action: BattleAction): void {
+  private applyActionPoints(data: ActionPointsChanged[]): void {
+    let formations: Formation[];
+    if (this.isDefendersTurn) formations = this.defendingFormations;
+    else formations = this.attackingFormations;
 
+    data.forEach(dataSet => {
+      let formation: Formation = formations.find(f => f.id === dataSet.formationId);
+      if (formation == null) throw new Error("Couldn't find a formation with " + dataSet.formationId + "id in applyActionPoints!");
+
+      formation.positions.forEach(row => {
+        row.forEach(entity => {
+          if (entity == null) return;
+          let actionPointData: ActionPointData = dataSet.actionPointData.find(apData => apData.entityId === entity.id);
+          if (actionPointData == null) return;
+
+          entity.resources.currentActionPoints = actionPointData.currentActionPoints;
+        })
+      })
+    });
   }
 
   /**
