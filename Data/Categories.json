@@ -34,5 +34,23 @@
       "images/gui/skills/enabled-base.png",
       "images/gui/skills/fighting.png"
     ]
+  },
+  {
+    "id": 5,
+    "name": "Holy Spells",
+    "description": "Holy spells are mostly defensive in nature, although there are a number of offensive-based abilities to combat the undead.",
+    "iconUris": [
+      "images/gui/skills/enabled-base.png",
+      "images/gui/skills/shields.png"
+    ]
+  },
+  {
+    "id": 6,
+    "name": "Blood Magic",
+    "description": "Blood magic is the usage of one's own lifeblood as a resource to cast heavy damaging or healing spells.",
+    "iconUris": [
+      "images/gui/skills/enabled-base.png",
+      "images/gui/skills/stabbing.png"
+    ]
   }
 ]

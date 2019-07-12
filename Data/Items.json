@@ -183,5 +183,62 @@
             }
         },
         "equippedAbilityIds": [8]
+    },
+    {
+        "id": 10,
+        "name": "Fanatic's Vest",
+        "description": "Robes issued to those devoted to the blood god.",
+        "cost": 50,
+        "iconUris": [
+            "images/gui/spells/disciplines/divination.png",
+            "images/item/armor/torso/robe_ego_1.png"
+        ],
+        "equipIconUri": "images/player/body/vest_red.png",
+        "itemTypeId": 2,
+        "isEquippable": true,
+        "secondaryStats": {
+            "armor": {
+                "blunt": 3,
+                "sharp": 3
+            }
+        }
+    },
+    {
+        "id": 11,
+        "name": "Fanatic's Hood",
+        "description": "Hood issued to those devoted to the blood god.",
+        "cost": 50,
+        "iconUris": [
+            "images/gui/spells/disciplines/divination.png",
+            "images/item/armor/torso/robe_ego_1.png"
+        ],
+        "equipIconUri": "images/player/head/hood_red.png",
+        "itemTypeId": 1,
+        "isEquippable": true,
+        "secondaryStats": {
+            "armor": {
+                "blunt": 3,
+                "sharp": 3
+            }
+        }
+    },
+    {
+        "id": 12,
+        "name": "Fanatic's Flail",
+        "description": "A basic flail given to devotees of the blood god.",
+        "cost": 50,
+        "iconUris": [
+            "images/gui/spells/disciplines/divination.png",
+            "images/item/weapon/mace_1_old.png"
+        ],
+        "equipIconUri": "images/player/hand_right/flail_ball_2_new.png",
+        "itemTypeId": 6,
+        "isEquippable": true,
+        "secondaryStats": {
+            "damage": {
+                "blunt": 10
+            }
+        },
+        "equippedAbilityIds": [12]
     }
 ]

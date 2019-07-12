@@ -66,7 +66,7 @@ namespace TRPGGame.Managers
             }
 
             // Filter out all dead targets
-            targets = targets.Where(entity => entity.Resources.CurrentHealth > 0).ToList();
+            targets = targets.Where(entity => entity != null && entity.Resources.CurrentHealth > 0).ToList();
             // Will be an invalid Ability usage if all targets are dead (later on will add ability to revive)
             if (targets.Count == 0)
             {

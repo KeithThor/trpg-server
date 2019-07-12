@@ -26,6 +26,7 @@ export class CombatPanelComponent {
 
   private activeEntityId: number;
   @Input() activeEntityPosition: number;
+  @Input() flipGrid: boolean;
   public activeAbility: Ability;
   @Output() onSelectAbility: EventEmitter<SelectedAbilityData> = new EventEmitter();
   @Output() onDefend: EventEmitter<void> = new EventEmitter();

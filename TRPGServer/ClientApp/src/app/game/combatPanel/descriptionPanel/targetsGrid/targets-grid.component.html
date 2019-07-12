@@ -1,10 +1,15 @@
 <div>
   <h5>Targets</h5>
   <div>
-    <div class="grid-block" *ngFor="let formationIndex of getFormationLimitAsArray()">
+    <div class="grid-block">
       <div class="grid-row" *ngFor="let row of getPositions(); let i = index">
-        <div class="grid-node" [ngClass]="getStyleForPosition(getPosition(formationIndex, position))" *ngFor="let position of row; let j = index">
-          {{getPosition(formationIndex, position)}}
+        <div class="grid-node" [ngClass]="getStyleForPosition(getPosition(0, row[row.length - 1 - j]))" *ngFor="let position of row; let j = index">
+        </div>
+      </div>
+    </div>
+    <div class="grid-block">
+      <div class="grid-row" *ngFor="let row of getPositions(); let i = index">
+        <div class="grid-node" [ngClass]="getStyleForPosition(getPosition(1, position))" *ngFor="let position of row; let j = index">
         </div>
       </div>
     </div>

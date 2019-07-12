@@ -76,6 +76,7 @@ namespace TRPGGame.Managers
         private AppliedStatusEffect CreateAppliedStatus(CombatEntity applicator, CombatEntity recipient, StatusEffect statusEffect)
         {
             var appliedStatus = new AppliedStatusEffect();
+            appliedStatus.BaseStatus = statusEffect;
             appliedStatus.CumulativeDamage = DamageCalculator.GetDamage(applicator, statusEffect);
             appliedStatus.CumulativeHeal = DamageCalculator.GetHeal(applicator, statusEffect);
             appliedStatus.CumulativeHeal += DamageCalculator.GetPercentageHeal(recipient.Resources.MaxHealth, statusEffect.PercentHealPerTurn);
@@ -178,7 +179,7 @@ namespace TRPGGame.Managers
         /// <param name="predicate">A function used to filter out which StatusEffects to remove from the CombatEntity.</param>
         public void RemoveAll(CombatEntity entity, Func<AppliedStatusEffect, bool> predicate)
         {
-            var remove = entity.StatusEffects.Where(se => !se.BaseStatus.IsPermanent && predicate(se));
+            var remove = entity.StatusEffects.Where(se => !se.BaseStatus.IsPermanent && predicate(se)).ToList();
             foreach (var statusEffect in remove)
             {
                 Remove(entity, statusEffect);

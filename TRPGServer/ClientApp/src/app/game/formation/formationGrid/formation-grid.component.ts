@@ -15,6 +15,7 @@ export class FormationGridComponent {
   @Input() specialIconsFunc: (entity: CombatEntity) => string[];
   @Input() getNodeStateFunc: (nodeState: FormationNodeState) => string;
   @Input() getNameStylesFunc: (formation: Formation) => any;
+  @Input() flipFormation: boolean = false;
   @Output() onNodeClicked: EventEmitter<FormationNodeState> = new EventEmitter();
   @Output() onNodeMouseEnter: EventEmitter<FormationNodeState> = new EventEmitter();
   @Output() onNodeMouseLeave: EventEmitter<FormationNodeState> = new EventEmitter();

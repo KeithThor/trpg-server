@@ -72,7 +72,7 @@ namespace TRPGShared
             {
                 for (int j = 0; j < arr[i].Length; j++)
                 {
-                    if (arr[i][j].Equals(obj))
+                    if (obj.Equals(arr[i][j]))
                     {
                         return new int[] { j, i };
                     }

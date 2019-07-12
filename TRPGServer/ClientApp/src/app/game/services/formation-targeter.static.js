@@ -22,6 +22,7 @@ var FormationTargeter = /** @class */ (function () {
                     }
                 });
             });
+            return targets;
         }
         else if (this.isTargetBlocked(ability, targetPosition, targetFormation))
             return targets;
@@ -56,6 +57,16 @@ var FormationTargeter = /** @class */ (function () {
                     return true;
             }
         }
+        //if (column !== FormationConstants.maxColumns) {
+        //  // Get row where target position is
+        //  let row = this.getRow(targetPosition);
+        //  // Get all entities in that row
+        //  let entityRow = targetFormation.positions[row - 1];
+        //  // From right to left, check for a living CombatEntity 
+        //  for (var i = FormationConstants.maxColumns - 1; i > column - 1; i--) {
+        //    if (entityRow[i] != null && entityRow[i].resources.currentHealth > 0) return true;
+        //  }
+        //}
         return false;
     };
     /**
@@ -68,6 +79,15 @@ var FormationTargeter = /** @class */ (function () {
     FormationTargeter.translate = function (initialCenter, targets, newCenter) {
         var _this = this;
         var newTargets = targets.slice();
+        //if (flipTargets) {
+        //  let centerColumn = Math.ceil(FormationConstants.maxColumns / 2);
+        //  newTargets = newTargets.map(target => {
+        //    let columnPosition = this.getColumn(target);
+        //    if (columnPosition >= centerColumn) return target - FormationConstants.maxColumns + (FormationConstants.maxColumns - columnPosition);
+        //    else return target + FormationConstants.maxColumns - (FormationConstants.maxColumns - columnPosition);
+        //  });
+        //}
+        var isExtendedTarget = newCenter > formation_model_1.FormationConstants.maxFormationSize;
         var change = initialCenter - newCenter;
         var rowDifference = this.getRowDifference(initialCenter, newCenter);
         var columnDifference = this.getColumnDifference(initialCenter, newCenter);
@@ -77,6 +97,9 @@ var FormationTargeter = /** @class */ (function () {
             var valRowDiff = _this.getRowDifference(val, val - change);
             var rowPosition = _this.getRow(val) - valRowDiff;
             // Remove any positions that go out of bounds of row size
+            if (isExtendedTarget
+                && (rowPosition < formation_model_1.FormationConstants.maxRows + 1 || rowPosition > formation_model_1.FormationConstants.maxRows * 2))
+                removePositions.push(index);
             if (rowPosition < 1 || rowPosition > formation_model_1.FormationConstants.maxRows)
                 removePositions.push(index);
             // If there is a misalignment in the change in rows of this position and the center, remove this position
@@ -90,6 +113,9 @@ var FormationTargeter = /** @class */ (function () {
             var valColDiff = _this.getColumnDifference(val, val - change);
             var columnPosition = _this.getColumn(val) - valColDiff;
             // Remove any positions that go out of bounds of column size
+            if (isExtendedTarget
+                && (columnPosition < formation_model_1.FormationConstants.maxColumns + 1 || columnPosition > formation_model_1.FormationConstants.maxColumns * 2))
+                removePositions.push(index);
             if (columnPosition < 1 || columnPosition > formation_model_1.FormationConstants.maxColumns)
                 removePositions.push(index);
             // If there is a misalignment in the chance in columns of this position and the center, remove this position

@@ -23,7 +23,7 @@ namespace TRPGGame.Services
                                                            Formation targetFormation)
         {
             var targets = new List<CombatEntity>();
-            if (ability.IsPositionStatic)
+            if (ability.IsPositionStatic && !ability.IsPointBlank)
             {
                 for (int i = 0; i < targetFormation.Positions.Length; i++)
                 {
@@ -35,6 +35,7 @@ namespace TRPGGame.Services
                         }
                     }
                 }
+                return targets;
             }
             else if (ability.CanTargetBeBlocked)
             {

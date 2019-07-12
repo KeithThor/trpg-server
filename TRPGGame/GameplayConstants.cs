@@ -27,7 +27,7 @@ namespace TRPGGame
         /// <summary>
         /// The time in minutes until a player is logged off due to inactivity.
         /// </summary>
-        public const int InactiveTimeoutDuration = 10;
+        public const int InactiveTimeoutDuration = 60;
 
         /// <summary>
         /// The guid that fills in the place of any spot that requires an ownerId for an AI owned entity.

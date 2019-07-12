@@ -22,6 +22,7 @@ export class FormationTargeter {
           }
         });
       });
+      return targets;
     }
     else if (this.isTargetBlocked(ability, targetPosition, targetFormation)) return targets;
 
@@ -56,6 +57,18 @@ export class FormationTargeter {
         if (entityRow[i] != null && entityRow[i].resources.currentHealth > 0) return true;
       }
     }
+    //if (column !== FormationConstants.maxColumns) {
+    //  // Get row where target position is
+    //  let row = this.getRow(targetPosition);
+
+    //  // Get all entities in that row
+    //  let entityRow = targetFormation.positions[row - 1];
+
+    //  // From right to left, check for a living CombatEntity 
+    //  for (var i = FormationConstants.maxColumns - 1; i > column - 1; i--) {
+    //    if (entityRow[i] != null && entityRow[i].resources.currentHealth > 0) return true;
+    //  }
+    //}
 
     return false;
   }
@@ -81,6 +94,7 @@ export class FormationTargeter {
 
       // Remove any positions that go out of bounds of row size
       if (rowPosition < 1 || rowPosition > FormationConstants.maxRows) removePositions.push(index);
+
       // If there is a misalignment in the change in rows of this position and the center, remove this position
       else if (rowDifference != valRowDiff) removePositions.push(index);
     });
@@ -92,6 +106,7 @@ export class FormationTargeter {
     newTargets.forEach((val, index) => {
       let valColDiff = this.getColumnDifference(val, val - change);
       let columnPosition = this.getColumn(val) - valColDiff;
+
       // Remove any positions that go out of bounds of column size
       if (columnPosition < 1 || columnPosition > FormationConstants.maxColumns) removePositions.push(index);
       // If there is a misalignment in the chance in columns of this position and the center, remove this position

@@ -59,6 +59,7 @@
       <!--Formation grid-->
       <div class="formation-container">
         <game-formation-grid *ngIf="isLoaded" [formation]="activeFormation"
+                             [flipFormation]="true"
                              [specialIconsFunc]="getExtraIcons.bind(this)"
                              [getNodeStateFunc]="getNodeState.bind(this)"
                              (onNodeClicked)="onNodeClick($event)"
@@ -72,7 +73,9 @@
 
   <!--Entities list-->
   <div class="row">
-    <game-combat-panel [activeEntity]="getCombatPanelEntity()" [activeEntityPosition]="getCombatPanelEntityPosition()">
+    <game-combat-panel [activeEntity]="getCombatPanelEntity()"
+                       [activeEntityPosition]="getCombatPanelEntityPosition()"
+                       [flipGrid]="true">
     </game-combat-panel>
   </div>
 </div>

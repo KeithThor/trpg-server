@@ -19,11 +19,12 @@ export class DescriptionPanelComponent {
   @Input() activeCategory: Category;
   @Input() activeAbility: Ability;
   @Input() activeEntity: CombatEntity;
-  @Input() activeEntityPosition: Coordinate;
+  @Input() activeEntityPosition: number;
   @Input() hoveredCommand: string;
   @Input() hoveredCategory: Category;
   @Input() hoveredAbility: Ability;
   @Input() hoveredEntity: CombatEntity;
+  @Input() flipGrid: boolean;
 
   private tempAbilityId: number;
   private tempEntityId: number;

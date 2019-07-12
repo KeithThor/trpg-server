@@ -61,6 +61,7 @@ namespace TRPGServer.Hubs
         public void BeginPlay()
         {
             var manager = _worldEntityManager.GetPlayerEntityManager(Guid.Parse(Context.UserIdentifier));
+            if (manager == null) return;
             manager.BeginPlay();
         }
 

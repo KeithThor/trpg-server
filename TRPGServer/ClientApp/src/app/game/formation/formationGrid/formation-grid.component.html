@@ -3,17 +3,38 @@
   <table (click)="onClicked.emit(formation)"
          (mouseenter)="onMouseEnter.emit(formation)"
          (mouseleave)="onMouseLeave.emit(formation)">
+    <!-- Normal facing formation -->
     <tr *ngFor="let row of formation.positions; let i = index" class="formation-row">
       <td *ngFor="let entity of row; let j = index">
-        <game-formation-node [entity]="entity"
+        <game-formation-node *ngIf="flipFormation; else normalFormation"
+                             [entity]="row[row.length - j - 1]"
                              [formation]="formation"
                              [specialIconsFunc]="specialIconsFunc"
-                             [coordinate]="getCoordinate(j, i)"
+                             [coordinate]="getCoordinate(row.length - j - 1, i)"
                              [getNodeStateFunc]="getNodeStateFunc"
                              (onClick)="nodeClicked($event)"
                              (onMouseEnter)="nodeMouseEnter($event)"
                              (onMouseLeave)="nodeMouseLeave($event)"
                              (onContextMenu)="nodeContextMenu($event)"></game-formation-node>
+
+        <ng-template #normalFormation>
+          <game-formation-node [entity]="entity"
+                               [formation]="formation"
+                               [specialIconsFunc]="specialIconsFunc"
+                               [coordinate]="getCoordinate(j, i)"
+                               [getNodeStateFunc]="getNodeStateFunc"
+                               (onClick)="nodeClicked($event)"
+                               (onMouseEnter)="nodeMouseEnter($event)"
+                               (onMouseLeave)="nodeMouseLeave($event)"
+                               (onContextMenu)="nodeContextMenu($event)"></game-formation-node>
+        </ng-template>
+      </td>
+    </tr>
+
+    <!-- Flipped formation -->
+    <tr *ngFor="let row of formation.positions; let i = index" class="formation-row">
+      <td *ngFor="let entity of row; let j = index">
+        
       </td>
     </tr>
   </table>

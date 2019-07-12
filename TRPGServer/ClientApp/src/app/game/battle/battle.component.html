@@ -37,6 +37,7 @@
         <game-formation-grid [formation]="formation"
                              [getNameStylesFunc]="getFormationNameStyle.bind(this)"
                              [getNodeStateFunc]="getNodeState.bind(this)"
+                             [flipFormation]="true"
                              (onMouseEnter)="onMouseEnterFormationGrid($event)"
                              (onMouseLeave)="targetFormation = null"
                              (onNodeClicked)="onNodeClicked($event)"
@@ -62,6 +63,7 @@
   <div class="row">
     <game-combat-panel [activeEntity]="activeEntity"
                        [activeEntityPosition]="activeEntityPosition"
+                       [flipGrid]="isUserAttacker"
                        (onSelectAbility)="changeSelectedAbility($event)"
                        (onDefend)="performFleeOrDefend(false)"
                        (onFlee)="performFleeOrDefend(true)"></game-combat-panel>

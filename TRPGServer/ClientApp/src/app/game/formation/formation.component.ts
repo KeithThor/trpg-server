@@ -1,6 +1,6 @@
 import { Component, OnInit } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
-import { Formation, FormationTemplate } from "../model/formation.model";
+import { Formation, FormationTemplate, FormationConstants } from "../model/formation.model";
 import { DisplayableEntity } from "../model/display-entity.interface";
 import { CombatEntity } from "../model/combat-entity.model";
 import { FormationFactory } from "../services/formation.factory";
@@ -112,11 +112,15 @@ export class FormationComponent implements OnInit {
 
   /** Returns the formation position of the CombatEntity who should have its abilities and
    * details displayed in the CombatPanel*/
-  public getCombatPanelEntityPosition(): Coordinate {
+  public getCombatPanelEntityPosition(): number {
+    let coord: Coordinate;
     if (this.hoveredEntity != null) {
-      return this.findOccupiedPosition(this.getCombatPanelEntity(), this.activeFormation);
+      coord = this.findOccupiedPosition(this.getCombatPanelEntity(), this.activeFormation);
     }
-    else return this.findOccupiedPosition(this.selectedEntity, this.activeFormation);
+    else coord = this.findOccupiedPosition(this.selectedEntity, this.activeFormation);
+    if (coord == null) return null;
+
+    return coord.positionY * FormationConstants.maxColumns + coord.positionX + 1;
   }
 
   /**

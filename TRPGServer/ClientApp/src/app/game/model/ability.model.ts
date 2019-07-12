@@ -22,6 +22,7 @@ export class Ability {
     this.manaPercentCost = 0;
     this.heal = 0;
     this.percentHeal = 0;
+    this.isOffensive = false;
   }
 
   public id: number;
@@ -33,6 +34,7 @@ export class Ability {
   public centerOfTargets: number;
   public isPointBlank: boolean;
   public isPositionStatic: boolean;
+  public isOffensive: boolean;
   public canTargetBeBlocked: boolean;
   public isSpell: boolean;
   public isSkill: boolean;

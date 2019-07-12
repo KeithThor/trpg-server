@@ -13,6 +13,7 @@ import { SelectedAbilityData } from "../combatPanel/combat-panel.component";
 import { GameplayConstants } from "../gameplay-constants.static";
 import { StateHandlerService } from "../services/state-handler.service";
 import { PlayerStateConstants } from "../player-state-constants.static";
+import { TwoDArray } from "../../shared/static/two-d-array.static";
 
 /**Component responsible for displaying to the user the state of a battle as well as allowing
  * the user to perform actions in battle.*/
@@ -154,8 +155,8 @@ export class BattleComponent implements OnInit, OnDestroy {
    */
   private applyAction(action: SuccessfulAction): void {
     this.removeActiveEntity(action);
-    this.setNextActiveEntity();
-
+    if (action.actor.ownerId === this.userId) this.setNextActiveEntity();
+    
     if (action.ability != null) {
       // Animate ability effects
     }
@@ -176,7 +177,9 @@ export class BattleComponent implements OnInit, OnDestroy {
     if (removeIndex != -1) activeEntities.entityIds.splice(removeIndex, 1);
 
     // Clears selection if the active entity was the actor successfully performing an action
-    if (this.activeEntity.id === action.actor.id) this.clearSelection();
+    if (action.actor.ownerId === this.userId && this.activeEntity != null) {
+      if (this.activeEntity.id === action.actor.id) this.clearSelection();
+    }
   }
 
   /**Clears the currently active Entity and Ability. */
@@ -354,7 +357,6 @@ export class BattleComponent implements OnInit, OnDestroy {
       this.setNextActiveEntity();
     }
     else {
-      this.activeEntityPosition = null;
       this.targetFormation = null;
       this.targetPosition = null;
     }
@@ -418,7 +420,7 @@ export class BattleComponent implements OnInit, OnDestroy {
         if (!activeEntities.entityIds.some(id => id === args.entity.id)) return;
 
         this.activeEntity = args.entity;
-        this.activeEntityPosition = args.coordinate.positionX * FormationConstants.maxColumns + args.coordinate.positionY + 1;
+        this.activeEntityPosition = args.coordinate.positionY * FormationConstants.maxColumns + args.coordinate.positionX + 1;
       }
       return;
     }
@@ -494,6 +496,19 @@ export class BattleComponent implements OnInit, OnDestroy {
 
     this.targetPosition = args.coordinate.positionY * FormationConstants.maxRows + args.coordinate.positionX + 1;
 
+    if (this.activeAbility.ability.isPointBlank) {
+      this.targetPosition = this.activeEntityPosition;
+      this.targetPositions = FormationTargeter.translate(this.activeAbility.ability.centerOfTargets,
+                                                         this.activeAbility.ability.targets,
+                                                         this.targetPosition);
+      this.targetFormation = this.userFormation;
+      return;
+    }
+    if (this.activeAbility.ability.isPositionStatic) {
+      this.targetPosition = this.activeAbility.ability.centerOfTargets;
+      this.targetPositions = this.activeAbility.ability.targets;
+      return;
+    }
     this.targetPositions = FormationTargeter.translate(this.activeAbility.ability.centerOfTargets,
                                                        this.activeAbility.ability.targets,
                                                        this.targetPosition);
@@ -540,6 +555,10 @@ export class BattleComponent implements OnInit, OnDestroy {
    */
   public changeSelectedAbility(ability: SelectedAbilityData): void {
     this.activeAbility = ability;
+    if (ability == null) {
+      this.targetPosition = null;
+      this.targetPositions = null;
+    }
   }
 
   /**
@@ -550,9 +569,20 @@ export class BattleComponent implements OnInit, OnDestroy {
   public getNodeState(nodeState: FormationNodeState): string {
     let position = nodeState.coordinate.positionY * FormationConstants.maxRows + nodeState.coordinate.positionX + 1;
 
-    // If the Formation of this node is the same as the player's target
-    if (this.targetFormation != null && nodeState.formation.id === this.targetFormation.id) {
-      if (this.targetPosition === position) return "formation-node-target-center";
+    // If the ability is point blank, keep targets styled even when mousing over other formations
+    if (this.activeAbility != null
+        && this.activeAbility.ability.isPointBlank
+        && nodeState.formation.id === this.userFormation.id) {
+      if (this.targetPosition === position && this.targetPositions.some(pos => position === pos)) return "formation-node-target-center";
+      if (this.targetPositions != null && this.targetPositions.indexOf(position) !== -1) return "formation-node-target";
+    }
+    // Style static target abilities that are not point blank
+    if (this.targetFormation != null
+        && this.activeAbility != null
+        && !this.activeAbility.ability.isPointBlank
+        && nodeState.formation.id === this.targetFormation.id) {
+      // Show center only if cursor is over node and the target positions contains that position
+      if (this.targetPosition === position && this.targetPositions.some(pos => position === pos)) return "formation-node-target-center";
       if (this.targetPositions != null && this.targetPositions.indexOf(position) !== -1) return "formation-node-target";
     }
 

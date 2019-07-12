@@ -156,7 +156,9 @@
 
     <!--Targets pane-->
     <div class="pane">
-      <game-targets-grid [ability]="getDisplayAbility()" [entityPosition]="activeEntityPosition"></game-targets-grid>
+      <game-targets-grid [ability]="getDisplayAbility()"
+                         [entityPosition]="activeEntityPosition"
+                         [flipGrid]="flipGrid"></game-targets-grid>
     </div>
 
     <!--Targets information pane-->

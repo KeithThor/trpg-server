@@ -26,5 +26,19 @@
         },
         "abilityIds": [9, 10],
         "equippedItemIds": [7, 8, 9]
+    },
+    {
+        "id": 3,
+        "name": "Fanatic",
+        "description": "A crazed lunatic who worships the Blood God. Has the potential for great power, but power comes at a cost.",
+        "stats": {
+            "strength": 8,
+            "dexterity": 7,
+            "intelligence": 5,
+            "agility": 6,
+            "constitution": 14
+        },
+        "abilityIds": [13, 14],
+        "equippedItemIds": [10, 11, 12]
     }
 ]
