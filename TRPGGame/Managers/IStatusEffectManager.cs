@@ -29,6 +29,13 @@ namespace TRPGGame.Managers
         void Apply(CombatEntity recipient, CombatEntity applicator, IEnumerable<StatusEffect> statusEffects, bool isCrit = false);
 
         /// <summary>
+        /// Applies damage and healing from all StatusEffects afflicting a CombatEntity and reduces their timers by 1.
+        /// Removes any StatusEffects that are expired.
+        /// </summary>
+        /// <param name="entity">The CombatEntity to apply damage and healing to.</param>
+        void ApplyEffects(CombatEntity entity);
+
+        /// <summary>
         /// Removes an AppliedStatusEffect from a CombatEntity, removing all the beneficial and detrimental effects.
         /// </summary>
         /// <param name="entity">The CombatEntity to remove the StatusEffect from.</param>

@@ -68,6 +68,34 @@ namespace TRPGGame.Managers
         }
 
         /// <summary>
+        /// Applies damage and healing from all StatusEffects afflicting a CombatEntity and reduces their timers by 1.
+        /// Removes any StatusEffects that are expired.
+        /// </summary>
+        /// <param name="entity">The CombatEntity to apply damage and healing to.</param>
+        public void ApplyEffects(CombatEntity entity)
+        {
+            var removeStatuses = new List<AppliedStatusEffect>();
+            foreach (var statusEffect in entity.StatusEffects)
+            {
+                var damage = DamageCalculator.GetTotalDamage(statusEffect.CumulativeDamage, entity);
+                var totalChange = DamageCalculator.GetDamageTypesAsInt(damage) - statusEffect.CumulativeHeal;
+                entity.Resources.CurrentHealth -= totalChange;
+
+                statusEffect.Duration--;
+                if (statusEffect.Duration == 0) removeStatuses.Add(statusEffect);
+            }
+
+            if (entity.Resources.CurrentHealth <= 0) RemoveAll(entity);
+            else
+            {
+                if (entity.Resources.CurrentHealth > entity.Resources.MaxHealth)
+                    entity.Resources.CurrentHealth = entity.Resources.MaxHealth;
+
+                entity.StatusEffects = entity.StatusEffects.Except(removeStatuses).ToList();
+            }
+        }
+
+        /// <summary>
         /// Creates an instance of an AppliedStatusEffect from the given StatusEffect.
         /// </summary>
         /// <param name="applicator">The CombatEntity applying this instance of the AppliedStatusEffect.</param>

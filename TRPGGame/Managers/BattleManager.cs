@@ -353,17 +353,15 @@ namespace TRPGGame.Managers
                     foreach (var ability in startOfTurnAbilities)
                     {
                         var entities = _abilityManager.PerformDelayedAbility(ability);
-                        foreach (var entity in entities)
-                        {
-                            if (!affectedEntities.Contains(entity)) affectedEntities.Add(entity);
-                        }
+                        affectedEntities.AddRange(entities);
                         activatedAbilities.Add(ability.BaseAbility);
                     }
                 }
 
-                // Increase action points and choose active entities for all formations whose turn it is
+                // Increase action points, choose active entities, and apply status effects to all formations that are active
                 foreach (var formation in activeGroup)
                 {
+                    affectedEntities.AddRange(ApplyStatusEffects(formation));
                     IncreaseActionPoints(formation);
                     var actives = ChooseActiveEntities(formation);
                     activeEntities.Add(new ActiveEntities
@@ -374,7 +372,7 @@ namespace TRPGGame.Managers
                     });
                     _battle.ActionsLeftPerFormation.Add(formation, actives);
                 }
-
+                affectedEntities = affectedEntities.Distinct().ToList();
                 _battle.TurnExpiration = DateTime.Now.AddSeconds(GameplayConstants.SecondsPerTurn);
             }
 
@@ -886,6 +884,27 @@ namespace TRPGGame.Managers
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Applies StatusEffects, if any, to all CombatEntities in a Formation. Removes them accordingly.
+        /// </summary>
+        /// <param name="formation">The Formation to apply StatusEffects to.</param>
+        /// <returns>Returns an IEnumerable of CombatEntities affected by StatusEffect changes.</returns>
+        private IEnumerable<CombatEntity> ApplyStatusEffects(Formation formation)
+        {
+            var affectedEntities = new List<CombatEntity>();
+            var entities = formation.Positions.Flatten()
+                                              .Where(e => e != null && e.Resources.CurrentHealth > 0)
+                                              .Where(e => e.StatusEffects.Count > 0)
+                                              .ToList();
+
+            foreach (var entity in entities)
+            {
+                _statusEffectManager.ApplyEffects(entity);
+                affectedEntities.Add(entity);
+            }
+            return affectedEntities;
         }
 
         /// <summary>

@@ -190,6 +190,8 @@ namespace TRPGGame.Managers
                 if (target.Resources.CurrentHealth > 0)
                 {
                     _statusEffectManager.Apply(target, attacker, ability.AppliedStatusEffects, isCrit);
+                    if (target.Resources.CurrentHealth > target.Resources.MaxHealth)
+                        target.Resources.CurrentHealth = target.Resources.MaxHealth;
                 }
                 else
                 {

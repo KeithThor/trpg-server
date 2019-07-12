@@ -102,6 +102,25 @@ namespace TRPGShared
         }
 
         /// <summary>
+        /// Returns the two dimensional array as a one dimensional IEnumerable.
+        /// </summary>
+        /// <typeparam name="T">The type of the object and array.</typeparam>
+        /// <param name="arr">The two dimensional array to flatten.</param>
+        /// <returns></returns>
+        public static IEnumerable<T> Flatten<T>(this T[][] arr)
+        {
+            var list = new List<T>();
+            foreach (var row in arr)
+            {
+                foreach (var item in row)
+                {
+                    list.Add(item);
+                }
+            }
+            return list;
+        }
+
+        /// <summary>
         /// Returns an IEnumerable of objects that match a given predicate.
         /// </summary>
         /// <typeparam name="T">The type of the object and array.</typeparam>

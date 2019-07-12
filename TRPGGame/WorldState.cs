@@ -79,7 +79,7 @@ namespace TRPGGame
         /// </summary>
         public void OnGameTick()
         {
-            var tasks = new List<Task>();
+            var tasks = new ConcurrentBag<Task>();
             Parallel.ForEach(MapManagers.Values, (maps) =>
             {
                 tasks.Add(Task.Run(() => maps.CheckChangesAsync()));
