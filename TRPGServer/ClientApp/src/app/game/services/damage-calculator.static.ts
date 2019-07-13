@@ -13,13 +13,13 @@ export class DamageCalculator {
    * @param ability The Ability to calculate damage for.
    */
   public static getAbilityDamage(owner: CombatEntity, ability: Ability): DamageTypes {
-    if (this.doesNoDamage(ability.damage)) return new DamageTypes();
-
-    let damageWithBonuses = this.addDamage(this.getBonusDamage(owner, ability),
-      ability.damage,
+    let damage = this.addDamage(ability.damage,
       this.getDamageFromStats(ability.damagePerStat, owner.stats));
 
-    return this.getPercentDamage(damageWithBonuses, owner.secondaryStats.damagePercentage);
+    let bonusDamage = this.getBonusDamage(owner, damage);
+    damage = this.addDamage(damage, bonusDamage);
+
+    return this.getPercentDamage(damage, owner.secondaryStats.damagePercentage);
   }
 
   /**
@@ -28,17 +28,17 @@ export class DamageCalculator {
    * @param owner The CombatEntity that the ability belongs to.
    * @param ability The ability to calculate bonus damage for.
    */
-  private static getBonusDamage(owner: CombatEntity, ability: Ability): DamageTypes {
+  private static getBonusDamage(owner: CombatEntity, damage: DamageTypes): DamageTypes {
     let bonusDamage = owner.secondaryStats.damage;
     let result = new DamageTypes();
-    if (ability.damage.blunt != null && ability.damage.blunt != 0) result.blunt = bonusDamage.blunt;
-    if (ability.damage.sharp != null && ability.damage.sharp != 0) result.sharp = bonusDamage.sharp;
-    if (ability.damage.fire != null && ability.damage.fire != 0) result.fire = bonusDamage.fire;
-    if (ability.damage.frost != null && ability.damage.frost != 0) result.frost = bonusDamage.frost;
-    if (ability.damage.lightning != null && ability.damage.lightning != 0) result.lightning = bonusDamage.lightning;
-    if (ability.damage.earth != null && ability.damage.earth != 0) result.earth = bonusDamage.earth;
-    if (ability.damage.holy != null && ability.damage.holy != 0) result.holy = bonusDamage.holy;
-    if (ability.damage.shadow != null && ability.damage.shadow != 0) result.shadow = bonusDamage.shadow;
+    if (damage.blunt != null && damage.blunt != 0) result.blunt = bonusDamage.blunt;
+    if (damage.sharp != null && damage.sharp != 0) result.sharp = bonusDamage.sharp;
+    if (damage.fire != null && damage.fire != 0) result.fire = bonusDamage.fire;
+    if (damage.frost != null && damage.frost != 0) result.frost = bonusDamage.frost;
+    if (damage.lightning != null && damage.lightning != 0) result.lightning = bonusDamage.lightning;
+    if (damage.earth != null && damage.earth != 0) result.earth = bonusDamage.earth;
+    if (damage.holy != null && damage.holy != 0) result.holy = bonusDamage.holy;
+    if (damage.shadow != null && damage.shadow != 0) result.shadow = bonusDamage.shadow;
     return result;
   }
 
@@ -111,14 +111,14 @@ export class DamageCalculator {
     let damage = new DamageTypes();
     let perStatArray = DamagePerStat.asArray(damagePerStat);
     let statsArray = CharacterStats.asArray(stats);
-    for (var i = 0; i < perStatArray.length; i++) {
+    for (let i = 0; i < perStatArray.length; i++) {
       if (perStatArray[i] != null) {
         let dmgArr: number[] = [];
         let statDamage = DamageTypes.asArray(perStatArray[i]);
         statDamage.forEach(val => {
           dmgArr.push(val * statsArray[i]);
         });
-        damage = this.addDamage(damage, DamageTypes.fromArray(statDamage));
+        damage = this.addDamage(damage, DamageTypes.fromArray(dmgArr));
       }
     }
     return damage;

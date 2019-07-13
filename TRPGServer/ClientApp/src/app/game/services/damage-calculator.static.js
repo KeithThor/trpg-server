@@ -14,10 +14,10 @@ var DamageCalculator = /** @class */ (function () {
      * @param ability The Ability to calculate damage for.
      */
     DamageCalculator.getAbilityDamage = function (owner, ability) {
-        if (this.doesNoDamage(ability.damage))
-            return new damage_types_model_1.DamageTypes();
-        var damageWithBonuses = this.addDamage(this.getBonusDamage(owner, ability), ability.damage, this.getDamageFromStats(ability.damagePerStat, owner.stats));
-        return this.getPercentDamage(damageWithBonuses, owner.secondaryStats.damagePercentage);
+        var damage = this.addDamage(ability.damage, this.getDamageFromStats(ability.damagePerStat, owner.stats));
+        var bonusDamage = this.getBonusDamage(owner, damage);
+        damage = this.addDamage(damage, bonusDamage);
+        return this.getPercentDamage(damage, owner.secondaryStats.damagePercentage);
     };
     /**
      * Returns a DamageTypes object containing the amount of bonus damage for each damage type
@@ -25,24 +25,24 @@ var DamageCalculator = /** @class */ (function () {
      * @param owner The CombatEntity that the ability belongs to.
      * @param ability The ability to calculate bonus damage for.
      */
-    DamageCalculator.getBonusDamage = function (owner, ability) {
+    DamageCalculator.getBonusDamage = function (owner, damage) {
         var bonusDamage = owner.secondaryStats.damage;
         var result = new damage_types_model_1.DamageTypes();
-        if (ability.damage.blunt != null && ability.damage.blunt != 0)
+        if (damage.blunt != null && damage.blunt != 0)
             result.blunt = bonusDamage.blunt;
-        if (ability.damage.sharp != null && ability.damage.sharp != 0)
+        if (damage.sharp != null && damage.sharp != 0)
             result.sharp = bonusDamage.sharp;
-        if (ability.damage.fire != null && ability.damage.fire != 0)
+        if (damage.fire != null && damage.fire != 0)
             result.fire = bonusDamage.fire;
-        if (ability.damage.frost != null && ability.damage.frost != 0)
+        if (damage.frost != null && damage.frost != 0)
             result.frost = bonusDamage.frost;
-        if (ability.damage.lightning != null && ability.damage.lightning != 0)
+        if (damage.lightning != null && damage.lightning != 0)
             result.lightning = bonusDamage.lightning;
-        if (ability.damage.earth != null && ability.damage.earth != 0)
+        if (damage.earth != null && damage.earth != 0)
             result.earth = bonusDamage.earth;
-        if (ability.damage.holy != null && ability.damage.holy != 0)
+        if (damage.holy != null && damage.holy != 0)
             result.holy = bonusDamage.holy;
-        if (ability.damage.shadow != null && ability.damage.shadow != 0)
+        if (damage.shadow != null && damage.shadow != 0)
             result.shadow = bonusDamage.shadow;
         return result;
     };
@@ -121,19 +121,19 @@ var DamageCalculator = /** @class */ (function () {
         var damage = new damage_types_model_1.DamageTypes();
         var perStatArray = damage_per_stat_model_1.DamagePerStat.asArray(damagePerStat);
         var statsArray = character_stats_model_1.CharacterStats.asArray(stats);
-        var _loop_1 = function () {
+        var _loop_1 = function (i) {
             if (perStatArray[i] != null) {
                 var dmgArr_1 = [];
                 var statDamage = damage_types_model_1.DamageTypes.asArray(perStatArray[i]);
                 statDamage.forEach(function (val) {
                     dmgArr_1.push(val * statsArray[i]);
                 });
-                damage = this_1.addDamage(damage, damage_types_model_1.DamageTypes.fromArray(statDamage));
+                damage = this_1.addDamage(damage, damage_types_model_1.DamageTypes.fromArray(dmgArr_1));
             }
         };
         var this_1 = this;
         for (var i = 0; i < perStatArray.length; i++) {
-            _loop_1();
+            _loop_1(i);
         }
         return damage;
     };

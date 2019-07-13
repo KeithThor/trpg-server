@@ -62,6 +62,7 @@
     <None Remove="ClientApp\src\app\game\model\invalid-action.model.ts" />
     <None Remove="ClientApp\src\app\game\model\joined-battle.model.ts" />
     <None Remove="ClientApp\src\app\game\services\pathfinder.static.ts" />
+    <None Remove="ClientApp\src\app\game\services\resource-calculator.static.ts" />
     <None Remove="ClientApp\src\app\shared\components\confirmationPrompt\confirmation-prompt.component.ts" />
     <None Remove="ClientApp\src\app\game\game\tile-node.component.ts" />
     <None Remove="ClientApp\src\app\game\iconDisplay\icon-display.component.ts" />
@@ -140,6 +141,7 @@
     <TypeScriptCompile Include="ClientApp\src\app\game\model\invalid-action.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\model\joined-battle.model.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\services\pathfinder.static.ts" />
+    <TypeScriptCompile Include="ClientApp\src\app\game\services\resource-calculator.static.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\shared\components\confirmationPrompt\confirmation-prompt.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\game\tile-node.component.ts" />
     <TypeScriptCompile Include="ClientApp\src\app\game\iconDisplay\icon-display.component.ts" />
