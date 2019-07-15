@@ -40,13 +40,17 @@ namespace TRPGServer.Services
         private async void OnStartOfTurn(object sender, StartOfTurnEventArgs args)
         {
             int turnExpiration = (int)(args.TurnExpiration - DateTime.Now).TotalSeconds;
+            dynamic actionPointsChanged = null;
 
-            // Get action points changed for CombatEntities that are not in AffectedEntities
-            var actionPointsChanged = args.ActionPointData.Select(kvp => new
+            if (args.ActionPointData != null && args.AffectedEntities != null)
             {
-                FormationId = kvp.Key,
-                ActionPointData = kvp.Value
-            }).ToList();
+                // Get action points changed for CombatEntities that are not in AffectedEntities
+                actionPointsChanged = args.ActionPointData.Select(kvp => new
+                {
+                    FormationId = kvp.Key,
+                    ActionPointData = kvp.Value
+                }).ToList();
+            }
 
             // Todo: Send delayed abilities too
             await _battleHubContext.Clients.Users(args.ParticipantIds).SendAsync("startOfTurn", new

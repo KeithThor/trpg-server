@@ -93,7 +93,7 @@ namespace TRPGGame.Managers
         {
             if (_rand.Next(1, 5) <= 1)
             {
-                //MoveEntity();
+                MoveEntity();
             }
         }
 
@@ -189,6 +189,7 @@ namespace TRPGGame.Managers
                         battleSuccess = true;
                         _battleManager = battleManager;
                         _battleManager.EndOfBattleEvent += OnEndOfBattle;
+                        _isMovementDisabled = true;
                     }
                 }
                 i++;

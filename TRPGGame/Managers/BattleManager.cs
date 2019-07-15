@@ -659,8 +659,16 @@ namespace TRPGGame.Managers
             {
                 if (entity.Resources.CurrentHealth <= 0)
                 {
-                    if (actorFormation.Positions.ContainsTwoD(entity)) _numOfAttackers--;
-                    else _numOfDefenders--;
+                    if (_battle.Attackers.Contains(targetFormation))
+                    {
+                        if (targetFormation.Positions.ContainsTwoD(entity)) _numOfAttackers--;
+                        else _numOfDefenders--;
+                    }
+                    else
+                    {
+                        if (targetFormation.Positions.ContainsTwoD(entity)) _numOfDefenders--;
+                        else _numOfAttackers--;
+                    }
                 }
             }
 
