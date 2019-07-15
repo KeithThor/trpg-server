@@ -174,5 +174,13 @@ namespace TRPGGame.Static
             return $"{entity.Name} does not have enough Health to use {ability.Name}. {ability.Name} " +
                 $"requires {totalHealthCost} Health, {entity.Name} has {entity.Resources.CurrentHealth}.";
         }
+
+        /// <summary>
+        /// Returns a string indicating that the action could not be completed because an exception was thrown.
+        /// </summary>
+        public static string WriteExceptionOccured()
+        {
+            return "Oops, there was a problem on our end.";
+        }
     }
 }

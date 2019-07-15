@@ -3,6 +3,7 @@ using System;
 using TRPGGame.Data;
 using TRPGGame.Entities;
 using TRPGGame.Entities.Data;
+using TRPGGame.Logging;
 using TRPGGame.Managers;
 using TRPGGame.Managers.Combat;
 using TRPGGame.Managers.Combat.Interfaces;
@@ -70,6 +71,7 @@ namespace TRPGGame
             containerBuilder.RegisterType<BattleManagerFactory>();
             containerBuilder.RegisterType<AiEntityManagerFactory>();
             containerBuilder.RegisterType<CombatAi>().As<ICombatAi>();
+            containerBuilder.RegisterType<ErrorLogger>().As<IErrorLogger>();
         }
 
         /// <summary>
