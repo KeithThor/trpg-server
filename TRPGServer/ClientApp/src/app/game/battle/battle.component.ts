@@ -257,6 +257,8 @@ export class BattleComponent implements OnInit, OnDestroy {
    * @param data Object containing the amount of action points changed for every CombatEntity in a Formation.
    */
   private applyActionPoints(data: ActionPointsChanged[]): void {
+    if (data == null) return;
+
     let formations: Formation[];
     if (this.isDefendersTurn) formations = this.defendingFormations;
     else formations = this.attackingFormations;

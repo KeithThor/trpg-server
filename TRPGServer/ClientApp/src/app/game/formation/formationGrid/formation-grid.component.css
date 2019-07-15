@@ -6,9 +6,13 @@
   color: red;
 }
 
+.formation-table {
+  margin: 0 auto;
+}
+
 .formation-grid {
-  margin: auto;
-  float: left;
+  margin: 0 auto;
+  /*flex-direction: column;*/
 }
 
 .formation-name {

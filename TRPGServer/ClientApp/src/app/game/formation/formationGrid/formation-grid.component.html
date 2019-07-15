@@ -2,7 +2,8 @@
   <div [ngClass]="getNameStyles()" class="formation-name">{{formation.name}}</div>
   <table (click)="onClicked.emit(formation)"
          (mouseenter)="onMouseEnter.emit(formation)"
-         (mouseleave)="onMouseLeave.emit(formation)">
+         (mouseleave)="onMouseLeave.emit(formation)"
+         class="formation-table">
     <!-- Normal facing formation -->
     <tr *ngFor="let row of formation.positions; let i = index" class="formation-row">
       <td *ngFor="let entity of row; let j = index">
