@@ -206,8 +206,6 @@ namespace TRPGGame.Managers
                 if (_battle == null) return null;
                 if (!_isBattleActive) return null;
 
-                InitializeFormation(participant.ActiveFormation, isAttacker);
-
                 // Add to list of attackers if joining as an attacker
                 if (isAttacker)
                 {
@@ -219,6 +217,8 @@ namespace TRPGGame.Managers
                     if (_battle.Defenders.Count >= GameplayConstants.MaxFormationsPerSide) return null;
                     _battle.Defenders.Add(participant.ActiveFormation);
                 }
+
+                InitializeFormation(participant.ActiveFormation, isAttacker);
 
                 activeEntities = new List<ActiveEntities>();
 
