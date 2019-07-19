@@ -38,9 +38,9 @@ export class BattleComponent implements OnInit, OnDestroy {
   // Game data
   private userId: string;
   private userFormation: Formation;
-  private isUserAttacker: boolean;
-  private attackingFormations: Formation[];
-  private defendingFormations: Formation[];
+  public isUserAttacker: boolean;
+  public attackingFormations: Formation[];
+  public defendingFormations: Formation[];
 
   // User data
   public activeEntity: CombatEntity;

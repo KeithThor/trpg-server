@@ -1,6 +1,5 @@
 <div [ngStyle]="resourceMaxStyles" class="resource-max">
   <span [ngStyle]="resourceCurrentStyles"
-        class="resource-current"
-        [@changedResource]="{value: changed, params: {currentValue: current}}"></span>
+        class="resource-current"></span>
   <div [ngStyle]="resourceTextStyles" class="resource-text">{{resourceName}}: {{current}}/{{max}}</div>
 </div>

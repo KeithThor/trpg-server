@@ -22,8 +22,8 @@ export class ChatboxComponent implements OnInit {
   }
   @ViewChild("container") private container: ElementRef;
   @ViewChild("messageBox") private messageBox: ElementRef;
-  private receivedMessages: Message[];
-  private message: Message;
+  public receivedMessages: Message[];
+  public message: Message;
   public isTextboxFocused: boolean = false;
 
   /**

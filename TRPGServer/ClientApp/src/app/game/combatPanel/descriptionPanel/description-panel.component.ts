@@ -23,7 +23,6 @@ export class DescriptionPanelComponent {
   @Input() hoveredCommand: string;
   @Input() hoveredCategory: Category;
   @Input() hoveredAbility: Ability;
-  @Input() hoveredEntity: CombatEntity;
   @Input() flipGrid: boolean;
 
   private tempAbilityId: number;
@@ -41,7 +40,7 @@ export class DescriptionPanelComponent {
   }
 
   public getDisplayEntity(): CombatEntity {
-    if (this.activeEntity == null) return this.hoveredEntity;
+    if (this.activeEntity == null) return null;
     //if (this.getDisplayAbility() != null ||
     //  this.getDisplayCategory() != null ||
     //  this.getDisplayCommand() != null) {
