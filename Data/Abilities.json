@@ -109,8 +109,8 @@
   {
     "id": 6,
     "name": "Fire Column",
-    "actionPointCost": 50,
-    "manaCost": 30,
+    "actionPointCost": 30,
+    "manaCost": 15,
     "isSpell": true,
     "description": "Unleashes a column of fire outwards from your hands that scorches your enemies.",
     "iconUris": [
@@ -123,11 +123,11 @@
     "isPositionStatic": false,
     "canTargetBeBlocked": false,
     "damage": {
-      "fire": 15
+      "fire": 5
     },
     "damagePerStat": {
       "intelligence": {
-        "fire": 3
+        "fire": 1
       }
     },
     "appliedStatusEffectIds": [ 1 ]
@@ -136,7 +136,7 @@
     "id": 7,
     "name": "Firebolt",
     "actionPointCost": 20,
-    "manaCost": 20,
+    "manaCost": 10,
     "isSpell": true,
     "description": "Unleashes a small bolt of fire at a target enemy.",
     "iconUris": [
@@ -149,7 +149,7 @@
     "isPositionStatic": false,
     "canTargetBeBlocked": false,
     "damage": {
-      "fire": 10
+      "fire": 5
     },
     "damagePerStat": {
       "intelligence": {
@@ -161,7 +161,7 @@
   {
     "id": 8,
     "name": "Swing",
-    "actionPointCost": 30,
+    "actionPointCost": 10,
     "description": "Swing at your target with the blunt end of your weapon.",
     "iconUris": [
       "images/gui/spells/components/sword.png"
@@ -181,8 +181,8 @@
   {
     "id": 9,
     "name": "Smite",
-    "actionPointCost": 30,
-    "manaCost": 20,
+    "actionPointCost": 20,
+    "manaCost": 10,
     "isSpell": true,
     "description": "Enchants your weapon with holy power and strikes at your enemy.",
     "iconUris": [
@@ -194,9 +194,6 @@
     "isPointBlank": false,
     "isPositionStatic": false,
     "canTargetBeBlocked": true,
-    "damage": {
-      "holy": 10
-    },
     "damagePerStat": {
       "strength": {
         "blunt": 1
@@ -213,7 +210,7 @@
     "id": 10,
     "name": "Minor Blessing of Protection",
     "actionPointCost": 20,
-    "manaCost": 20,
+    "manaCost": 10,
     "isSpell": true,
     "description": "Places a blessing a person that will shield them from harm.",
     "iconUris": [
@@ -253,7 +250,7 @@
   {
     "id": 12,
     "name": "Flail Swing",
-    "actionPointCost": 20,
+    "actionPointCost": 15,
     "description": "Swing at your targets with your flail.",
     "iconUris": [
       "images/item/weapon/flail_1_new.png"
@@ -275,7 +272,6 @@
     "name": "One for All",
     "actionPointCost": 20,
     "healthPercentCost": 25,
-    "heal": 10,
     "healPerStat": {
       "constitution": 2
     },
@@ -309,7 +305,7 @@
     "canTargetBeBlocked": false,
     "damagePerStat": {
       "constitution": {
-        "shadow": 2
+        "shadow": 1
       }
     }
   }

@@ -214,7 +214,7 @@ namespace TRPGGame.Managers
 
                 foreach (var defender in defendingFormations)
                 {
-                    InitializeFormation(defender, false);
+                    InitializeFormation(defender, false, true);
                 }
 
                 var nextTurnStartDate = DateTime.Now.AddSeconds(GameplayConstants.SecondsPerTurn);
@@ -446,6 +446,8 @@ namespace TRPGGame.Managers
                 }
                 affectedEntities = affectedEntities.Distinct().ToList();
                 _battle.TurnExpiration = DateTime.Now.AddSeconds(GameplayConstants.SecondsPerTurn);
+
+                if (!_battle.IsDefenderTurn) _battle.Round++;
             }
 
             Task.Run(() => StartOfTurnEvent?.Invoke(this, new StartOfTurnEventArgs
@@ -895,11 +897,11 @@ namespace TRPGGame.Managers
         /// </summary>
         /// <param name="formation">The Formation to initialize.</param>
         /// <param name="isAttacker">Adds the formation to the attackers group if true, else adds to defenders.</param>
-        private void InitializeFormation(Formation formation, bool isAttacker)
+        /// <param name="dontIncrementActionPoints">If true, will keep the action points for this Formation at 0.</param>
+        private void InitializeFormation(Formation formation, bool isAttacker, bool dontIncrementActionPoints = false)
         {
             lock (_key)
             {
-                var characters = new List<CombatEntity>();
                 foreach (var row in formation.Positions)
                 {
                     foreach (var entity in row)
@@ -911,9 +913,8 @@ namespace TRPGGame.Managers
                         entity.Resources.CurrentHealth = entity.Resources.MaxHealth;
                         entity.Resources.CurrentMana = entity.Resources.MaxMana;
 
-                        IncreaseActionPoints(entity);
-                        characters.Add(entity);
-
+                        if (!dontIncrementActionPoints) IncreaseActionPoints(entity);
+                        
                         if (isAttacker) _numOfAttackers++;
                         else _numOfDefenders++;
                     }

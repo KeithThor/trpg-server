@@ -81,7 +81,6 @@ namespace TRPGServer
             services.AddSingleton<BattleListenerContainer>();
             services.AddSingleton<PlayerListenerContainer>();
 
-            services.AddSingleton<GameDataHandler>();
             services.AddTransient<MapDataHandler>();
 
             var bootstrapper = new Bootstrapper();
@@ -113,7 +112,6 @@ namespace TRPGServer
             var game = app.ApplicationServices.GetRequiredService<Game>();
             game.CancellationToken = lifetime.ApplicationStopped;
             Task.Factory.StartNew(game.StartGame);
-            app.ApplicationServices.GetRequiredService<GameDataHandler>();
 
             AddMapEntityListeners(app);
 

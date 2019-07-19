@@ -1,22 +1,55 @@
 <div class="container">
-  <div class="col-md-6 offset-md-3">
-    <h3 *ngIf="isLoggedIn(); else notLoggedIn">Hi {{getUsername()}}, welcome to the new home!</h3>
-    <ng-template #notLoggedIn><h3>Welcome to home anonymous user!</h3></ng-template>
-    <button *ngIf="isLoggedIn()" class="btn btn-secondary" (click)="logOut()">Log out</button>
-  </div>
-  <div class="col-md-3">
-    <h3>Gamedata</h3>
-    <form>
-      <div class="form-group">
-        <label for="messageInput">Message</label>
-        <input class="form-control" id="messageInput" [(ngModel)]="message" [ngModelOptions]="{standalone: true}" type="text" />
+  <div class="row">
+    <div class="col-md-10">
+      <h2 class="home-section-title">Welcome to the Keith's game server!</h2>
+      <h4 class="home-section-title about-me-section">About the Game</h4>
+
+      <div class="about-me-section">
+        <img class="home-img" src="images/home-1.JPG" />
+        <p>
+          This is a Massively-Multiplayer Online Tactical Role-Playing Game. Think old school Final Fantasy but multiplayer
+          and with a strategic twist. You may create as many characters as you want, however, you may only battle using up to 9
+          characters at a time.
+        </p>
       </div>
-      <button (click)="sendMessage()" type="submit">Send Message</button>
-    </form>
-    <ul class="list-group">
-      <li *ngFor="let gameState of gameData" class="list-group-item">
-        {{gameState}}
-      </li>
-    </ul>
+
+      <div class="about-me-section">
+        <img class="home-img" src="images/home-2.JPG" />
+        <p>
+          Battles are fought in Formations which are 3 x 3 grids. Positioning is key to victory in battle. Place your beefier
+          and more heavily armored characters on the right-most column to protect your squishier characters. If your front-line
+          is defeated, the enemy can start attacking your mid-line and back-line characters. Ranged and magical attacks can attack
+          any position in your Formation, however.
+        </p>
+      </div>
+
+      <div class="about-me-section">
+        <img class="home-img" src="images/home-3.JPG" />
+        <p>
+          Pay attention to the details about your abilities. Some abilities cannot target pass any enemies, while some let you ignore
+          the positioning of the enemy&#39;s Formation completely. Some abilities cannot move their target position in a Formation,
+          but will allow you to target other Formations. Finally, some abilities use your own character as their target position, these
+          are called point blank abilities.
+        </p>
+      </div>
+
+      <div class="about-me-section">
+        <img class="home-img" src="images/home-4.JPG" />
+        <p>
+          You can move around the World Map by right-clicking on a tile. If you right-click a tile with a character on it, the context
+          menu will appear and give you choices on what you want to do. You can move to other maps by moving on top of a door tile.
+        </p>
+      </div>
+
+      <div class="about-me-section">
+        <img class="home-img" src="images/home-5.JPG" />
+        <p>
+          Battles are turn-based, which means all players and ai on one team all take their turns at the same time. Then their enemys all
+          take their turns afterwards. The players or ai who started the battle get to take their turns first. At the start of the turn,
+          your 5 able-bodied characters with the highest Action Points are able to act. Battles go on until one side has no living
+          characters left.
+        </p>
+      </div>
+    </div>
   </div>
 </div>

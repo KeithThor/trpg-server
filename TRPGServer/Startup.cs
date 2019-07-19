@@ -73,7 +73,6 @@ namespace TRPGServer
 
             app.UseSignalR(routes =>
             {
-                routes.MapHub<GameDataHub>("/hubs/gamedata");
                 routes.MapHub<ChatHub>("/hubs/chat");
                 routes.MapHub<WorldEntityHub>("/hubs/worldentities");
                 routes.MapHub<BattleHub>("/hubs/battle");
