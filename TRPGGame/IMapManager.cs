@@ -35,7 +35,12 @@ namespace TRPGGame
         /// Event invoked on every game tick.
         /// </summary>
         event EventHandler<GameTickEventArgs> GameTick;
-        
+
+        /// <summary>
+        /// Called to request the map to send it's state to all players on this map.
+        /// </summary>
+        void RequestState();
+
         /// <summary>
         /// Removes the entity with the given id from this map.
         /// </summary>

@@ -36,6 +36,7 @@ namespace TRPGGame
         private IMapBattleManager _mapBattleManager;
         private WorldEntity _entity;
         private Queue<Coordinate> _movementQueue;
+        private bool _canInvokeMovementStopped = false;
 
         private int _targetEntityId;
         private string _targetOwnerId;
@@ -101,7 +102,11 @@ namespace TRPGGame
                 if (isMovementStopped) PerformAction();
             }
 
-            if (isMovementStopped) Task.Run(() => OnMovementStopped?.Invoke(this, new System.EventArgs()));
+            if (isMovementStopped && _canInvokeMovementStopped)
+            {
+                Task.Run(() => OnMovementStopped?.Invoke(this, new System.EventArgs()));
+                _canInvokeMovementStopped = false;
+            }
         }
 
         /// <summary>
@@ -169,6 +174,11 @@ namespace TRPGGame
                     IsActive = true;
                     LastAccessed = DateTime.Now;
                 }
+                // Player just finished battle and came back, request state in case there is no movement
+                else if (IsActive && _entity != null)
+                {
+                    _currentMapManager.RequestState();
+                }
             }
         }
 
@@ -234,7 +244,11 @@ namespace TRPGGame
         /// <param name="movePath">An IEnumerable of Coordinates that represent the movement path for the player's entity.</param>
         public void SetMovePath(IEnumerable<Coordinate> movePath)
         {
-            _movementQueue = new Queue<Coordinate>(movePath);
+            lock (_lock)
+            {
+                _movementQueue = new Queue<Coordinate>(movePath);
+                _canInvokeMovementStopped = true;
+            }
         }
 
         /// <summary>

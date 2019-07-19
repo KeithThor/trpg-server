@@ -275,6 +275,17 @@ namespace TRPGGame
         }
 
         /// <summary>
+        /// Called to request the map to send it's state to all players on this map.
+        /// </summary>
+        public void RequestState()
+        {
+            lock (_lock)
+            {
+                _isStateChanged = true;
+            }
+        }
+
+        /// <summary>
         /// Checks to see if the map state has changed, if so invokes the events.
         /// </summary>
         public Task CheckChangesAsync()

@@ -10,4 +10,5 @@ export class MapTile {
   id: number;
   iconUris: string[];
   isBlocking: boolean;
+  canTransport: boolean;
 }

@@ -7,6 +7,7 @@ import { MapService } from "../../services/map.service";
 import { Pathfinder } from "../../services/pathfinder.static";
 import { Dictionary } from "../../../shared/static/data-structures.static";
 import { WorldEntity } from "../../model/world-entity.model";
+import { MapTile } from "../../model/map-data.model";
 
 /**Manager responsible for moving the player's WorldEntity around the map. */
 @Injectable()
@@ -101,9 +102,17 @@ export class MovementManager implements OnDestroy {
    *
    * Tries to act on a target WorldEntity if there was a target.*/
   private onMovementStopped(): void {
-    // This was a move order so do nothing else
-    if (this.trackedEntity == null || this.trackedAction === MovementConstants.move) return;
-    
+    // This was a move order, do nothing after
+    if (this.trackedAction == null || this.trackedAction === MovementConstants.move) {
+      return;
+    }
+    // Change maps after reaching destination
+    else if (this.trackedAction === MovementConstants.changeMaps) {
+      this.worldEntityService.changeMapAsync();
+      return;
+    }
+    else if (this.trackedEntity == null) return;
+
     this.actOnEntity(this.trackedEntity, this.trackedAction);
   }
 
@@ -127,7 +136,12 @@ export class MovementManager implements OnDestroy {
     let mapData = this.mapService.mapData;
 
     // Todo: use this path to highlight the map to show where the entity will move
-    return Pathfinder.findPath(playerEntityLocation, target, mapData);
+    try {
+      return Pathfinder.findPath(playerEntityLocation, target, mapData);
+    }
+    catch (ex) {
+      return [];
+    }
   }
 
   /**
@@ -139,7 +153,13 @@ export class MovementManager implements OnDestroy {
 
     let path = this.getPath(target);
     if (path != null) this.storePath(path);
-    this.trackedAction = MovementConstants.move;
+    
+    let steppedTileId = this.mapService.mapData.mapData[target.positionX][target.positionY];
+    let steppedTile: MapTile = this.mapService.mapData.uniqueTiles.find(tile => tile.id === steppedTileId);
+
+    // If this tile is a door, automatically change maps
+    if (steppedTile.canTransport) this.trackedAction = MovementConstants.changeMaps;
+    else this.trackedAction = MovementConstants.move;
 
     this.worldEntityService.moveEntity(path);
   }
@@ -183,4 +203,5 @@ export class MovementConstants {
   public static attack: string = "attack";
   public static join: string = "join";
   public static move: string = "move";
+  public static changeMaps: string = "changemaps";
 }

@@ -25,7 +25,7 @@ namespace TRPGServer.Controllers
         }
 
         [HttpGet("Map")]
-        public  async Task<IActionResult> GetMap(int? mapId)
+        public async Task<IActionResult> GetMap(int? mapId)
         {
             if (mapId == null)
             {

@@ -106,15 +106,6 @@ export class GameComponent implements OnInit, OnDestroy {
     await this.gameStateService.beginPlayAsync();
   }
 
-  @HostListener('document: keydown', ['$event'])
-  public onKey(event: KeyboardEvent): void {
-    if (this.gameStateService.initialized) {
-      if (event.key === "`") {
-        this.gameStateService.changeMapsAsync();
-      }
-    }
-  }
-
   @HostListener('window:beforeunload', ['$event'])
   public onBeginUnload(event: Event): void {
     this.endConnections();

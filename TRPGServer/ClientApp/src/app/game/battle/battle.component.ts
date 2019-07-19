@@ -626,6 +626,7 @@ export class BattleComponent implements OnInit, OnDestroy {
       if (this.targetPosition === position && this.targetPositions.some(pos => position === pos)) return "formation-node-target-center";
       if (this.targetPositions != null && this.targetPositions.indexOf(position) !== -1) return "formation-node-target";
     }
+
     // Style static target abilities that are not point blank
     if (this.targetFormation != null
         && this.activeAbility != null
@@ -639,8 +640,17 @@ export class BattleComponent implements OnInit, OnDestroy {
     if (nodeState.entity == null) return "";
     if (this.hoveredEntity != null && nodeState.entity.id === this.hoveredEntity.id) return "formation-node-hovered";
 
+    // If it is the player's turn and there is at least 1 entity that can act in the player's formation, return active style
     if (this.isDefendersTurn !== this.isUserAttacker) {
-      if (this.activeEntity != null && this.activeEntity.id === nodeState.entity.id) return "formation-node-active";
+      if (this.activeEntity != null
+        && this.activeEntity.id === nodeState.entity.id) {
+        if (this.activeEntities != null) {
+          let myActiveEntities: ActiveEntities = this.activeEntities.find(ae => ae.ownerId === this.userId);
+          if (myActiveEntities.entityIds.length <= 0) return "";
+          else return "formation-node-active";
+        }
+      }
+      return "";
     }
 
     // If the node contains an entity that can act but is not active
