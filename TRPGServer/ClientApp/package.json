@@ -30,7 +30,7 @@
     "bootstrap": "^3.4.1",
     "core-js": "^2.6.9",
     "rxjs": "^5.5.12",
-    "web-animations-js": "^2.3.1",
+    "web-animations-js": "^2.3.2",
     "zone.js": "^0.8.29"
   },
   "devDependencies": {
@@ -39,12 +39,12 @@
     "@angular/language-service": "^5.2.0",
     "@types/jasmine": "^2.8.16",
     "@types/jasminewd2": "^2.0.6",
-    "@types/node": "^6.14.6",
+    "@types/node": "^6.14.7",
     "codelyzer": "^4.5.0",
     "diff": "^3.5.0",
     "jasmine-core": "~2.8.0",
     "jasmine-spec-reporter": "~4.2.1",
-    "karma": "^4.1.0",
+    "karma": "^4.2.0",
     "karma-chrome-launcher": "~2.2.0",
     "karma-coverage-istanbul-reporter": "^1.4.3",
     "karma-jasmine": "^1.1.2",
