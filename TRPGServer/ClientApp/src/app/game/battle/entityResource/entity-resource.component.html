@@ -1,33 +1,35 @@
-<div class="entity-resource-card" *ngIf="entity != null">
-  <!-- Entity viewer -->
-  <div class="resource-block">
-    <!--<game-display-entity [entity]="entity"
-                         [displayName]="false"></game-display-entity>-->
-    <game-entity-card [entity]="entity"></game-entity-card>
-  </div>
+<div [style.visibility]="entity == null ? 'hidden': 'visible'" class="entity-resource-container">
+  <div class="entity-resource-card" *ngIf="entity != null">
+    <!-- Entity viewer -->
+    <div class="resource-block">
+      <!--<game-display-entity [entity]="entity"
+                           [displayName]="false"></game-display-entity>-->
+      <game-entity-card [entity]="entity"></game-entity-card>
+    </div>
 
-  <!-- Resource viewer -->
-  <div class="resource-block">
-    <div>
-      <!-- Health bar -->
-      <div class="resource-component">
-        <game-resource-bar [resourceName]="'Health'"
-                           [current]="entity.resources.currentHealth"
-                           [max]="entity.resources.maxHealth"
-                           [resourceCurrentStyles]="getHealthStyles()"></game-resource-bar>
-      </div>
-
-      <!-- Mana bar -->
-      <div class="resource-component">
-        <game-resource-bar [resourceName]="'Mana'"
-                           [current]="entity.resources.currentMana"
-                           [max]="entity.resources.maxMana"
-                           [resourceCurrentStyles]="getManaStyles()"></game-resource-bar>
-      </div>
-
-      <!-- Action points -->
+    <!-- Resource viewer -->
+    <div class="resource-block">
       <div>
-        Action Points: <span class="action-point">{{entity.resources.currentActionPoints}}</span>
+        <!-- Health bar -->
+        <div class="resource-component">
+          <game-resource-bar [resourceName]="'Health'"
+                             [current]="entity.resources.currentHealth"
+                             [max]="entity.resources.maxHealth"
+                             [resourceCurrentStyles]="getHealthStyles()"></game-resource-bar>
+        </div>
+
+        <!-- Mana bar -->
+        <div class="resource-component">
+          <game-resource-bar [resourceName]="'Mana'"
+                             [current]="entity.resources.currentMana"
+                             [max]="entity.resources.maxMana"
+                             [resourceCurrentStyles]="getManaStyles()"></game-resource-bar>
+        </div>
+
+        <!-- Action points -->
+        <div>
+          Action Points: <span class="action-point">{{entity.resources.currentActionPoints}}</span>
+        </div>
       </div>
     </div>
   </div>

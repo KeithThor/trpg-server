@@ -1,3 +1,9 @@
+.hud {
+  position: fixed;
+  z-index: 20;
+  top: 0;
+}
+
 .hud-block {
   display: inline-block;
 }
@@ -17,4 +23,12 @@
   height: 100vh;
   position: absolute;
   z-index: 1000;
+}
+
+.spacer {
+  padding-top: 100px;
+}
+
+.spacer-small {
+  padding-top: 20px;
 }

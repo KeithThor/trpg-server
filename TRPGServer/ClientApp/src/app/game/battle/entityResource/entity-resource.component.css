@@ -4,6 +4,10 @@
   padding: 5px;
 }
 
+.entity-resource-container {
+  min-width: 200px;
+}
+
 .resource-block {
   display: inline-block;
   position: relative;

@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy } from "@angular/core";
+import { Component, OnInit, OnDestroy, ViewChild } from "@angular/core";
 import { BattleService } from "../services/battle.service";
 import { Subscription } from "rxjs/Subscription";
 import { Battle } from "../model/battle.model";
@@ -9,11 +9,10 @@ import { Formation, FormationConstants } from "../model/formation.model";
 import { SuccessfulAction, BattleAction } from "../model/battle-action.model";
 import { FormationNodeState } from "../formation/formationGrid/formationNode/formation-node.component";
 import { FormationTargeter } from "../services/formation-targeter.static";
-import { SelectedAbilityData } from "../combatPanel/combat-panel.component";
+import { SelectedAbilityData, CombatPanelComponent } from "../combatPanel/combat-panel.component";
 import { GameplayConstants } from "../gameplay-constants.static";
 import { StateHandlerService } from "../services/state-handler.service";
 import { PlayerStateConstants } from "../player-state-constants.static";
-import { TwoDArray } from "../../shared/static/two-d-array.static";
 
 /**Component responsible for displaying to the user the state of a battle as well as allowing
  * the user to perform actions in battle.*/
@@ -27,6 +26,8 @@ export class BattleComponent implements OnInit, OnDestroy {
     private stateHandler: StateHandlerService) {
     this.subscriptions = [];
   }
+
+  @ViewChild("combatPanel") combatPanel: CombatPanelComponent;
 
   public battle: Battle;
   public activeEntities: ActiveEntities[];
@@ -50,6 +51,7 @@ export class BattleComponent implements OnInit, OnDestroy {
   public activeEntityPosition: number;
   public activeAbility: SelectedAbilityData;
   public errorMessage: string;
+  public battleMessage: string;
   public showExitPrompt: boolean = false;
   public didAttackersWin: boolean = false;
 
@@ -74,6 +76,7 @@ export class BattleComponent implements OnInit, OnDestroy {
           this.isDefendersTurn = data.isDefenderTurn;
           this.round = data.round;
           this.initializeFormations(data);
+          this.setNextActiveEntity();
         }
       })
     );
@@ -137,6 +140,13 @@ export class BattleComponent implements OnInit, OnDestroy {
               this.activeEntities.push(entitySet);
             });
           }
+
+          if (this.isUserAttacker && data.isAttacker) {
+            this.battleMessage = data.joinedFormation.name + " has joined our side in battle!";
+          }
+          else {
+            this.battleMessage = data.joinedFormation.name + " has joined the enemy's side in battle!";
+          }
         }
       })
     )
@@ -187,6 +197,7 @@ export class BattleComponent implements OnInit, OnDestroy {
     this.activeAbility = null;
     this.targetPosition = null;
     this.targetPositions = null;
+    this.combatPanel.reset();
   }
 
   /**Exits the current battle. */
@@ -200,9 +211,15 @@ export class BattleComponent implements OnInit, OnDestroy {
    */
   private applyEntityChanges(entities: CombatEntity[]): void {
     let playerEntities: CombatEntity[] = [];
-    let aiEntities = entities.filter(entity => {
+    let aiEntities: CombatEntity[] = [];
+
+    entities.forEach(entity => {
       if (entity.ownerId !== GameplayConstants.aiId) playerEntities.push(entity);
-      return entity.ownerId === GameplayConstants.aiId;
+      else aiEntities.push(entity);
+
+      // If entity is the same as the hovered or active entity, refresh the references
+      if (this.hoveredEntity != null && this.hoveredEntity.id === entity.id) this.hoveredEntity = entity;
+      if (this.activeEntity != null && this.activeEntity.id === entity.id) this.activeEntity = entity;
     });
 
     // Update a player's CombatEntity
@@ -318,28 +335,39 @@ export class BattleComponent implements OnInit, OnDestroy {
   private setNextActiveEntity(entity?: CombatEntity): void {
     let ownerId: string;
     let entityId: number;
+    let chooseAny: boolean = false;
+    let isMyTurn = this.isDefendersTurn && !this.isUserAttacker;
 
     if (entity == null) {
       let activeEntities: ActiveEntities = this.activeEntities.find(ae => ae.ownerId === this.userId);
-      if (activeEntities == null) throw new Error("Cannot find activeEntities for the user in setNextActiveEntity!");
-
-      if (activeEntities.entityIds.length === 0) {
-        this.activeEntity = null;
-        this.activeEntityPosition = -1;
-        return;
+      if (activeEntities == null && isMyTurn)
+        throw new Error("Cannot find activeEntities for the user in setNextActiveEntity!");
+      // Not my turn, just choose any of my CombatEntities
+      else if (activeEntities == null && !isMyTurn) {
+        chooseAny = this.activeEntity == null;
+        ownerId = this.userId;
+        entityId = -1;
       }
 
-      ownerId = activeEntities.ownerId;
-      entityId = activeEntities.entityIds[0];
+      // No more active entities available for this turn
+      else if (activeEntities.entityIds.length === 0) return;
+      else {
+        ownerId = activeEntities.ownerId;
+        entityId = activeEntities.entityIds[0];
+      }
     }
     else {
       // Prevent trying to set another player's entity as the active entity
       if (entity.ownerId !== this.userId) return;
-      let activeEntities = this.activeEntities.find(ae => ae.ownerId === entity.ownerId);
-      if (activeEntities == null) return;
 
-      // If the provided entity cannot act, ignore setting it as an active entity.
-      if (!activeEntities.entityIds.some(id => id === entity.id)) return;
+      // Prevent setting an inactive entity as the active entity if on the player's turn
+      if (isMyTurn) {
+        let activeEntities = this.activeEntities.find(ae => ae.ownerId === entity.ownerId);
+        if (activeEntities == null) return;
+
+        // If the provided entity cannot act, ignore setting it as an active entity.
+        if (!activeEntities.entityIds.some(id => id === entity.id)) return;
+      }
 
       ownerId = entity.ownerId;
       entityId = entity.id;
@@ -350,13 +378,14 @@ export class BattleComponent implements OnInit, OnDestroy {
     else formation = this.defendingFormations.find(f => f.ownerId === ownerId);
     if (formation == null) throw new Error("Couldn't find user's formation in setNextActiveEntity!");
 
-    // Find the first instance of an entity with the same id as the new active entity id
+    // Find the first instance of an entity with the same id as the new active entity id or any entity if chooseAny is true
     let isFound = false;
     let i = 0;
     while (i < formation.positions.length && !isFound) {
       let j = 0;
       while (j < formation.positions[i].length && !isFound) {
-        if (formation.positions[i][j] != null && formation.positions[i][j].id === entityId) {
+        if (formation.positions[i][j] != null && (
+                formation.positions[i][j].id === entityId || chooseAny)) {
           this.activeEntity = formation.positions[i][j];
           this.activeEntityPosition = i * FormationConstants.maxColumns + j + 1;
           isFound = true;
@@ -382,6 +411,7 @@ export class BattleComponent implements OnInit, OnDestroy {
 
     this.activeAbility = null;
     this.targetPositions = null;
+    this.combatPanel.reset();
   }
 
   ///**
@@ -432,14 +462,15 @@ export class BattleComponent implements OnInit, OnDestroy {
     if (this.activeAbility == null) {
       // Tries to set the active entity to the one inside the clicked node
       if (args.entity != null) {
-        if (args.entity.ownerId !== this.userId) return;
-        let activeEntities: ActiveEntities = this.activeEntities.find(ae => ae.ownerId === this.userId);
+        //if (args.entity.ownerId !== this.userId) return;
+        //let activeEntities: ActiveEntities = this.activeEntities.find(ae => ae.ownerId === this.userId);
 
-        if (activeEntities == null) throw new Error("No ActiveEntities instance belonging to the user was found onNodeClicked!");
-        if (!activeEntities.entityIds.some(id => id === args.entity.id)) return;
+        //if (activeEntities == null) throw new Error("No ActiveEntities instance belonging to the user was found onNodeClicked!");
+        //if (!activeEntities.entityIds.some(id => id === args.entity.id)) return;
 
-        this.activeEntity = args.entity;
-        this.activeEntityPosition = args.coordinate.positionY * FormationConstants.maxColumns + args.coordinate.positionX + 1;
+        //this.activeEntity = args.entity;
+        //this.activeEntityPosition = args.coordinate.positionY * FormationConstants.maxColumns + args.coordinate.positionX + 1;
+        this.setNextActiveEntity(args.entity);
       }
       return;
     }

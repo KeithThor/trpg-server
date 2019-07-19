@@ -18,6 +18,10 @@
   position: relative;
 }
 
+.panel-button-active {
+  background-color: green;
+}
+
 .panel-button:hover {
   border-color: cyan;
   color: white;

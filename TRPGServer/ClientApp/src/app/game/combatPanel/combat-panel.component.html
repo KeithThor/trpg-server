@@ -15,6 +15,7 @@
     <div *ngIf="inActionPanel; else categoryPanel" class="col-md-4" id="ability-panel">
       <h4 class="panel-header">Abilities</h4>
       <game-ability-panel [abilities]="getAbilities()"
+                          [activeAbility]="activeAbility"
                           [clickHandler]="onAbilityClick.bind(this)"
                           [mouseEnterHandler]="onMouseEnterAbility.bind(this)"
                           [mouseLeaveHandler]="onMouseLeaveAbility.bind(this)"></game-ability-panel>

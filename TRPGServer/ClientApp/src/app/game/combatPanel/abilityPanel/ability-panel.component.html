@@ -1,5 +1,5 @@
 <div class="ability-panel container">
-  <div class="panel-button"
+  <div [ngClass]="getPanelButtonStyle(ability)" class="panel-button"
           *ngFor="let ability of abilities"
           (click)="onClick(ability)"
           (mouseenter)="onMouseEnter(ability)"

@@ -1,4 +1,4 @@
-import { Component, Input, PACKAGE_ROOT_URL, Output, EventEmitter } from "@angular/core";
+import { Component, Input, Output, EventEmitter } from "@angular/core";
 import { CombatEntity } from "../model/combat-entity.model";
 import { CommandTypesConstants } from "../gameplay-constants.static";
 import { Category } from "../model/category.model";
@@ -44,8 +44,15 @@ export class CombatPanelComponent {
     return CommandTypesConstants.asArray;
   }
 
-  /**Resets the state of the CombatPanel. */
+  /**Resets the state of the CombatPanel and emits the onResetState event. */
   private resetState(): void {
+    this.reset();
+
+    this.onResetState.emit();
+  }
+
+  /**Resets the state of the CombatPanel. */
+  public reset(): void {
     this.activeAbility = null;
     this.activeCategory = null;
     this.activeCommand = null;
@@ -53,8 +60,6 @@ export class CombatPanelComponent {
     this.hoveredCategory = null
     this.inActionPanel = false;
     this.inCategoryPanel = false;
-
-    this.onResetState.emit();
   }
 
   /**Returns an array of Abilities that belong to the currently active entity filtered by

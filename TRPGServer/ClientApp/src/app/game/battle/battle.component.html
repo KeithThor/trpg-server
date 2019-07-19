@@ -1,67 +1,80 @@
 <div class="container" (contextmenu)="onContextMenu($event)">
   <!-- Exit battle prompt -->
   <shared-confirmation-prompt *ngIf="showExitPrompt"
-                              [title]="didAttackersWin ? 'Victory' : 'Defeat'"
-                              [message]="didAttackersWin ? 'Your team was victorious!' : 'Your team was defeated!'"
+                              [title]="didAttackersWin === isUserAttacker ? 'Victory' : 'Defeat'"
+                              [message]="didAttackersWin === isUserAttacker ? 'Your team was victorious!' : 'Your team was defeated!'"
                               [optionOne]="'Back to Game'"
                               (onOptionOneClicked)="exitBattle()"></shared-confirmation-prompt>
 
-  <!-- Top HUD elements -->
-  <div class="row">
-    <!-- ActiveEntity resources -->
-    <div class="hud-component">
-      <game-entity-resource [entity]="activeEntity"></game-entity-resource>
-    </div>
-
-    <!-- Timer -->
-    <div class="hud-component">
-      <game-timer-component [(timeLeft)]="secondsInTurn"></game-timer-component>
-    </div>
-
-    <!-- Error Message Component -->
-    <div class="hud-component">
-      <game-error-panel [(errorMessage)]="errorMessage"></game-error-panel>
-    </div>
-
-    <!-- HoveredEntity resources -->
-    <div class="hud-component">
-      <game-entity-resource [entity]="hoveredEntity"></game-entity-resource>
-    </div>
+  <div>
   </div>
 
-  <!-- Formations -->
   <div class="row">
-    <!-- Attacking formations -->
-    <div class="col-md-5">
-      <div *ngFor="let formation of attackingFormations">
-        <game-formation-grid [formation]="formation"
-                             [getNameStylesFunc]="getFormationNameStyle.bind(this)"
-                             [getNodeStateFunc]="getNodeState.bind(this)"
-                             [flipFormation]="true"
-                             (onMouseEnter)="onMouseEnterFormationGrid($event)"
-                             (onMouseLeave)="targetFormation = null"
-                             (onNodeClicked)="onNodeClicked($event)"
-                             (onNodeMouseEnter)="onNodeMouseEnter($event)"></game-formation-grid>
+    <div class="col-md-10">
+      <!-- Top HUD elements -->
+      <div class="hud">
+        <!-- ActiveEntity resources -->
+        <div class="hud-component">
+          <game-entity-resource [entity]="isUserAttacker ? activeEntity: hoveredEntity"></game-entity-resource>
+        </div>
+
+        <!-- Error Message Component -->
+        <div class="hud-component">
+          <game-error-panel [(errorMessage)]="battleMessage"></game-error-panel>
+        </div>
+
+        <!-- Timer -->
+        <div class="hud-component">
+          <game-timer-component [(timeLeft)]="secondsInTurn"></game-timer-component>
+        </div>
+
+        <!-- Error Message Component -->
+        <div class="hud-component">
+          <game-error-panel [(errorMessage)]="errorMessage"></game-error-panel>
+        </div>
+
+        <!-- HoveredEntity resources -->
+        <div class="hud-component">
+          <game-entity-resource [entity]="isUserAttacker ? hoveredEntity: activeEntity"></game-entity-resource>
+        </div>
       </div>
 
-    </div>
+      <!-- Formations -->
+      <div class="row spacer">
+        <!-- Attacking formations -->
+        <div class="col-md-6">
+          <div *ngFor="let formation of attackingFormations">
+            <game-formation-grid [formation]="formation"
+                                 [getNameStylesFunc]="getFormationNameStyle.bind(this)"
+                                 [getNodeStateFunc]="getNodeState.bind(this)"
+                                 [flipFormation]="true"
+                                 (onMouseEnter)="onMouseEnterFormationGrid($event)"
+                                 (onMouseLeave)="targetFormation = null"
+                                 (onNodeClicked)="onNodeClicked($event)"
+                                 (onNodeMouseEnter)="onNodeMouseEnter($event)"></game-formation-grid>
+          </div>
 
-    <!-- Defending formations -->
-    <div class="col-md-5">
-      <game-formation-grid *ngFor="let formation of defendingFormations"
-                           [formation]="formation"
-                           [getNameStylesFunc]="getFormationNameStyle.bind(this)"
-                           [getNodeStateFunc]="getNodeState.bind(this)"
-                           (onMouseEnter)="onMouseEnterFormationGrid($event)"
-                           (onMouseLeave)="targetFormation = null"
-                           (onNodeClicked)="onNodeClicked($event)"
-                           (onNodeMouseEnter)="onNodeMouseEnter($event)"></game-formation-grid>
+        </div>
+
+        <!-- Defending formations -->
+        <div class="col-md-6">
+          <game-formation-grid *ngFor="let formation of defendingFormations"
+                               [formation]="formation"
+                               [getNameStylesFunc]="getFormationNameStyle.bind(this)"
+                               [getNodeStateFunc]="getNodeState.bind(this)"
+                               (onMouseEnter)="onMouseEnterFormationGrid($event)"
+                               (onMouseLeave)="targetFormation = null"
+                               (onNodeClicked)="onNodeClicked($event)"
+                               (onNodeMouseEnter)="onNodeMouseEnter($event)"></game-formation-grid>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Combat Panel -->
-  <div class="row">
-    <game-combat-panel [activeEntity]="activeEntity"
+  <div class="row spacer-small">
+    <game-combat-panel #combatPanel
+                       [activeEntity]="activeEntity"
                        [activeEntityPosition]="activeEntityPosition"
                        [flipGrid]="isUserAttacker"
                        (onSelectAbility)="changeSelectedAbility($event)"
