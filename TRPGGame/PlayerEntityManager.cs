@@ -353,9 +353,9 @@ namespace TRPGGame
                     return entity.Id == _targetEntityId && entity.OwnerGuid.ToString() == _targetOwnerId;
                 });
 
-                if (_mapBattleManager.TryGetBattle(hostEntity, out IBattleManager battleManager))
+                if (_mapBattleManager.TryJoinBattle(hostEntity, Entity, out IBattleManager battleManager))
                 {
-                    if (battleManager.JoinBattle(hostEntity, Entity) != null) _battleManager = battleManager;
+                    _battleManager = battleManager;
                 }
             }
 

@@ -182,15 +182,12 @@ namespace TRPGGame.Managers
 
             while (i < allies.Count && !battleSuccess)
             {
-                if (_mapBattleManager.TryGetBattle(allies[i], out IBattleManager battleManager))
+                if (_mapBattleManager.TryJoinBattle(allies[i], _entity, out IBattleManager battleManager))
                 {
-                    if (battleManager.JoinBattle(allies[i], _entity) != null)
-                    {
-                        battleSuccess = true;
-                        _battleManager = battleManager;
-                        _battleManager.EndOfBattleEvent += OnEndOfBattle;
-                        _isMovementDisabled = true;
-                    }
+                    battleSuccess = true;
+                    _battleManager = battleManager;
+                    _battleManager.EndOfBattleEvent += OnEndOfBattle;
+                    _isMovementDisabled = true;
                 }
                 i++;
             }

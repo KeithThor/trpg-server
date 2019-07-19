@@ -33,6 +33,15 @@ namespace TRPGGame.Managers
         bool TryGetBattle(IReadOnlyWorldEntity entity, out IBattleManager battleManager);
 
         /// <summary>
+        /// Tries to join the host WorldEntity.
+        /// </summary>
+        /// <param name="host">The WorldEntity whose battle to join.</param>
+        /// <param name="joiner">The WorldEntity that is attempting to join the battle.</param>
+        /// <param name="battleManager">The BattleManager instance responsible for handling the battle of the host.</param>
+        /// <returns>Returns true if joining was successful.</returns>
+        bool TryJoinBattle(WorldEntity host, WorldEntity joiner, out IBattleManager battleManager);
+
+        /// <summary>
         /// Called on every game tick. Calls into each BattleManager every second to allow them to run functions
         /// based on time.
         /// </summary>

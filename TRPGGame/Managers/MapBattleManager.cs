@@ -113,6 +113,29 @@ namespace TRPGGame.Managers
         }
 
         /// <summary>
+        /// Tries to join the host WorldEntity.
+        /// </summary>
+        /// <param name="host">The WorldEntity whose battle to join.</param>
+        /// <param name="joiner">The WorldEntity that is attempting to join the battle.</param>
+        /// <param name="battleManager">The BattleManager instance responsible for handling the battle of the host.</param>
+        /// <returns>Returns true if joining was successful.</returns>
+        public bool TryJoinBattle(WorldEntity host, WorldEntity joiner, out IBattleManager battleManager)
+        {
+            var success = TryGetBattle(host, out battleManager);
+            if (!success) return false;
+
+            var manager = battleManager.JoinBattle(host, joiner);
+            if (manager == null) return false;
+            else
+            {
+                if (joiner.OwnerGuid == GameplayConstants.AiId) _aiBattleManagers.Add(joiner.Id, battleManager);
+                else _battleManagers.Add(joiner.OwnerGuid.ToString(), battleManager);
+
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Called on every game tick. Calls into each BattleManager every second to allow them to run functions
         /// based on time.
         /// </summary>
