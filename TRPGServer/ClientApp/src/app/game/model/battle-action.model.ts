@@ -17,4 +17,5 @@ export class SuccessfulAction {
   public affectedEntities: CombatEntity[];
   public ability: Ability;
   public actor: CombatEntity;
+  public nextActiveEntityId: number;
 }

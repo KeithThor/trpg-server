@@ -165,12 +165,33 @@ export class BattleComponent implements OnInit, OnDestroy {
    */
   private applyAction(action: SuccessfulAction): void {
     this.removeActiveEntity(action);
+    if (action.nextActiveEntityId !== -1) {
+      this.addActiveEntity(action);
+    }
     if (action.actor.ownerId === this.userId) this.setNextActiveEntity();
     
     if (action.ability != null) {
       // Animate ability effects
     }
     this.applyEntityChanges(action.affectedEntities);
+  }
+
+  /**
+   * Adds a new CombatEntity to the ActiveEntities object.
+   * @param action The object to extract the new active CombatEntity from.
+   */
+  private addActiveEntity(action: SuccessfulAction): void {
+    let activeEntities: ActiveEntities;
+
+    if (action.nextActiveEntityId === -1) return;
+
+    if (action.actor.ownerId === GameplayConstants.aiId) {
+      let aeArray = this.activeEntities.filter(ae => ae.ownerId === GameplayConstants.aiId);
+      activeEntities = aeArray.find(ae => ae.entityIds.some(id => id === action.actor.id))
+    }
+    else activeEntities = this.activeEntities.find(ae => ae.ownerId === action.actor.ownerId);
+
+    activeEntities.entityIds.push(action.nextActiveEntityId);
   }
 
   /**
@@ -181,8 +202,19 @@ export class BattleComponent implements OnInit, OnDestroy {
    * @param action The object containing data about the action that was successfully performed.
    */
   private removeActiveEntity(action: SuccessfulAction): void {
+    let activeEntities: ActiveEntities
+
+    if (action.actor == null) return;
+
     // Remove actor from activeEntities array
-    let activeEntities: ActiveEntities = this.activeEntities.find(ae => ae.ownerId === action.actor.ownerId);
+    if (action.actor.ownerId === GameplayConstants.aiId) {
+      let aeArray = this.activeEntities.filter(ae => ae.ownerId === GameplayConstants.aiId);
+      activeEntities = aeArray.find(ae => ae.entityIds.some(id => id === action.actor.id))
+    }
+    else activeEntities = this.activeEntities.find(ae => ae.ownerId === action.actor.ownerId);
+
+    if (activeEntities == null) throw new Error("No ActiveEntity set was found!");
+
     let removeIndex = activeEntities.entityIds.indexOf(action.actor.id);
     if (removeIndex != -1) activeEntities.entityIds.splice(removeIndex, 1);
 
@@ -336,7 +368,7 @@ export class BattleComponent implements OnInit, OnDestroy {
     let ownerId: string;
     let entityId: number;
     let chooseAny: boolean = false;
-    let isMyTurn = this.isDefendersTurn && !this.isUserAttacker;
+    let isMyTurn = this.isDefendersTurn === !this.isUserAttacker;
 
     if (entity == null) {
       let activeEntities: ActiveEntities = this.activeEntities.find(ae => ae.ownerId === this.userId);
@@ -646,11 +678,10 @@ export class BattleComponent implements OnInit, OnDestroy {
         && this.activeEntity.id === nodeState.entity.id) {
         if (this.activeEntities != null) {
           let myActiveEntities: ActiveEntities = this.activeEntities.find(ae => ae.ownerId === this.userId);
-          if (myActiveEntities.entityIds.length <= 0) return "";
+          if (myActiveEntities == null || myActiveEntities.entityIds.length <= 0) return "";
           else return "formation-node-active";
         }
       }
-      return "";
     }
 
     // If the node contains an entity that can act but is not active

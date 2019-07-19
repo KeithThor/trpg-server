@@ -91,7 +91,8 @@ namespace TRPGServer.Services
                 args.Ability,
                 args.Action,
                 args.Actor,
-                args.AffectedEntities
+                args.AffectedEntities,
+                args.NextActiveEntityId
             });
         }
 

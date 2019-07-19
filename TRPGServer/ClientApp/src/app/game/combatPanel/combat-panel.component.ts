@@ -86,12 +86,6 @@ export class CombatPanelComponent {
           return ability.isSkill
             && ability.category.id === this.activeCategory.id;
         });
-      case CommandTypesConstants.defend:
-        this.onDefend.emit();
-        break;
-      case CommandTypesConstants.flee:
-        this.onFlee.emit();
-        break;
       default:
         return null;
     }
@@ -146,8 +140,22 @@ export class CombatPanelComponent {
       else {
         this.resetState();
 
-        this.activeCommand = command;
-        this.inCategoryPanel = true;
+        switch (command) {
+          case CommandTypesConstants.attack:
+          case CommandTypesConstants.spells:
+          case CommandTypesConstants.skills:
+            this.activeCommand = command;
+            this.inCategoryPanel = true;
+            break;
+          case CommandTypesConstants.defend:
+            this.onDefend.emit();
+            break;
+          case CommandTypesConstants.flee:
+            this.onFlee.emit();
+            break;
+          default:
+            break;
+        }
       }
     }
   }

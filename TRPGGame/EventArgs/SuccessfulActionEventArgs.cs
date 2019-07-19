@@ -12,6 +12,7 @@ namespace TRPGGame.EventArgs
         public IReadOnlyAbility Ability { get; set; }
         public BattleAction Action { get; set; }
         public IReadOnlyCombatEntity Actor { get; set; }
+        public int NextActiveEntityId { get; set; }
         public List<string> ParticipantIds { get; set; }
     }
 }

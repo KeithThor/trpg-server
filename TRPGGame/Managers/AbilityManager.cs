@@ -29,19 +29,19 @@ namespace TRPGGame.Managers
         /// </summary>
         /// <param name="attacker">The attacker performing the ability.</param>
         /// <param name="ability">The ability used to attack the enemy.</param>
-        /// <param name="action">Contains info about the targets for the attack.</param>
+        /// <param name="targetPosition">The position to target with the ability being used.</param>
         /// <param name="targetFormation">The Formation that the CombatEntity is targeting with its action.</param>
         /// <returns></returns>
         public AbilityResult PerformAbility(CombatEntity attacker,
                                             Ability ability,
-                                            BattleAction action,
+                                            int targetPosition,
                                             Formation targetFormation)
         {
             var result = new AbilityResult();
 
             // Target position is out of bounds
             if (!ability.IsPointBlank && !ability.IsPositionStatic &&
-                (action.TargetPosition > 9 || action.TargetPosition < 1))
+                (targetPosition > 9 || targetPosition < 1))
             {
                 result.FailureReason = BattleErrorWriter.WriteTargetPositionOutOfBounds();
                 return result;
@@ -52,8 +52,7 @@ namespace TRPGGame.Managers
                 result.FailureReason = failureReason;
                 return result;
             }
-
-            int targetPosition = action.TargetPosition;
+            
             if (ability.IsPointBlank)
             {
                 targetPosition = GetTargetPosition(attacker, targetFormation);

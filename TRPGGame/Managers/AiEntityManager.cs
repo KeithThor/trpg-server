@@ -84,6 +84,7 @@ namespace TRPGGame.Managers
 
             _isMovementDisabled = !areAnyEntitiesLiving;
             _battleManager.EndOfBattleEvent -= OnEndOfBattle;
+            _battleManager = null;
         }
 
         /// <summary>

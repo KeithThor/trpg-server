@@ -7,6 +7,7 @@ using System.Timers;
 using TRPGGame.Entities;
 using TRPGGame.Entities.Combat;
 using TRPGGame.EventArgs;
+using TRPGGame.Managers.Combat.Interfaces;
 using TRPGGame.Repository;
 using TRPGGame.Static;
 using TRPGShared;
@@ -21,12 +22,14 @@ namespace TRPGGame.Managers
         public BattleManager(IAbilityManager abilityManager,
                              IEquipmentManager equipmentManager,
                              IStatusEffectManager statusEffectManager,
-                             IRepository<StatusEffect> statusEffectRepo)
+                             IRepository<StatusEffect> statusEffectRepo,
+                             ICombatAi combatAi)
         {
             _abilityManager = abilityManager;
             _equipmentManager = equipmentManager;
             _statusEffectManager = statusEffectManager;
             _statusEffectRepo = statusEffectRepo;
+            _combatAi = combatAi;
             _seed = new Random();
 
             _timer = new Timer();
@@ -44,6 +47,7 @@ namespace TRPGGame.Managers
         private readonly IEquipmentManager _equipmentManager;
         private readonly IStatusEffectManager _statusEffectManager;
         private readonly IRepository<StatusEffect> _statusEffectRepo;
+        private readonly ICombatAi _combatAi;
         private List<string> _participantIds;
         private List<int> _aiParticipantIds;
         private int _numOfAttackers = 0;
@@ -93,8 +97,72 @@ namespace TRPGGame.Managers
                     EndTurn();
                 }
 
-                // Make Ai act here
+                // Every 2 seconds make the Ai perform an action
+                if (_secondsElapsedInTurn % 2 == 0)
+                {
+                    PerformAiAction();
+                }
             }
+        }
+
+        /// <summary>
+        /// Performs an action for one Ai CombatEntity that is available to act this turn.
+        /// </summary>
+        private void PerformAiAction()
+        {
+            CombatAiDecision decision = null;
+            IEnumerable<Formation> myAllies = null;
+            IEnumerable<Formation> myEnemies = null;
+            IEnumerable<CombatEntity> affectedEntities = null;
+            CombatEntity nextActiveEntity = null;
+
+            lock (_key)
+            {
+                var available = _battle.ActionsLeftPerFormation.Where(kvp => kvp.Key.OwnerId == GameplayConstants.AiId)
+                                                           .Where(kvp => kvp.Value != null && kvp.Value.Count > 0)
+                                                           .FirstOrDefault();
+                // If no available ai actions left in turn
+                if (available.Equals(default(KeyValuePair<Formation, List<CombatEntity>>))) return;
+
+                var myFormation = available.Key;
+                var myEntity = available.Value.FirstOrDefault();
+
+                // If defenders turn, ai is a defender, all defenders are allies and attackers are enemies
+                if (_battle.IsDefenderTurn)
+                {
+                    myAllies = _battle.Defenders;
+                    myEnemies = _battle.Attackers;
+                }
+                else
+                {
+                    myAllies = _battle.Attackers;
+                    myEnemies = _battle.Defenders;
+                }
+
+                decision = _combatAi.MakeDecision(myFormation, myEntity, myAllies, myEnemies);
+                if (decision == null) return;
+
+                if (decision.IsDefending)
+                {
+                    affectedEntities = PerformDefend(myEntity, myFormation, out nextActiveEntity);
+                }
+                else
+                {
+                    var result = PerformAiDecision(decision, myFormation);
+                    affectedEntities = result.AffectedEntities;
+
+                    CheckForDeadEntities(affectedEntities, decision.TargetFormation);
+                }
+            }
+
+            Task.Run(() => SuccessfulActionEvent.Invoke(this, new SuccessfulActionEventArgs
+            {
+                Ability = decision.Ability,
+                Actor = decision.Actor,
+                AffectedEntities = affectedEntities,
+                ParticipantIds = _participantIds,
+                NextActiveEntityId = nextActiveEntity != null ? nextActiveEntity.Id : -1
+            })).Wait();
         }
 
         /// <summary>
@@ -463,12 +531,11 @@ namespace TRPGGame.Managers
         /// <returns></returns>
         public async Task<BattleActionResult> PerformActionAsync(BattleAction action)
         {
-            IEnumerable<CombatEntity> affectedEntities;
+            IEnumerable<CombatEntity> affectedEntities = null;
+            CombatEntity nextActiveEntity = null;
             Ability ability = null;
             CombatEntity actor = null;
             var result = new BattleActionResult { IsSuccess = true };
-
-            var statusEffects = await _statusEffectRepo.GetDataAsync();
 
             lock (_key)
             {
@@ -539,7 +606,14 @@ namespace TRPGGame.Managers
                 // Is defending or fleeing
                 else
                 {
-                    affectedEntities = PerformFleeOrDefend(action, actor, statusEffects, actorFormation);
+                    if (action.IsDefending)
+                    {
+                        affectedEntities = PerformDefend(actor, actorFormation, out nextActiveEntity);
+                    }
+                    else if (action.IsFleeing)
+                    {
+                        affectedEntities = PerformFlee(actor, actorFormation);
+                    }
                 }
             }
 
@@ -549,7 +623,8 @@ namespace TRPGGame.Managers
                 Action = action,
                 Actor = actor,
                 AffectedEntities = affectedEntities,
-                ParticipantIds = _participantIds
+                ParticipantIds = _participantIds,
+                NextActiveEntityId = nextActiveEntity != null ? nextActiveEntity.Id : -1
             }));
 
             return result;
@@ -637,7 +712,7 @@ namespace TRPGGame.Managers
             // Not a delayed ability, try to apply effects immediately
             else
             {
-                var abilityResult = _abilityManager.PerformAbility(actor, ability, action, targetFormation);
+                var abilityResult = _abilityManager.PerformAbility(actor, ability, action.TargetPosition, targetFormation);
                 if (abilityResult.FailureReason != null)
                 {
                     result.FailureReason = abilityResult.FailureReason;
@@ -648,61 +723,121 @@ namespace TRPGGame.Managers
                 affectedEntities = abilityResult.AffectedEntities;
             }
 
+            CheckForDeadEntities(affectedEntities, targetFormation);
+
             // Action was successful, remove the actor from characters free to act
             _battle.ActionsLeftPerFormation[actorFormation].Remove(actor);
 
             // If Ability was granted by an item, reduce the charges of the item
             if (item != null) _equipmentManager.ReduceCharges(actor, item);
 
-            // If any of the affected entities died, remove them from the number of living characters
-            foreach (var entity in affectedEntities)
-            {
-                if (entity.Resources.CurrentHealth <= 0)
-                {
-                    if (_battle.Attackers.Contains(targetFormation))
-                    {
-                        if (targetFormation.Positions.ContainsTwoD(entity)) _numOfAttackers--;
-                        else _numOfDefenders--;
-                    }
-                    else
-                    {
-                        if (targetFormation.Positions.ContainsTwoD(entity)) _numOfDefenders--;
-                        else _numOfAttackers--;
-                    }
-                }
-            }
+            
 
             return affectedEntities;
         }
 
         /// <summary>
-        /// Performs a flee or defend action for the provided CombatEntity.
+        /// Checks if any of the given CombatEntities are dead.
         /// </summary>
-        /// <param name="action">The object holding the original action.</param>
-        /// <param name="actor">The CombatEntity performing the flee or defend action.</param>
-        /// <param name="statusEffects">An IEnumerable containing all of the possible StatusEffects in the game.</param>
-        /// <param name="actorFormation">The formation of the CombatEntity performing the flee or defend action.</param>
-        /// <returns>Contains an IEnumerable of CombatEntities affected by the flee or defend command.</returns>
-        private IEnumerable<CombatEntity> PerformFleeOrDefend(BattleAction action,
-                                                              CombatEntity actor,
-                                                              IEnumerable<StatusEffect> statusEffects,
-                                                              Formation actorFormation)
+        /// <param name="entities">The CombatEntities to check.</param>
+        /// <param name="formation">The Formation the CombatEntities belong to.</param>
+        private void CheckForDeadEntities(IEnumerable<CombatEntity> entities, Formation formation)
         {
-            IEnumerable<CombatEntity> affectedEntities;
-            StatusEffect statusEffect;
-            if (action.IsDefending)
-            {
-                statusEffect = statusEffects.FirstOrDefault(se => se.Id == GameplayConstants.DefendingStatusEffectId);
-            }
-            else statusEffect = statusEffects.FirstOrDefault(se => se.Id == GameplayConstants.FleeingStatusEffectId);
+            // If any of the affected entities died, remove them from the number of living characters
+            var deadEntities = entities.Where(entity => entity.Resources.CurrentHealth <= 0).ToList();
+            if (deadEntities.Count == 0) return;
 
-            _statusEffectManager.Apply(actor, actor, statusEffect);
-            _battle.ActionsLeftPerFormation[actorFormation].Remove(actor);
+            foreach (var entity in deadEntities)
+            {
+                if (_battle.Attackers.Contains(formation))
+                {
+                    if (formation.Positions.ContainsTwoD(entity)) _numOfAttackers--;
+                    else _numOfDefenders--;
+                }
+                else
+                {
+                    if (formation.Positions.ContainsTwoD(entity)) _numOfDefenders--;
+                    else _numOfAttackers--;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Performs a flee action for the provided CombatEntity.
+        /// </summary>
+        /// <param name="actor">The CombatEntity performing the flee action.</param>
+        /// <param name="actorFormation">The Formation of the CombatEntity performing the flee action.</param>
+        /// <returns>Contains an IEnumerable of CombatEntities affected by the flee or defend command.</returns>
+        private IEnumerable<CombatEntity> PerformFlee(CombatEntity actor, Formation actorFormation)
+        {
+            IEnumerable<CombatEntity> affectedEntities = null;
+
+            var task = _statusEffectRepo.GetDataAsync();
+            task.Wait();
+
+            var statusEffects = task.Result;
+            var fleeStatus = statusEffects.FirstOrDefault(se => se.Id == GameplayConstants.FleeingStatusEffectId);
+
+            lock (_key)
+            {
+                _statusEffectManager.Apply(actor, actor, fleeStatus);
+                _battle.ActionsLeftPerFormation[actorFormation].Remove(actor);
+            }
+            
             affectedEntities = new List<CombatEntity> { actor };
 
-            if (action.IsDefending)
+            return affectedEntities;
+        }
+
+        /// <summary>
+        /// Performs an ability based on the ai's decision data.
+        /// </summary>
+        /// <param name="decision">The data object containing the ai's decision of action.</param>
+        /// <param name="aiFormation">The Formation of the Ai.</param>
+        /// <returns>Returns the result of the ability being performed.</returns>
+        private AbilityResult PerformAiDecision(CombatAiDecision decision, Formation aiFormation)
+        {
+            lock (_key)
             {
-                var nextActiveEntity = GetNextActiveEntity(actorFormation, _battle.ActionsLeftPerFormation[actorFormation]);
+                int targetPosition = decision.TargetCoordinate.PositionX +
+                                     decision.TargetCoordinate.PositionY * GameplayConstants.MaxFormationRows;
+
+                var result = _abilityManager.PerformAbility(decision.Actor, decision.Ability, targetPosition, decision.TargetFormation);
+
+                if (result.FailureReason == null)
+                {
+                    _battle.ActionsLeftPerFormation[aiFormation].Remove(decision.Actor);
+                }
+                return result;
+            }
+        }
+
+        /// <summary>
+        /// Called to make a CombatEntity perform the defend command.
+        /// </summary>
+        /// <param name="actor">The CombatEntity performing the defend command.</param>
+        /// <param name="actorFormation">The Formation of the CombatEntity performing the defend command.</param>
+        /// <param name="nextActiveEntity">Contains the next active CombatEntity, if any.</param>
+        /// <returns>An IEnumerable of CombatEntity containing the CombatEntity performing the defend command.</returns>
+        private IEnumerable<CombatEntity> PerformDefend(CombatEntity actor, Formation actorFormation, out CombatEntity nextActiveEntity)
+        {
+            IEnumerable<CombatEntity> affectedEntities = null;
+
+            var task = _statusEffectRepo.GetDataAsync();
+            task.Wait();
+
+            var statusEffects = task.Result;
+            var defendStatus = statusEffects.FirstOrDefault(se => se.Id == GameplayConstants.DefendingStatusEffectId);
+
+            lock (_key)
+            {
+                // Apply status effect
+                _statusEffectManager.Apply(actor, actor, defendStatus);
+                _battle.ActionsLeftPerFormation[actorFormation].Remove(actor);
+                affectedEntities = new List<CombatEntity> { actor };
+
+                // Choose next active entity
+                nextActiveEntity = GetNextActiveEntity(actorFormation, _battle.ActionsLeftPerFormation[actorFormation]);
                 if (nextActiveEntity != null) _battle.ActionsLeftPerFormation[actorFormation].Add(nextActiveEntity);
             }
 

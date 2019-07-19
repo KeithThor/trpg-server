@@ -8,6 +8,15 @@ namespace TRPGGame.Managers.Combat.Interfaces
 {
     public interface ICombatAi
     {
+        /// <summary>
+        /// Provided the state of combat, makes a decision for the provided CombatEntity on which Ability it should
+        /// use and where.
+        /// </summary>
+        /// <param name="myFormation">The Formation the active entity belongs to.</param>
+        /// <param name="myActiveEntity">The CombatEntity to make a decision for.</param>
+        /// <param name="myAllies">The Formations that are allies with the CombatEntity provided.</param>
+        /// <param name="myEnemies">The Formations that are enemies with the CombatEntity provided.</param>
+        /// <returns></returns>
         CombatAiDecision MakeDecision(Formation myFormation,
                                       CombatEntity myActiveEntity,
                                       IEnumerable<Formation> myAllies,

@@ -51,6 +51,22 @@ namespace TRPGGame.Managers.Combat
             public Formation TargetFormation { get; set; }
         }
 
+        /// <summary>
+        /// Comparer used to allow SortedList to store duplicate keys.
+        /// </summary>
+        private class DuplicateKeyComparer : IComparer<int>
+        {
+            public int Compare(int x, int y)
+            {
+                int result = x.CompareTo(y);
+
+                if (result == 0)
+                    return 1;   // Handle equality as beeing greater
+                else
+                    return result;
+            }
+        }
+
         public CombatAi()
         {
             _rand = new Random();
@@ -95,7 +111,8 @@ namespace TRPGGame.Managers.Combat
         /// <returns>A decision on what Ability to use and where in combat.</returns>
         private CombatAiDecision EvaluateEntity(CombatEntity activeEntity)
         {
-            var evaluations = new SortedList<int, AbilityEvaluation>();
+            var comparer = new DuplicateKeyComparer();
+            var evaluations = new SortedList<int, AbilityEvaluation>(comparer);
 
             // Get any abilities not in the CombatEntity's cooldowns list
             var useableAbilities = activeEntity.Abilities.Where(ability =>
@@ -106,11 +123,13 @@ namespace TRPGGame.Managers.Combat
             foreach (var ability in useableAbilities)
             {
                 var abilityEvaluation = EvaluateAbility(activeEntity, ability);
+                if (abilityEvaluation == null) continue;
+
                 evaluations.Add(abilityEvaluation.FormationEvaluation.TotalValue, abilityEvaluation);
             }
 
             // Checks if any abilities are under the desired value
-            bool areAbilitiesUnderPar = !evaluations.Keys.Any(value => value <= UnderParThreshold);
+            bool areAbilitiesUnderPar = evaluations.Keys.Any(value => value <= UnderParThreshold);
 
             // If there are no valid abilities or all abilities are under par, perform a defend action instead
             if (evaluations.Count() == 0 || areAbilitiesUnderPar)
@@ -175,11 +194,14 @@ namespace TRPGGame.Managers.Combat
         /// <returns></returns>
         private AbilityEvaluation EvaluateAbility(CombatEntity activeEntity, Ability ability)
         {
-            var evaluations = new SortedList<int, AbilityEvaluation>();
+            var comparer = new DuplicateKeyComparer();
+            var evaluations = new SortedList<int, AbilityEvaluation>(comparer);
 
             foreach (var enemy in _myEnemies)
             {
                 var evaluation = EvaluateFormation(activeEntity, ability, enemy, true);
+                if (evaluation == null) continue;
+
                 evaluations.Add(evaluation.TotalValue, new AbilityEvaluation
                 {
                     Ability = ability,
@@ -191,6 +213,8 @@ namespace TRPGGame.Managers.Combat
             foreach (var ally in _myAllies)
             {
                 var evaluation = EvaluateFormation(activeEntity, ability, ally, false);
+                if (evaluation == null) continue;
+
                 evaluations.Add(evaluation.TotalValue, new AbilityEvaluation
                 {
                     Ability = ability,
@@ -198,6 +222,8 @@ namespace TRPGGame.Managers.Combat
                     TargetFormation = ally
                 });
             }
+
+            if (evaluations.Count == 0) return null;
 
             // If no ai randomness, choose highest value FormationEvaluation
             if (_myFormation.AiRandomness <= 0)
@@ -237,7 +263,8 @@ namespace TRPGGame.Managers.Combat
             // Only allows offensive abilities against enemy formations and defensive abilities on allied formations
             if ((!isOffensive && isEnemyFormation) || (isOffensive && !isEnemyFormation)) return null;
 
-            var evaluations = new SortedList<int, FormationEvaluation>();
+            var comparer = new DuplicateKeyComparer();
+            var evaluations = new SortedList<int, FormationEvaluation>(comparer);
 
             // Calculate total ai weight modifier for this ability
             int aiWeightModifier = ability.SelfAppliedStatusEffects.Concat(ability.AppliedStatusEffects)
@@ -262,6 +289,10 @@ namespace TRPGGame.Managers.Combat
                     // Calculate total value using damage if using the ability offensively
                     if (isEnemyFormation && isOffensive)
                     {
+                        // Ignore dead entities
+                        targets = targets.Where(entity => entity.Resources.CurrentHealth > 0).ToList();
+                        if (targets.Count() == 0) continue;
+
                         // Gets total potential damage dealt to each target as a percentage
                         int damagePercentage = targets.Select(entity =>
                         {
@@ -283,6 +314,10 @@ namespace TRPGGame.Managers.Combat
                     // Calculate total value using healing if using the ability defensively
                     else if (!isEnemyFormation && !isOffensive)
                     {
+                        // Ignore dead entities, update later when adding resurrection spells
+                        targets = targets.Where(entity => entity.Resources.CurrentHealth > 0).ToList();
+                        if (targets.Count() == 0) continue;
+
                         int healPercentage = targets.Select(entity =>
                         {
                             // Value cannot exceed max heal amount, prevents ai from wanting to overheal
@@ -303,6 +338,8 @@ namespace TRPGGame.Managers.Combat
                     }
                 }
             }
+
+            if (evaluations.Count == 0) return null;
 
             // Returns best target evaluation if no randomness
             if (_myFormation.AiRandomness <= 0) return evaluations.Last().Value;

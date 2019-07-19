@@ -241,6 +241,9 @@
     "isPointBlank": false,
     "isPositionStatic": false,
     "canTargetBeBlocked": true,
+    "damage": {
+      "sharp": 10
+    },
     "damagePerStat": {
       "agility": {
         "sharp": 2
