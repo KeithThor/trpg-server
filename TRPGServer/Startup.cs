@@ -30,7 +30,7 @@ namespace TRPGServer
             services.AddAuth(Configuration);
             services.AddDbContext<UserDbContext>(options =>
             {
-                options.UseSqlServer(Configuration.GetConnectionString("UserDb"));
+                options.UseSqlite(Configuration.GetConnectionString("UserDb"));
             });
 
             services.AddIdentityCore<ApplicationUser>()

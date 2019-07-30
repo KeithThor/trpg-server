@@ -8,9 +8,16 @@ namespace TRPGGame.Data
 {
     public class WorldEntityDbContext: DbContext
     {
+        private readonly DataConfig _dataConfig;
+
+        public WorldEntityDbContext()
+        {
+            _dataConfig = new DataConfig();
+        }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("Server=(localdb)\\mssqllocaldb;Database=TRpgServer.Entities.mdf;Trusted_Connection=True;");
+            optionsBuilder.UseSqlite(_dataConfig.DbConnectionString);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)

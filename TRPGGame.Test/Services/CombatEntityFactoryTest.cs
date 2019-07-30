@@ -602,6 +602,11 @@ namespace TRPGGame.Test.Services
             throw new NotImplementedException();
         }
 
+        public void ApplyEffects(CombatEntity entity)
+        {
+            throw new NotImplementedException();
+        }
+
         public bool Remove(CombatEntity entity, AppliedStatusEffect appliedStatusEffect)
         {
             throw new NotImplementedException();
