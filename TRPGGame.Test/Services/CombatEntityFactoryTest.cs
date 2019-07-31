@@ -1,7 +1,5 @@
-﻿using AutoFixture;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 using TRPGGame.Entities;
 using TRPGGame.Entities.Combat;
@@ -16,7 +14,6 @@ namespace TRPGGame.Test.Services
     public class CombatEntityFactoryTest
     {
         private readonly CombatEntityFactory _combatEntityFactory;
-        private readonly Fixture _fixture;
 
         public CombatEntityFactoryTest()
         {
@@ -25,7 +22,6 @@ namespace TRPGGame.Test.Services
                                                            new ClassTemplateRepoStub(),
                                                            new EquipmentManagerStub(),
                                                            new StatusEffectManagerStub());
-            _fixture = new Fixture();
         }
 
         [Theory]
@@ -610,14 +606,13 @@ namespace TRPGGame.Test.Services
         {
             return Task.Run(() =>
             {
-                var templates = new List<ClassTemplate>();
-                var fixture = new Fixture();
-                var template = fixture.Create<ClassTemplate>();
-                template.Id = 1;
-
-                templates.Add(template);
-
-                return (IEnumerable<ClassTemplate>)templates;
+                return new List<ClassTemplate>
+                {
+                    new ClassTemplate
+                    {
+                        Id = 1
+                    }
+                } as IEnumerable<ClassTemplate>;
             });
         }
     }

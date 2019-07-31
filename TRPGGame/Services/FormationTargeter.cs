@@ -31,6 +31,7 @@ namespace TRPGGame.Services
                     {
                         if (ability.Targets.Contains(i * GameplayConstants.MaxFormationColumns + j + 1))
                         {
+                            if (targetFormation.Positions[i][j] == null) continue;
                             targets.Add(targetFormation.Positions[i][j]);
                         }
                     }
@@ -48,7 +49,7 @@ namespace TRPGGame.Services
                     var entityRow = targetFormation.Positions[row - 1];
                     for (int i = 0; i < column - 1; i++)
                     {
-                        if (entityRow[i] != null && entityRow[i].Resources.CurrentHealth > 0) return null;
+                        if (entityRow[i] != null && entityRow[i].Resources.CurrentHealth > 0) return targets;
                     }
                 }
             }
