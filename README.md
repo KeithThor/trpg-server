@@ -10,6 +10,30 @@ The game exists independently of the server and the client. All players are assi
 
 The application was designed this way because each layer of the application distrusts data coming from the layer above it. The server layer must check to make sure a request coming from the client to make sure it's a valid request. The game layer must check to make sure the request passed from the server is valid in the player's current game state and context. The problem is compounded in an asynchronous and concurrent environment. In the current application design, the game remains the only source of truth and ignores any invalid requests.
 
+## Current State
+
+The game is currently in a playable state. There are a few minor and major bugs that are currently being worked on but for the most part shouldn't affect gameplay too much. The currently implemented features in the game are as follows:
+
+1. The player can create any number of characters with different hair, body, and class combinations.
+
+2. The player can create any number of formations with characters in different positions and in one or more formations at the same time.
+
+3. The player can move around in a game map and move from map to map.
+
+4. The player can talk with other players on the same map or in any map in the game.
+
+5. The player can initiate battle and join battle against the AI or other players.
+
+6. The player can battle against one or more opponents using a variety of abilities.
+
+Most of my time working on this project in the future will be refactoring the code base and adding unit tests, but the planned future features that I have laid the groundwork for are as follows:
+
+1. The player can open their inventory and equip items for each character.
+
+2. An admin login that allows game developers to create new classes, abilities, items, monsters, and game maps that can be implemented immediately without requiring a server restart.
+
+3. The player can invite other players into a party and start a battle with all party members present.
+
 ## Installation using Visual Studio
 
 Before installing the project, you must have [Visual Studio 2015+](https://visualstudio.microsoft.com/downloads/) with the .NET Core package and [Node](https://nodejs.org/en/download/) installed.
