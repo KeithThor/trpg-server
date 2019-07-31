@@ -47,6 +47,7 @@ namespace TRPGServer
                             IssuerSigningKey = keyBuilder.GetSymmetricKey()
                         };
 
+                        // For authenticating SignalR requests
                         options.Events = new JwtBearerEvents
                         {
                             OnMessageReceived = context =>

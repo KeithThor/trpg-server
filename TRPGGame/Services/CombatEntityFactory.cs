@@ -45,7 +45,7 @@ namespace TRPGGame.Services
         public async Task<CombatEntity> CreateAsync(CharacterTemplate template)
         {
             if (!await IsValidTemplateAsync(template)) return null;
-            if (template.ClassTemplateId == null) return null;
+
             var hairData = await _characterHairRepo.GetDataAsync();
             var baseData = await _characterBaseRepo.GetDataAsync();
             var classTemplates = await _classTemplateRepo.GetDataAsync();
@@ -66,9 +66,8 @@ namespace TRPGGame.Services
                     HairIconUri = hair
                 };
             }
-            catch (ArgumentException e)
+            catch (InvalidOperationException e)
             {
-                Console.WriteLine(e.Message);
                 return null;
             }
 
@@ -198,6 +197,8 @@ namespace TRPGGame.Services
         /// <returns></returns>
         private async Task<bool> IsValidTemplateAsync(CharacterTemplate template)
         {
+            if (template.ClassTemplateId == null) return false;
+            if (template.AllocatedStats == null) return false;
             if (!await AreStatsValidAsync(template)) return false;
             return true;
         }
@@ -229,6 +230,8 @@ namespace TRPGGame.Services
         {
             var data = await _characterBaseRepo.GetDataAsync();
             var cBase = data.FirstOrDefault(b => b.Id == template.BaseId);
+
+            if (cBase == null) return false;
             if (template.AllocatedStats.GetTotalStats() != CharacterTemplate.MaxAllocatedStats) return false;
 
             var allocatedStats = template.AllocatedStats.AsArray();

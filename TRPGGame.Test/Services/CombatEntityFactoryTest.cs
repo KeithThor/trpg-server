@@ -1,4 +1,5 @@
-﻿using System;
+﻿using AutoFixture;
+using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,6 +16,7 @@ namespace TRPGGame.Test.Services
     public class CombatEntityFactoryTest
     {
         private readonly CombatEntityFactory _combatEntityFactory;
+        private readonly Fixture _fixture;
 
         public CombatEntityFactoryTest()
         {
@@ -23,6 +25,7 @@ namespace TRPGGame.Test.Services
                                                            new ClassTemplateRepoStub(),
                                                            new EquipmentManagerStub(),
                                                            new StatusEffectManagerStub());
+            _fixture = new Fixture();
         }
 
         [Theory]
@@ -89,7 +92,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "TemplateA"
+                        Name = "TemplateA",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -108,7 +112,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "TemplateB"
+                        Name = "TemplateB",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -127,7 +132,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "TemplateC"
+                        Name = "TemplateC",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -146,7 +152,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "TemplateD"
+                        Name = "TemplateD",
+                        ClassTemplateId = 1
                     }
                 }
             };
@@ -171,7 +178,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "ExceedsMaxStatButRemainsWithinTotalStatRange"
+                        Name = "ExceedsMaxStatButRemainsWithinTotalStatRange",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -190,7 +198,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "ExceedsMultipleMaxStats"
+                        Name = "ExceedsMultipleMaxStats",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -209,7 +218,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "ExceedsMaxStatWithPositiveBonuses"
+                        Name = "ExceedsMaxStatWithPositiveBonuses",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -228,7 +238,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "ExceedsMaxStatWithNegativeBonuses"
+                        Name = "ExceedsMaxStatWithNegativeBonuses",
+                        ClassTemplateId = 1
                     }
                 }
             };
@@ -254,7 +265,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "UnderStatMaxButOverStatLimit"
+                        Name = "UnderStatMaxButOverStatLimit",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -273,7 +285,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "UnderStatMaxButOverStatLimit"
+                        Name = "UnderStatMaxButOverStatLimit",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -292,7 +305,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "UnderStatMaxButOverStatLimitWithPositiveBonuses"
+                        Name = "UnderStatMaxButOverStatLimitWithPositiveBonuses",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -311,7 +325,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "UnderStatMaxButOverStatLimitWithNegativeBonuses"
+                        Name = "UnderStatMaxButOverStatLimitWithNegativeBonuses",
+                        ClassTemplateId = 1
                     }
                 }
             };
@@ -336,7 +351,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "UnderStatMinButSameStatTotal"
+                        Name = "UnderStatMinButSameStatTotal",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -355,7 +371,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "WayUnderMinStat"
+                        Name = "WayUnderMinStat",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -374,7 +391,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "BelowMinStatWithPositiveBonus"
+                        Name = "BelowMinStatWithPositiveBonus",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -393,7 +411,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "BelowMinStatWithNegativeBonus"
+                        Name = "BelowMinStatWithNegativeBonus",
+                        ClassTemplateId = 1
                     }
                 }
             };
@@ -417,7 +436,8 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "BaseDoesNotExistForThisId"
+                        Name = "BaseDoesNotExistForThisId",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -436,7 +456,8 @@ namespace TRPGGame.Test.Services
                         HairId = -789789,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "HairDoesNotExistForThisId"
+                        Name = "HairDoesNotExistForThisId",
+                        ClassTemplateId = 1
                     }
                 },
                 {
@@ -448,9 +469,28 @@ namespace TRPGGame.Test.Services
                         HairId = 1,
                         EntityId = 1,
                         GroupId = null,
-                        Name = "StatsAreNullForThisObject"
+                        Name = "StatsAreNullForThisObject",
+                        ClassTemplateId = 1
                     }
-                }
+                },
+                new CharacterTemplate{
+                        OwnerId = new Guid(),
+                        OwnerName = "NameHere",
+                        AllocatedStats = new CharacterStats
+                        {
+                            Strength = 5,
+                            Dexterity = 5,
+                            Agility = 5,
+                            Intelligence = 5,
+                            Constitution = 5
+                        },
+                        BaseId = 1,
+                        HairId = 1,
+                        EntityId = 1,
+                        GroupId = null,
+                        Name = "ClassTemplateDoesntExist",
+                        ClassTemplateId = 112312312
+                    }
             };
     }
 
@@ -568,7 +608,17 @@ namespace TRPGGame.Test.Services
     {
         public Task<IEnumerable<ClassTemplate>> GetDataAsync()
         {
-            return Task.Run(() => new List<ClassTemplate>() as IEnumerable<ClassTemplate>);
+            return Task.Run(() =>
+            {
+                var templates = new List<ClassTemplate>();
+                var fixture = new Fixture();
+                var template = fixture.Create<ClassTemplate>();
+                template.Id = 1;
+
+                templates.Add(template);
+
+                return (IEnumerable<ClassTemplate>)templates;
+            });
         }
     }
 
@@ -581,7 +631,7 @@ namespace TRPGGame.Test.Services
 
         public void ReduceCharges(CombatEntity entity, Item item)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public void Unequip(CombatEntity entity, Item item)
@@ -594,37 +644,42 @@ namespace TRPGGame.Test.Services
     {
         public void Apply(CombatEntity recipient, CombatEntity applicator, StatusEffect statusEffect, bool isCrit = false)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public void Apply(CombatEntity recipient, CombatEntity applicator, IEnumerable<StatusEffect> statusEffects, bool isCrit = false)
         {
-            throw new NotImplementedException();
+            return;
+        }
+
+        public void ApplyEffects(CombatEntity entity)
+        {
+            return;
         }
 
         public bool Remove(CombatEntity entity, AppliedStatusEffect appliedStatusEffect)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public bool Remove(CombatEntity entity, int statusId)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public bool Remove(CombatEntity entity, StatusEffect statusEffect)
         {
-            throw new NotImplementedException();
+            return true;
         }
 
         public void RemoveAll(CombatEntity entity)
         {
-            throw new NotImplementedException();
+            return;
         }
 
         public void RemoveAll(CombatEntity entity, Func<AppliedStatusEffect, bool> predicate)
         {
-            throw new NotImplementedException();
+            return;
         }
     }
 }
