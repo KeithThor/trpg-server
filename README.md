@@ -8,7 +8,7 @@ The application is split up into 3-layers: the client, the server, and the game.
 
 The game exists independently of the server and the client. All players are assigned a unique PlayerEntityManager, which exists as a stand in for the player's representation in the game world. Requests from the client pass into their assigned managers who replicate the player's desired action in the game. Any changes caused by the requests will propagate back to the server through events, which the server should be listening for. The server then sends the results of the requests back to the client.
 
-The application was designed this way because each layer of the application distrusts data coming from the layer above it. The server layer must check to make sure a request coming from the client to make sure it's a valid request. The game layer must check to make sure the request passed from the server is valid in the player's current game state and context. The problem is compounded in an asynchronous and concurrent environment. In the current application design, the game remains the only source of truth and ignores any invalid requests.
+The application was designed this way because each layer of the application distrusts data coming from the layer above it. The server layer must check to make sure a request coming from the client is a valid request. The game layer must check to make sure the request passed from the server is valid in the player's current game state and context. The problem is compounded because it is an asynchronous and concurrent environment. In the current application design, the game remains the only source of truth and ignores any invalid requests.
 
 ## Current State
 
