@@ -2,7 +2,7 @@
 
 TRPGServer is an ASP.NET Core and Angular 5 application that hosts a massively-multiplayer online, turn-based role-playing game. Players can battle against one another or the AI in 2 teams of up to 3 players each. They battle using up to 9 characters each that are placed on a grid where positioning plays an important role in survivability.
 
-# About the Infrastructure
+## About the Infrastructure
 
 The application is split up into 3-layers: the client, the server, and the game. The client displays the game and allows the user to interact with the game and other players. Most interactions the player makes in the game causes the client to send a request to the server, most of which are real-time requests, which handles the requests and forwards them to the game if there are no errors. 
 
